@@ -2,7 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
-interface DocumentDesigner
+interface DocumentDesigner extends ReadOnlyDocument
 {
     public function publish();
 

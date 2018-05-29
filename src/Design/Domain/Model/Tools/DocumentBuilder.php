@@ -42,9 +42,9 @@ final class DocumentBuilder
     }
 
     /**
-     * @return DocumentDesignerAggregate
+     * @return DocumentDesigner
      */
-    public function build(): DocumentDesignerAggregate
+    public function build(): DocumentDesigner
     {
         return $this->document;
     }

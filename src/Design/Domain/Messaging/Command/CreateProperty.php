@@ -52,7 +52,8 @@ final class CreateProperty implements Command
      *
      * @return CreateProperty
      */
-    public static function fromString(string $documentId, PropertyDefinition $definition): self {
+    public static function fromString(string $documentId, PropertyDefinition $definition): self
+    {
         return new self(new DocumentId($documentId), $definition);
     }
 }

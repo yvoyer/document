@@ -47,7 +47,7 @@ final class CreatePropertyHandlerTest extends TestCase
 
     /**
      * @expectedException        \Star\Component\Identity\Exception\EntityNotFoundException
-     * @expectedExceptionMessage Object of class 'Star\Component\Document\Design\Domain\Model\DocumentDesigner' with identity 'invalid' could not be found.
+     * @expectedExceptionMessage with identity 'invalid' could not be found.
      */
     public function test_it_should_throw_exception_when_document_not_found()
     {

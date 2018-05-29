@@ -11,3 +11,6 @@ before_script:
 script:
   - bin/phpunit
   - bin/behat
+  - bin/infection
+  - bin/phpcs
+  - bin/phpstan analyse -l max -c phpstan.neon src/ tests/

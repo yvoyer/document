@@ -1,6 +1,6 @@
 {
     "name": "star/document",
-    "description": "Managment of documents with custom attributes optimized for querying.",
+    "description": "Management of documents with custom attributes optimized for querying.",
     "type": "library",
     "minimum-stability": "stable",
     "license": "MIT",
@@ -22,7 +22,10 @@
     "require-dev": {
         "behat/behat": "^3.4",
         "infection/infection": "^0.8.1",
-        "phpunit/phpunit": "^6.0"
+        "phpstan/phpstan": "^0.9",
+        "phpstan/phpstan-phpunit": "~0.9",
+        "phpunit/phpunit": "^6.0",
+        "squizlabs/php_codesniffer": "^3.2"
     },
     "authors": [
         {
