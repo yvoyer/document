@@ -11,14 +11,17 @@ use PHPUnit\Framework\Assert;
 use Star\Component\Document\Common\Domain\Messaging\Command;
 use Star\Component\Document\Common\Domain\Messaging\CommandBus;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Messaging\Command\ChangePropertyDefinition;
+use Star\Component\Document\Design\Domain\Messaging\Command\ChangePropertyDefinitionHandler;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocument;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocumentHandler;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateProperty;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreatePropertyHandler;
-use Star\Component\Document\Design\Domain\Model\DocumentDesignerAggregate;
-use Star\Component\Document\Design\Domain\Model\NullableValue;
+use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
-use Star\Component\Document\Design\Domain\Model\Structure\ReadDocumentStructure;
+use Star\Component\Document\Design\Domain\Model\ReadOnlyDocument;
+use Star\Component\Document\Design\Domain\Model\Tools\AttributeBuilder;
+use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
 
 /**
@@ -49,6 +52,7 @@ class FeatureContext implements Context
         $handlers = [
             new CreateDocumentHandler($this->documents),
             new CreatePropertyHandler($this->documents),
+            new ChangePropertyDefinitionHandler($this->documents)
         ];
 
         $this->bus = new class($handlers) implements CommandBus {
@@ -88,50 +92,26 @@ class FeatureContext implements Context
         };
     }
 
-    /**
-     * @Given The document :arg1 is created
-     */
-    public function theDocumentIsCreated(string $documentId)
+    private function getDocument(string $documentId): ReadOnlyDocument
     {
-        $this->bus->handleCommand(new CreateDocument(new DocumentId($documentId)));
+        return $this->documents->getDocumentByIdentity(new DocumentId($documentId));
     }
 
     /**
-     * @Given The document :arg1 has a section named :arg2
+     * @Given The document :arg1 is created without any properties
      */
-    public function theDocumentHasASectionNamed(string $documentId, string $sectionName)
+    public function theDocumentIsCreatedWithoutAnyProperties(string $documentId)
     {
-        $this->bus->handleCommand(
-            new CreateProperty(
-                new DocumentId($documentId),
-                new PropertyName($sectionName),
-                new NullableValue()
-            )
-        );
+        $this->iCreateADocumentNamed($documentId);
     }
 
     /**
-     * @Given The document :arg1 as a text field named :arg2 under the section :arg3
+     * @Given The document :arg1 is created with a text property named :arg2
      */
-    public function theDocumentAsATextFieldNamedUnderTheSection(string $documentId, string $fieldId, string $sectionName)
+    public function theDocumentIsCreatedWithATextPropertyNamed(string $documentId, string $property)
     {
-        throw new PendingException();
-    }
-
-    /**
-     * @When I update the property (required) of the field :arg1 on the document :arg2
-     */
-    public function iUpdateThePropertyOfTheFieldOnTheDocument(string $fieldId, string $documentId)
-    {
-        throw new PendingException();
-    }
-
-    /**
-     * @When I create a text field named :arg1 under the section :arg2 of document :arg3
-     */
-    public function iCreateATextFieldNamedUnderTheSectionOfDocument(string $fieldId, string $sectionName, string $documentId)
-    {
-        throw new PendingException();
+        $this->iCreateADocumentNamed($documentId);
+        $this->iCreateATextFieldNamedInDocument($property, $documentId);
     }
 
     /**
@@ -139,27 +119,63 @@ class FeatureContext implements Context
      */
     public function iCreateADocumentNamed(string $documentId)
     {
-        $this->theDocumentIsCreated($documentId);
+        $this->bus->handleCommand(CreateDocument::fromString($documentId));
     }
 
     /**
-     * @When I create a section named :arg1 on the document :arg2
+     * @When I create a text field named :arg1 in document :arg2
      */
-    public function iCreateASectionNamedOnTheDocument(string $sectionName, string $documentId)
+    public function iCreateATextFieldNamedInDocument(string $property, string $documentId)
     {
-        $this->theDocumentHasASectionNamed($sectionName, $documentId);
+        $this->bus->handleCommand(
+            CreateProperty::fromString(
+                $documentId,
+                PropertyDefinition::textDefinition($property)
+            )
+        );
     }
 
     /**
-     * @Then The structure of the document :arg1 should look like:
+     * @When I mark the property :arg1 as required on the document :arg2
      */
-    public function theStructureOfTheDocumentShouldLookLike(string $documentId, PyStringNode $string)
+    public function iMarkThePropertyAsRequiredOnTheDocument(string $fieldId, string $documentId)
     {
-        /**
-         * @var $document DocumentDesignerAggregate
-         */
-        $document = $this->documents->getDocumentByIdentity(new DocumentId($documentId));
-        $document->acceptDocumentVisitor($visitor = new ReadDocumentStructure());
-        Assert::assertSame($string->getRaw(), $visitor->toString());
+        $this->bus->handleCommand(
+            ChangePropertyDefinition::fromString(
+                $documentId,
+                $fieldId,
+                AttributeBuilder::create()->required()
+            )
+        );
+    }
+
+    /**
+     * @Then The document :arg1 should have no properties
+     */
+    public function theDocumentShouldHaveNoProperties(string $documentId)
+    {
+        $this->getDocument($documentId)->acceptDocumentVisitor($visitor = new PropertyExtractor());
+        Assert::assertCount(0, $visitor->properties());
+    }
+
+    /**
+     * @Then The document :arg1 should have a property :arg2
+     */
+    public function theDocumentShouldHaveAProperty(string $documentId, string $name)
+    {
+        $this->getDocument($documentId)->acceptDocumentVisitor($visitor = new PropertyExtractor());
+        Assert::assertTrue($visitor->hasProperty($name));
+    }
+
+    /**
+     * @Then The document :arg1 should have a required property :arg2
+     */
+    public function theDocumentShouldHaveARequiredProperty(string $documentId, string $name)
+    {
+        Assert::assertTrue(
+            $this->getDocument($documentId)
+                ->getPropertyDefinition(new PropertyName($name))
+                ->isRequired()
+        );
     }
 }

@@ -27,4 +27,14 @@ final class PropertyName
     {
         return $this->value;
     }
+
+    /**
+     * @param PropertyName $name
+     *
+     * @return bool
+     */
+    public function matchName(PropertyName $name): bool
+    {
+        return $name->toString() === $this->toString();
+    }
 }

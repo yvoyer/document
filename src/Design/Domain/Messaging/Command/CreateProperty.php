@@ -4,8 +4,7 @@ namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
 use Star\Component\Document\Common\Domain\Messaging\Command;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
-use Star\Component\Document\Design\Domain\Model\ValueDefinition;
+use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
 
 final class CreateProperty implements Command
 {
@@ -15,28 +14,20 @@ final class CreateProperty implements Command
     private $documentId;
 
     /**
-     * @var PropertyName
+     * @var PropertyDefinition
      */
-    private $name;
-
-    /**
-     * @var ValueDefinition
-     */
-    private $value;
+    private $definition;
 
     /**
      * @param DocumentId $documentId
-     * @param PropertyName $name
-     * @param ValueDefinition $value
+     * @param PropertyDefinition $definition
      */
     public function __construct(
         DocumentId $documentId,
-        PropertyName $name,
-        ValueDefinition $value
+        PropertyDefinition $definition
     ) {
         $this->documentId = $documentId;
-        $this->name = $name;
-        $this->value = $value;
+        $this->definition = $definition;
     }
 
     /**
@@ -48,18 +39,20 @@ final class CreateProperty implements Command
     }
 
     /**
-     * @return PropertyName
+     * @return PropertyDefinition
      */
-    public function name(): PropertyName
+    public function definition(): PropertyDefinition
     {
-        return $this->name;
+        return $this->definition;
     }
 
     /**
-     * @return ValueDefinition
+     * @param string $documentId
+     * @param PropertyDefinition $definition
+     *
+     * @return CreateProperty
      */
-    public function value(): ValueDefinition
-    {
-        return $this->value;
+    public static function fromString(string $documentId, PropertyDefinition $definition): self {
+        return new self(new DocumentId($documentId), $definition);
     }
 }

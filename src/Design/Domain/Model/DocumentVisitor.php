@@ -12,8 +12,7 @@ interface DocumentVisitor
     public function visitDocument(DocumentId $id);
 
     /**
-     * @param PropertyName $name
-     * @param ValueDefinition $definition
+     * @param PropertyDefinition $definition
      */
-    public function visitProperty(PropertyName $name, ValueDefinition $definition);
+    public function visitProperty(PropertyDefinition $definition);
 }

@@ -5,8 +5,7 @@ namespace Star\Component\Document\Design\Domain\Messaging\Command;
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
-use Star\Component\Document\Design\Domain\Model\NullableValue;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
 
 final class CreatePropertyHandlerTest extends TestCase
@@ -22,7 +21,7 @@ final class CreatePropertyHandlerTest extends TestCase
     private $documents;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
+     * @var \PHPUnit_Framework_MockObject_MockObject|DocumentDesigner
      */
     private $document;
 
@@ -36,14 +35,13 @@ final class CreatePropertyHandlerTest extends TestCase
 
     public function test_it_should_create_a_property()
     {
-        $handler = $this->handler;
         $this->documents->saveDocument($id = new DocumentId('id'), $this->document);
         $this->document
             ->expects($this->once())
             ->method('createProperty');
 
-        $handler(
-            new CreateProperty($id, new PropertyName('name'), new NullableValue())
+        $this->handler->__invoke(
+            new CreateProperty($id, PropertyDefinition::textDefinition('name'))
         );
     }
 
@@ -55,7 +53,7 @@ final class CreatePropertyHandlerTest extends TestCase
     {
         $handler = $this->handler;
         $handler(
-            new CreateProperty(new DocumentId('invalid'), new PropertyName('name'), new NullableValue())
+            new CreateProperty(new DocumentId('invalid'), PropertyDefinition::textDefinition('name'))
         );
     }
 }

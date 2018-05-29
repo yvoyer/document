@@ -30,11 +30,14 @@ final class DocumentDesignerAggregateTest extends TestCase
     {
         $this->assertAttributeCount(0, 'properties', $this->document);
 
-        $this->document->createProperty(
-            new PropertyName('name'),
-            new NullableValue()
-        );
+        $name = new PropertyName('name');
+        $this->document->createProperty(new PropertyDefinition($name, 'type'));
 
         $this->assertAttributeCount(1, 'properties', $this->document);
+        $this->assertInstanceOf(
+            PropertyDefinition::class,
+            $definition = $this->document->getPropertyDefinition($name)
+        );
+        $this->assertEquals($name, $definition->getName());
     }
 }

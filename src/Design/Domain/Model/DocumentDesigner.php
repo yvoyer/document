@@ -7,8 +7,13 @@ interface DocumentDesigner
     public function publish();
 
     /**
-     * @param PropertyName $name
-     * @param ValueDefinition $definition
+     * @param PropertyDefinition $definition
      */
-    public function createProperty(PropertyName $name, ValueDefinition $definition);
+    public function createProperty(PropertyDefinition $definition);
+
+    /**
+     * @param PropertyName $name
+     * @param PropertyAttribute $attribute
+     */
+    public function changePropertyAttribute(PropertyName $name, PropertyAttribute $attribute);
 }

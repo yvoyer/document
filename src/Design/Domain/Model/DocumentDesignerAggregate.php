@@ -3,6 +3,7 @@
 namespace Star\Component\Document\Design\Domain\Model;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\Exception\ReferencePropertyNotFound;
 
 final class DocumentDesignerAggregate implements DocumentDesigner, ReadOnlyDocument
 {
@@ -30,18 +31,31 @@ final class DocumentDesignerAggregate implements DocumentDesigner, ReadOnlyDocum
         $this->state = new DocumentState();
     }
 
+    public function getIdentity(): DocumentId
+    {
+        return $this->id;
+    }
+
     public function publish()
     {
         $this->state = $this->state->publish();
     }
 
     /**
-     * @param PropertyName $name
-     * @param ValueDefinition $definition
+     * @param PropertyDefinition $definition
      */
-    public function createProperty(PropertyName $name, ValueDefinition $definition)
+    public function createProperty(PropertyDefinition $definition)
     {
-        $this->properties[] = new DocumentProperty($this, $name, $definition);
+        $this->properties[] = new DocumentProperty($this, $definition);
+    }
+
+    /**
+     * @param PropertyName $name
+     * @param PropertyAttribute $attribute
+     */
+    public function changePropertyAttribute(PropertyName $name, PropertyAttribute $attribute)
+    {
+        $attribute->updateDefinition($this->getPropertyDefinition($name));
     }
 
     /**
@@ -50,6 +64,22 @@ final class DocumentDesignerAggregate implements DocumentDesigner, ReadOnlyDocum
     public function isPublished(): bool
     {
         return $this->state->isPublished();
+    }
+
+    /**
+     * @param PropertyName $name
+     *
+     * @return PropertyDefinition
+     */
+    public function getPropertyDefinition(PropertyName $name): PropertyDefinition
+    {
+        foreach ($this->properties as $property) {
+            if ($property->matchName($name)) {
+                return $property->getDefinition();
+            }
+        }
+
+        throw new ReferencePropertyNotFound($name);
     }
 
     /**

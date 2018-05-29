@@ -27,4 +27,14 @@ final class CreateDocument implements Command
     {
         return $this->id;
     }
+
+    /**
+     * @param string $documentId
+     *
+     * @return CreateDocument
+     */
+    public static function fromString(string $documentId): self
+    {
+        return new self(new DocumentId($documentId));
+    }
 }

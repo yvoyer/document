@@ -4,7 +4,7 @@ namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
 use Star\Component\Document\Design\Domain\Model\DocumentRepository;
 
-final class CreatePropertyHandler
+final class ChangePropertyDefinitionHandler
 {
     /**
      * @var DocumentRepository
@@ -20,12 +20,12 @@ final class CreatePropertyHandler
     }
 
     /**
-     * @param CreateProperty $command
+     * @param ChangePropertyDefinition $command
      */
-    public function __invoke(CreateProperty $command)
+    public function __invoke(ChangePropertyDefinition $command)
     {
         $document = $this->documents->getDocumentByIdentity($command->documentId());
-        $document->createProperty($command->definition());
+        $document->changePropertyAttribute($command->name(), $command->attribute());
 
         $this->documents->saveDocument($command->documentId(), $document);
     }

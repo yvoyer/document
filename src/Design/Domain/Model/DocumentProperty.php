@@ -2,7 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
-final class DocumentProperty
+final class DocumentProperty implements ReadOnlyProperty
 {
     /**
      * @var DocumentDesigner
@@ -10,29 +10,54 @@ final class DocumentProperty
     private $document;
 
     /**
-     * @var PropertyName
-     */
-    private $name;
-
-    /**
-     * @var ValueDefinition
+     * @var PropertyDefinition
      */
     private $definition;
 
     /**
      * @param DocumentDesigner $document
-     * @param PropertyName $name
-     * @param ValueDefinition $definition
+     * @param PropertyDefinition $definition
      */
-    public function __construct(DocumentDesigner $document, PropertyName $name, ValueDefinition $definition)
+    public function __construct(DocumentDesigner $document, PropertyDefinition $definition)
     {
         $this->document = $document;
-        $this->name = $name;
         $this->definition = $definition;
     }
 
+    /**
+     * @param DocumentVisitor $visitor
+     */
     public function acceptDocumentVisitor(DocumentVisitor $visitor)
     {
-        $visitor->visitProperty($this->name, $this->definition);
+        $visitor->visitProperty($this->getDefinition());
+    }
+
+    /**
+     * @param PropertyName $name
+     *
+     * @return bool
+     */
+    public function matchName(PropertyName $name): bool
+    {
+        return $name->matchName($this->definition->getName());
+    }
+
+    /**
+     * @return PropertyDefinition
+     */
+    public function getDefinition(): PropertyDefinition
+    {
+        return $this->definition;
+    }
+
+    /**
+     * @param DocumentDesigner $document
+     * @param PropertyDefinition $definition
+     *
+     * @return DocumentProperty
+     */
+    public static function fromDefinition(DocumentDesigner $document, PropertyDefinition $definition): self
+    {
+        return new self($document, $definition);
     }
 }
