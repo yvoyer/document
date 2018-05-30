@@ -31,11 +31,13 @@ final class RecordCollection implements RecordRepository, \Countable
      */
     public function allRecordsOfDocument(DocumentId $id): array
     {
-        return array_filter(
-            $this->records,
-            function (DocumentRecord $record) use ($id) {
-                return $id->matchIdentity($record->getDocumentId());
-            }
+        return array_values(
+            array_filter(
+                $this->records,
+                function (DocumentRecord $record) use ($id) {
+                    return $id->matchIdentity($record->getDocumentId());
+                }
+            )
         );
     }
 

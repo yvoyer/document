@@ -235,23 +235,32 @@ class FeatureContext implements Context
      */
     public function theRecordsListOfDocumentTheShouldLooksLike(string $documentId, TableNode $table)
     {
-        $result = [];
+        $rows = [];
         $this->queries->handleQuery(
             $query = GetAllRecordsOfDocument::fromString($documentId)
-        )->then(function (array $_r) use (&$result) {
-            $result = $_r;
+        )->then(function (array $_r) use (&$rows) {
+            $rows = $_r;
         });
 
         /**
-         * @var RecordRow[] $result
+         * @var RecordRow[] $rows
          */
-        Assert::assertContainsOnlyInstancesOf(RecordRow::class, $result);
-        foreach ($table->getHash() as $data) {
-            // todo
-            Assert::assertSame($data['record-id'], $result->getRecordId()->toString());
-            Assert::assertSame($data['value'], $result->getValue($data['property']));
+        Assert::assertContainsOnlyInstancesOf(RecordRow::class, $rows);
+        $expected = $table->getHash();
+        Assert::assertCount(count($expected), $rows);
+
+        foreach ($rows as $key => $row) {
+            Assert::assertSame(
+                $expected[$key]['record-id'],
+                $row->getRecordId()->toString(),
+                'Record id not as expected'
+            );
+            Assert::assertSame(
+                $expected[$key]['value'],
+                $row->getValue($expected[$key]['property']),
+                'Property value not as expected'
+            );
         }
-        throw new PendingException();
     }
 
     /**
