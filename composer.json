@@ -16,6 +16,7 @@
     },
     "require": {
         "php": "~7.0",
+        "react/promise": "^2.5",
         "star/identity": "~1.0",
         "star/state-machine": "~1.0@dev"
     },

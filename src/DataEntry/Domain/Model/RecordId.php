@@ -1,13 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Common\Domain\Model;
+namespace Star\Component\Document\DataEntry\Domain\Model;
 
 use Assert\Assertion;
-use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Identity\Identity;
 
-// todo move to Design only, make another class for DataEntry BC
-final class DocumentId implements Identity
+final class RecordId implements Identity
 {
     /**
      * @var string
@@ -24,23 +22,13 @@ final class DocumentId implements Identity
     }
 
     /**
-     * @param DocumentId $id
-     *
-     * @return bool
-     */
-    public function matchIdentity(DocumentId $id): bool
-    {
-        return $id->toString() === $this->toString();
-    }
-
-    /**
      * Returns the entity class for the identity.
      *
      * @return string
      */
     public function entityClass()
     {
-        return DocumentDesigner::class;
+        return DocumentRecord::class;
     }
 
     /**

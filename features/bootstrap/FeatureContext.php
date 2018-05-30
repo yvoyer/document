@@ -8,9 +8,20 @@ use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use PHPUnit\Framework\Assert;
+use React\Promise\Deferred;
+use React\Promise\PromiseInterface;
+use Star\Component\Document\Application\Port\DocumentDesignerToSchema;
 use Star\Component\Document\Common\Domain\Messaging\Command;
 use Star\Component\Document\Common\Domain\Messaging\CommandBus;
+use Star\Component\Document\Common\Domain\Messaging\Query;
+use Star\Component\Document\Common\Domain\Messaging\QueryBus;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\DataEntry\Domain\Messaging\Command\SetRecordValue;
+use Star\Component\Document\DataEntry\Domain\Messaging\Command\SetRecordValueHandler;
+use Star\Component\Document\DataEntry\Domain\Messaging\Query\GetAllRecordsOfDocument;
+use Star\Component\Document\DataEntry\Domain\Messaging\Query\GetAllRecordsOfDocumentHandler;
+use Star\Component\Document\DataEntry\Domain\Messaging\Query\RecordRow;
+use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
 use Star\Component\Document\Design\Domain\Messaging\Command\ChangePropertyDefinition;
 use Star\Component\Document\Design\Domain\Messaging\Command\ChangePropertyDefinitionHandler;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocument;
@@ -40,6 +51,11 @@ class FeatureContext implements Context
     private $bus;
 
     /**
+     * @var QueryBus
+     */
+    private $queries;
+
+    /**
      * Initializes context.
      *
      * Every scenario gets its own context instance.
@@ -48,11 +64,13 @@ class FeatureContext implements Context
      */
     public function __construct()
     {
+        $records = new RecordCollection();
         $this->documents = new DocumentCollection();
         $handlers = [
             new CreateDocumentHandler($this->documents),
             new CreatePropertyHandler($this->documents),
-            new ChangePropertyDefinitionHandler($this->documents)
+            new ChangePropertyDefinitionHandler($this->documents),
+            new SetRecordValueHandler($records, new DocumentDesignerToSchema($this->documents)),
         ];
 
         $this->bus = new class($handlers) implements CommandBus {
@@ -88,6 +106,52 @@ class FeatureContext implements Context
                     sprintf('Command handler "%s" must be invokable.', $class)
                 );
                 $handler($command);
+            }
+        };
+
+        $queries = [
+            new GetAllRecordsOfDocumentHandler($records),
+        ];
+        $this->queries = new class($queries) implements QueryBus {
+            /**
+             * @var callable[]
+             */
+            private $handlers;
+
+            /**
+             * @param callable[] $handlers
+             */
+            public function __construct(array $handlers)
+            {
+                array_map(
+                    function ($handler) {
+                        $command = str_replace('Handler', '', get_class($handler));
+                        $this->handlers[$command] = $handler;
+                    },
+                    $handlers
+                );
+            }
+
+            /**
+             * @param Query $query
+             *
+             * @return PromiseInterface
+             */
+            public function handleQuery(Query $query): PromiseInterface
+            {
+                $class = get_class($query);
+                if (! isset($this->handlers[$class])) {
+                    throw new \RuntimeException('Handler for class ' . get_class($query) . ' is not implemented yet.');
+                }
+
+                $handler = $this->handlers[$class];
+                Assertion::true(
+                    is_callable($handler),
+                    sprintf('Command handler "%s" must be invokable.', $class)
+                );
+                $handler($query, $deferred = new Deferred());
+
+                return $deferred->promise();
             }
         };
     }
@@ -147,6 +211,47 @@ class FeatureContext implements Context
                 AttributeBuilder::create()->required()
             )
         );
+    }
+
+    /**
+     * @When I enter the following values to document :arg1
+     */
+    public function iEnterTheFollowingValuesToDocument(string $documentId, TableNode $table)
+    {
+        foreach ($table->getHash() as $data) {
+            $this->bus->handleCommand(
+                SetRecordValue::fromString(
+                    $documentId,
+                    $data['record-id'],
+                    $data['property'],
+                    $data['value']
+                )
+            );
+        }
+    }
+
+    /**
+     * @Then The records list of document the :arg1 should looks like:
+     */
+    public function theRecordsListOfDocumentTheShouldLooksLike(string $documentId, TableNode $table)
+    {
+        $result = [];
+        $this->queries->handleQuery(
+            $query = GetAllRecordsOfDocument::fromString($documentId)
+        )->then(function (array $_r) use (&$result) {
+            $result = $_r;
+        });
+
+        /**
+         * @var RecordRow[] $result
+         */
+        Assert::assertContainsOnlyInstancesOf(RecordRow::class, $result);
+        foreach ($table->getHash() as $data) {
+            // todo
+            Assert::assertSame($data['record-id'], $result->getRecordId()->toString());
+            Assert::assertSame($data['value'], $result->getValue($data['property']));
+        }
+        throw new PendingException();
     }
 
     /**
