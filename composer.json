@@ -1,0 +1,40 @@
+{
+    "name": "star/document",
+    "description": "Management of documents with custom attributes optimized for querying.",
+    "type": "library",
+    "minimum-stability": "stable",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Star\\Component\\Document\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Star\\Component\\Document\\": ["tests", "features/bootstrap"]
+        }
+    },
+    "require": {
+        "php": "~7.0",
+        "react/promise": "^2.5",
+        "star/identity": "~1.0",
+        "star/state-machine": "~1.0@dev"
+    },
+    "require-dev": {
+        "behat/behat": "^3.4",
+        "infection/infection": "^0.8.1",
+        "phpstan/phpstan": "^0.9",
+        "phpstan/phpstan-phpunit": "~0.9",
+        "phpunit/phpunit": "^6.0",
+        "squizlabs/php_codesniffer": "^3.2"
+    },
+    "authors": [
+        {
+            "name": "Yannick Voyer",
+            "email": "yvoyer.star@gmail.com"
+        }
+    ],
+    "config": {
+        "bin-dir": "bin"
+    }
+}
