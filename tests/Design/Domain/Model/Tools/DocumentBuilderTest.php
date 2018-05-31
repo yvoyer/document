@@ -5,6 +5,7 @@ namespace Star\Component\Document\Design\Domain\Model\Tools;
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\ReadOnlyDocument;
+use Star\Component\Document\Design\Domain\Model\Types;
 
 final class DocumentBuilderTest extends TestCase
 {
@@ -19,6 +20,10 @@ final class DocumentBuilderTest extends TestCase
 
         $this->assertFalse($document->isPublished());
         $this->assertFalse($document->getPropertyDefinition('name')->isRequired());
+        $this->assertInstanceOf(
+            Types\StringType::class,
+            $document->getPropertyDefinition('name')->getType()
+        );
     }
 
     public function test_it_should_build_a_document_with_a_required_text_property()
@@ -32,5 +37,16 @@ final class DocumentBuilderTest extends TestCase
 
         $this->assertFalse($document->isPublished());
         $this->assertTrue($document->getPropertyDefinition('name')->isRequired());
+    }
+
+    public function test_it_should_create_a_boolean_property()
+    {
+        $document = DocumentBuilder::createBuilder('id')
+            ->createBooleanProperty('bool')->endProperty()
+            ->build();
+        $this->assertInstanceOf(
+            Types\BooleanType::class,
+            $document->getPropertyDefinition('bool')->getType()
+        );
     }
 }

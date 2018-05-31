@@ -3,8 +3,8 @@
 namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
 use PHPUnit\Framework\TestCase;
+use Star\Component\Document\Design\Domain\Exception\ReferencePropertyNotFound;
 use Star\Component\Document\Design\Domain\Model\Definition\RequiredProperty;
-use Star\Component\Document\Design\Domain\Model\Exception\ReferencePropertyNotFound;
 use Star\Component\Document\Design\Domain\Model\PropertyAttribute;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\Tools\DocumentBuilder;

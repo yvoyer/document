@@ -3,7 +3,8 @@
 namespace Star\Component\Document\DataEntry\Domain\Model;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\DataEntry\Domain\Model\Values\StringValue;
+use Star\Component\Document\Common\Domain\Model\PropertyValue;
+use Star\Component\Document\Design\Domain\Model\Values\StringValue;
 
 final class AlwaysCreateStringValue implements DocumentSchema
 {
@@ -23,6 +24,6 @@ final class AlwaysCreateStringValue implements DocumentSchema
      */
     public function createValue(string $propertyName, $rawValue): PropertyValue
     {
-        return new StringValue($rawValue);
+        return new StringValue($propertyName, $rawValue);
     }
 }

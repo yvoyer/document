@@ -3,7 +3,7 @@
 namespace Star\Component\Document\Design\Domain\Model;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\Exception\ReferencePropertyNotFound;
+use Star\Component\Document\Design\Domain\Exception\ReferencePropertyNotFound;
 
 final class DocumentDesignerAggregate implements DocumentDesigner
 {

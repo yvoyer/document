@@ -31,6 +31,8 @@ use Star\Component\Document\Design\Domain\Messaging\Command\CreatePropertyHandle
 use Star\Component\Document\Design\Domain\Model\Definition\RequiredProperty;
 use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
 use Star\Component\Document\Design\Domain\Model\ReadOnlyDocument;
+use Star\Component\Document\Design\Domain\Model\Types\BooleanType;
+use Star\Component\Document\Design\Domain\Model\Types\StringType;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
 
@@ -178,6 +180,15 @@ class FeatureContext implements Context
     }
 
     /**
+     * @Given The document :arg1 is created with a bool property named :arg2
+     */
+    public function theDocumentIsCreatedWithABoolPropertyNamed(string $documentId, string $property)
+    {
+        $this->iCreateADocumentNamed($documentId);
+        $this->iCreateABooleanFieldNamedInDocument($property, $documentId);
+    }
+
+    /**
      * @When I create a document named :arg1
      */
     public function iCreateADocumentNamed(string $documentId)
@@ -193,7 +204,20 @@ class FeatureContext implements Context
         $this->bus->handleCommand(
             CreateProperty::fromString(
                 $documentId,
-                PropertyDefinition::textDefinition($property)
+                PropertyDefinition::fromString($property, StringType::class)
+            )
+        );
+    }
+
+    /**
+     * @When I create a boolean field named :arg1 in document :arg2
+     */
+    public function iCreateABooleanFieldNamedInDocument(string $property, string $documentId)
+    {
+        $this->bus->handleCommand(
+            CreateProperty::fromString(
+                $documentId,
+                PropertyDefinition::fromString($property, BooleanType::class)
             )
         );
     }

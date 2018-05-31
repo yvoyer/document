@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
+use Star\Component\Document\Design\Domain\Model\Types\StringType;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
 
 final class CreatePropertyHandlerTest extends TestCase
@@ -41,7 +42,10 @@ final class CreatePropertyHandlerTest extends TestCase
             ->method('createProperty');
 
         $this->handler->__invoke(
-            CreateProperty::fromString($id->toString(), PropertyDefinition::textDefinition('name'))
+            CreateProperty::fromString(
+                $id->toString(),
+                PropertyDefinition::fromString('name', StringType::class)
+            )
         );
     }
 
@@ -53,7 +57,10 @@ final class CreatePropertyHandlerTest extends TestCase
     {
         $handler = $this->handler;
         $handler(
-            CreateProperty::fromString('invalid', PropertyDefinition::textDefinition('name'))
+            CreateProperty::fromString(
+                'invalid',
+                PropertyDefinition::fromString('name', StringType::class)
+            )
         );
     }
 }

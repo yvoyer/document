@@ -1,21 +1,28 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\DataEntry\Domain\Model\Values;
+namespace Star\Component\Document\Design\Domain\Model\Values;
 
-use Star\Component\Document\DataEntry\Domain\Model\PropertyValue;
+use Star\Component\Document\Common\Domain\Model\PropertyValue;
 
 final class StringValue implements PropertyValue
 {
     /**
      * @var string
      */
+    private $property;
+
+    /**
+     * @var string
+     */
     private $value;
 
     /**
+     * @param string $property
      * @param string $value
      */
-    public function __construct(string $value)
+    public function __construct(string $property, string $value)
     {
+        $this->property = $property;
         $this->value = $value;
     }
 
@@ -24,22 +31,16 @@ final class StringValue implements PropertyValue
      */
     public function getName(): string
     {
-        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+        return $this->property;
     }
 
     /**
+     * Returns the string representation of contained value.
+     *
      * @return string
      */
     public function toString(): string
     {
         return $this->value;
-    }
-
-    /**
-     * @return PropertyValue
-     */
-    public static function emptyValue(): PropertyValue
-    {
-        return new self('');
     }
 }

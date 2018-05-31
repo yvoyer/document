@@ -3,9 +3,8 @@
 namespace Star\Component\Document\Application\Port;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\Common\Domain\Model\PropertyValue;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentSchema;
-use Star\Component\Document\DataEntry\Domain\Model\PropertyValue;
-use Star\Component\Document\DataEntry\Domain\Model\Values\StringValue;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 
 final class DefinitionToSchema implements DocumentSchema
@@ -39,12 +38,9 @@ final class DefinitionToSchema implements DocumentSchema
      */
     public function createValue(string $propertyName, $rawValue): PropertyValue
     {
-        // todo use to ensure requirements $definition =
-        // todo $this->document->getPropertyDefinition(new PropertyName($propertyName));
-        if (is_string($rawValue)) {
-            return new StringValue($rawValue);
-        }
+        $definition = $this->document->getPropertyDefinition($propertyName);
+        $propertyType = $definition->getType();
 
-        throw new \RuntimeException('Raw value is not supported yet.');
+        return $propertyType->createValue($propertyName, $rawValue);
     }
 }
