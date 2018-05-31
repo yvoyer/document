@@ -18,7 +18,7 @@ final class DocumentProperty implements ReadOnlyProperty
      * @param DocumentDesigner $document
      * @param PropertyDefinition $definition
      */
-    public function __construct(DocumentDesigner $document, PropertyDefinition $definition)
+    private function __construct(DocumentDesigner $document, PropertyDefinition $definition)
     {
         $this->document = $document;
         $this->definition = $definition;

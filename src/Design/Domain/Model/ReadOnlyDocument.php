@@ -17,11 +17,11 @@ interface ReadOnlyDocument
     public function isPublished(): bool;
 
     /**
-     * @param PropertyName $name
+     * @param string $name
      *
      * @return PropertyDefinition
      */
-    public function getPropertyDefinition(PropertyName $name): PropertyDefinition;
+    public function getPropertyDefinition(string $name): PropertyDefinition;
 
     /**
      * @param DocumentVisitor $visitor

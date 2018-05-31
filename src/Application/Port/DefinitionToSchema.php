@@ -39,7 +39,8 @@ final class DefinitionToSchema implements DocumentSchema
      */
     public function createValue(string $propertyName, $rawValue): PropertyValue
     {
-        // todo use to ensure requirements $definition = $this->document->getPropertyDefinition(new PropertyName($propertyName));
+        // todo use to ensure requirements $definition =
+        // todo $this->document->getPropertyDefinition(new PropertyName($propertyName));
         if (is_string($rawValue)) {
             return new StringValue($rawValue);
         }

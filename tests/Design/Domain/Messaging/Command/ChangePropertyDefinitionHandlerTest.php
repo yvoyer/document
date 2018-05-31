@@ -38,17 +38,17 @@ final class ChangePropertyDefinitionHandlerTest extends TestCase
             ->build();
         $this->documents->saveDocument($document->getIdentity(), $document);
 
-        $this->assertFalse($document->getPropertyDefinition($name)->isRequired());
+        $this->assertFalse($document->getPropertyDefinition($name->toString())->isRequired());
 
         $this->handler->__invoke(
-            new ChangePropertyDefinition(
-                $document->getIdentity(),
-                $name,
+            ChangePropertyDefinition::fromString(
+                $document->getIdentity()->toString(),
+                $name->toString(),
                 new RequiredProperty()
             )
         );
 
-        $this->assertTrue($document->getPropertyDefinition($name)->isRequired());
+        $this->assertTrue($document->getPropertyDefinition($name->toString())->isRequired());
     }
 
     public function test_it_should_throw_exception_when_property_not_found_in_document()
@@ -59,9 +59,9 @@ final class ChangePropertyDefinitionHandlerTest extends TestCase
         $this->expectException(ReferencePropertyNotFound::class);
         $this->expectExceptionMessage('The property with name "not found" could not be found.');
         $this->handler->__invoke(
-            new ChangePropertyDefinition(
-                $document->getIdentity(),
-                new PropertyName('not found'),
+            ChangePropertyDefinition::fromString(
+                $document->getIdentity()->toString(),
+                'not found',
                 $this->createMock(PropertyAttribute::class)
             )
         );

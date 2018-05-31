@@ -28,10 +28,9 @@ use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocument;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocumentHandler;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateProperty;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreatePropertyHandler;
+use Star\Component\Document\Design\Domain\Model\Definition\RequiredProperty;
 use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\ReadOnlyDocument;
-use Star\Component\Document\Design\Domain\Model\Tools\AttributeBuilder;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
 
@@ -208,7 +207,7 @@ class FeatureContext implements Context
             ChangePropertyDefinition::fromString(
                 $documentId,
                 $fieldId,
-                AttributeBuilder::create()->required()
+                new RequiredProperty()
             )
         );
     }
@@ -288,7 +287,7 @@ class FeatureContext implements Context
     {
         Assert::assertTrue(
             $this->getDocument($documentId)
-                ->getPropertyDefinition(new PropertyName($name))
+                ->getPropertyDefinition($name)
                 ->isRequired()
         );
     }

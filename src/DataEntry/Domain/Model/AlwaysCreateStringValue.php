@@ -5,7 +5,7 @@ namespace Star\Component\Document\DataEntry\Domain\Model;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\Values\StringValue;
 
-final class AllStringProperty implements DocumentSchema
+final class AlwaysCreateStringValue implements DocumentSchema
 {
     /**
      * @return DocumentId

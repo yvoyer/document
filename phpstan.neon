@@ -4,3 +4,9 @@ includes:
 
 parameters:
     --level: max
+
+services:
+    -
+        class: Star\Component\Document\Bridge\PHPStan\StateMetadataExtension
+        tags:
+            - 'phpstan.broker.dynamicMethodReturnTypeExtension'

@@ -41,7 +41,7 @@ final class CreatePropertyHandlerTest extends TestCase
             ->method('createProperty');
 
         $this->handler->__invoke(
-            new CreateProperty($id, PropertyDefinition::textDefinition('name'))
+            CreateProperty::fromString($id->toString(), PropertyDefinition::textDefinition('name'))
         );
     }
 
@@ -53,7 +53,7 @@ final class CreatePropertyHandlerTest extends TestCase
     {
         $handler = $this->handler;
         $handler(
-            new CreateProperty(new DocumentId('invalid'), PropertyDefinition::textDefinition('name'))
+            CreateProperty::fromString('invalid', PropertyDefinition::textDefinition('name'))
         );
     }
 }

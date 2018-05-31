@@ -33,11 +33,31 @@ final class DocumentDesignerAggregateTest extends TestCase
         $name = new PropertyName('name');
         $this->document->createProperty(new PropertyDefinition($name, 'type'));
 
-        $this->assertAttributeCount(1, 'properties', $this->document);
         $this->assertInstanceOf(
             PropertyDefinition::class,
-            $definition = $this->document->getPropertyDefinition($name)
+            $definition = $this->document->getPropertyDefinition($name->toString())
         );
         $this->assertEquals($name, $definition->getName());
+    }
+
+    public function test_it_should_visit_the_document()
+    {
+        $visitor = $this->createMock(DocumentVisitor::class);
+        $visitor
+            ->expects($this->once())
+            ->method('visitDocument');
+
+        $this->document->acceptDocumentVisitor($visitor);
+    }
+
+    public function test_it_should_visit_the_document_properties()
+    {
+        $this->document->createProperty(new PropertyDefinition(new PropertyName('name'), 'type'));
+        $visitor = $this->createMock(DocumentVisitor::class);
+        $visitor
+            ->expects($this->once())
+            ->method('visitProperty');
+
+        $this->document->acceptDocumentVisitor($visitor);
     }
 }

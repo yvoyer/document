@@ -46,7 +46,7 @@ final class DocumentDesignerAggregate implements DocumentDesigner
      */
     public function createProperty(PropertyDefinition $definition)
     {
-        $this->properties[] = new DocumentProperty($this, $definition);
+        $this->properties[] = DocumentProperty::fromDefinition($this, $definition);
     }
 
     /**
@@ -55,7 +55,7 @@ final class DocumentDesignerAggregate implements DocumentDesigner
      */
     public function changePropertyAttribute(PropertyName $name, PropertyAttribute $attribute)
     {
-        $attribute->updateDefinition($this->getPropertyDefinition($name));
+        $attribute->updateDefinition($this->getPropertyDefinition($name->toString()));
     }
 
     /**
@@ -67,12 +67,13 @@ final class DocumentDesignerAggregate implements DocumentDesigner
     }
 
     /**
-     * @param PropertyName $name
+     * @param string $name
      *
      * @return PropertyDefinition
      */
-    public function getPropertyDefinition(PropertyName $name): PropertyDefinition
+    public function getPropertyDefinition(string $name): PropertyDefinition
     {
+        $name = new PropertyName($name);
         foreach ($this->properties as $property) {
             if ($property->matchName($name)) {
                 return $property->getDefinition();
@@ -87,7 +88,7 @@ final class DocumentDesignerAggregate implements DocumentDesigner
      */
     public function acceptDocumentVisitor(DocumentVisitor $visitor)
     {
-        $visitor->visitDocument($this->id);
+        $visitor->visitDocument($this->getIdentity());
         foreach ($this->properties as $property) {
             $property->acceptDocumentVisitor($visitor);
         }

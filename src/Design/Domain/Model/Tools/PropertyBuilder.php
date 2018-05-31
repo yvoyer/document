@@ -5,7 +5,6 @@ namespace Star\Component\Document\Design\Domain\Model\Tools;
 use Star\Component\Document\Design\Domain\Model\Definition\RequiredProperty;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
 
 final class PropertyBuilder
 {

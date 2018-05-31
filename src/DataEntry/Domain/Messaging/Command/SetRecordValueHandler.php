@@ -3,6 +3,7 @@
 namespace Star\Component\Document\DataEntry\Domain\Messaging\Command;
 
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
+use Star\Component\Document\DataEntry\Domain\Model\RecordAggregate;
 use Star\Component\Document\DataEntry\Domain\Model\RecordRepository;
 use Star\Component\Document\DataEntry\Domain\Model\SchemaFactory;
 
@@ -37,7 +38,7 @@ final class SetRecordValueHandler
         if ($this->records->recordExists($recordId)) {
             $record = $this->records->getRecordWithIdentity($recordId);
         } else {
-            $record = new DocumentRecord($recordId, $this->factory->createSchema($command->documentId()));
+            $record = new RecordAggregate($recordId, $this->factory->createSchema($command->documentId()));
         }
 
         $record->setValue($command->property(), $command->value());

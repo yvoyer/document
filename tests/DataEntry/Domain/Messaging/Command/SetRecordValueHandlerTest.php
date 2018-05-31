@@ -6,7 +6,8 @@ use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\AlwaysReturnSchema;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
-use Star\Component\Document\DataEntry\Domain\Model\AllStringProperty;
+use Star\Component\Document\DataEntry\Domain\Model\AlwaysCreateStringValue;
+use Star\Component\Document\DataEntry\Domain\Model\RecordAggregate;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
 
@@ -26,7 +27,7 @@ final class SetRecordValueHandlerTest extends TestCase
     {
         $this->handler = new SetRecordValueHandler(
             $this->records = new RecordCollection(),
-            new AlwaysReturnSchema(new AllStringProperty())
+            new AlwaysReturnSchema(new AlwaysCreateStringValue())
         );
     }
 
@@ -36,7 +37,7 @@ final class SetRecordValueHandlerTest extends TestCase
 
         $recordId = new RecordId('id');
         $this->handler->__invoke(
-            new SetRecordValue(new DocumentId('id'), $recordId, 'name', 'value')
+            SetRecordValue::fromString('id', $recordId->toString(), 'name', 'value')
         );
 
         $this->assertCount(1, $this->records);
@@ -52,13 +53,13 @@ final class SetRecordValueHandlerTest extends TestCase
         $documentId = new DocumentId('id');
         $recordId = new RecordId('id');
         $this->handler->__invoke(
-            new SetRecordValue($documentId, $recordId, 'p1','v1')
+            SetRecordValue::fromString($documentId->toString(), $recordId->toString(), 'p1', 'v1')
         );
         $this->handler->__invoke(
-            new SetRecordValue($documentId, $recordId, 'p2','v2')
+            SetRecordValue::fromString($documentId->toString(), $recordId->toString(), 'p2', 'v2')
         );
         $this->handler->__invoke(
-            new SetRecordValue($documentId, $recordId, 'p3', 'v3')
+            SetRecordValue::fromString($documentId->toString(), $recordId->toString(), 'p3', 'v3')
         );
 
         $this->assertCount(1, $this->records);
@@ -74,7 +75,7 @@ final class SetRecordValueHandlerTest extends TestCase
     public function test_it_should_use_the_old_record_to_store_value()
     {
         $recordId = new RecordId('r1');
-        $record = new DocumentRecord($recordId, new AllStringProperty());
+        $record = new RecordAggregate($recordId, new AlwaysCreateStringValue());
         $record->setValue('name', 'old-value');
         $this->records->saveRecord($recordId, $record);
         $this->assertCount(1, $this->records);
@@ -82,7 +83,7 @@ final class SetRecordValueHandlerTest extends TestCase
         $this->assertSame('old-value', $record->getValue('name')->toString());
 
         $this->handler->__invoke(
-            new SetRecordValue(new DocumentId('id'), $recordId, 'name', 'new-value')
+            SetRecordValue::fromString('id', $recordId->toString(), 'name', 'new-value')
         );
 
         $this->assertSame('new-value', $record->getValue('name')->toString());

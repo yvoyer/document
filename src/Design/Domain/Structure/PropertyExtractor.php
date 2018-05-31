@@ -5,17 +5,16 @@ namespace Star\Component\Document\Design\Domain\Structure;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
 
 final class PropertyExtractor implements DocumentVisitor
 {
     /**
-     * @var PropertyName[]
+     * @var PropertyDefinition[]
      */
     private $properties = [];
 
     /**
-     * @return PropertyName[]
+     * @return PropertyDefinition[]
      */
     public function properties(): array
     {
@@ -44,11 +43,7 @@ final class PropertyExtractor implements DocumentVisitor
      */
     public function visitProperty(PropertyDefinition $definition)
     {
-        $this->addProperty($definition->getName());
-    }
-
-    private function addProperty(PropertyName $name)
-    {
-        $this->properties[$name->toString()] = $name;
+        $name = $definition->getName();
+        $this->properties[$name->toString()] = $definition;
     }
 }
