@@ -4,6 +4,7 @@ namespace Star\Component\Document\Design\Domain\Model;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\Types\NullType;
 
 final class DocumentDesignerAggregateTest extends TestCase
 {
@@ -31,7 +32,7 @@ final class DocumentDesignerAggregateTest extends TestCase
         $this->assertAttributeCount(0, 'properties', $this->document);
 
         $name = new PropertyName('name');
-        $this->document->createProperty(new PropertyDefinition($name, 'type'));
+        $this->document->createProperty(new PropertyDefinition($name, new NullType()));
 
         $this->assertInstanceOf(
             PropertyDefinition::class,
@@ -52,7 +53,9 @@ final class DocumentDesignerAggregateTest extends TestCase
 
     public function test_it_should_visit_the_document_properties()
     {
-        $this->document->createProperty(new PropertyDefinition(new PropertyName('name'), 'type'));
+        $this->document->createProperty(
+            new PropertyDefinition(new PropertyName('name'), new NullType())
+        );
         $visitor = $this->createMock(DocumentVisitor::class);
         $visitor
             ->expects($this->once())

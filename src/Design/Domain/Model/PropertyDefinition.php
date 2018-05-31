@@ -2,6 +2,8 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
+use Star\Component\Document\Design\Domain\Exception\InvalidPropertyType;
+
 final class PropertyDefinition
 {
     /**
@@ -10,7 +12,7 @@ final class PropertyDefinition
     private $name;
 
     /**
-     * @var string
+     * @var PropertyType
      */
     private $type;
 
@@ -21,9 +23,9 @@ final class PropertyDefinition
 
     /**
      * @param PropertyName $name The property name
-     * @param string $type The property type
+     * @param PropertyType $type The property type
      */
-    public function __construct(PropertyName $name, string $type)
+    public function __construct(PropertyName $name, PropertyType $type)
     {
         $this->name = $name;
         $this->type = $type;
@@ -35,6 +37,14 @@ final class PropertyDefinition
     public function getName(): PropertyName
     {
         return $this->name;
+    }
+
+    /**
+     * @return PropertyType
+     */
+    public function getType(): PropertyType
+    {
+        return $this->type;
     }
 
     /**
@@ -57,11 +67,19 @@ final class PropertyDefinition
 
     /**
      * @param string $name
+     * @param string $type
      *
      * @return PropertyDefinition
      */
-    public static function textDefinition(string $name): self
+    public static function fromString(string $name, string $type): self
     {
-        return new self(new PropertyName($name), 'text');
+        /**
+         * @var PropertyType $type
+         */
+        if (! class_exists($type) && ! is_a($type, PropertyType::class)) {
+            throw new InvalidPropertyType($type);
+        }
+
+        return new self(new PropertyName($name), new $type());
     }
 }

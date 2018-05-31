@@ -3,6 +3,7 @@
 namespace Star\Component\Document\DataEntry\Domain\Model;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\Common\Domain\Model\PropertyValue;
 use Star\Component\Document\DataEntry\Domain\Exception\UndefinedProperty;
 
 final class RecordAggregate implements DocumentRecord

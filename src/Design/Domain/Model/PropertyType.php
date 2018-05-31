@@ -1,22 +1,25 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\DataEntry\Domain\Model;
+namespace Star\Component\Document\Design\Domain\Model;
 
-use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Common\Domain\Model\PropertyValue;
+use Star\Component\Document\Design\Domain\Exception\InvalidPropertyValue;
 
-interface DocumentSchema
+interface PropertyType
 {
     /**
-     * @return DocumentId
+     * @param mixed $value
+     *
+     * @return bool
      */
-    public function getIdentity(): DocumentId;
+    public function isValid($value): bool;
 
     /**
      * @param string $propertyName
      * @param mixed $rawValue
      *
      * @return PropertyValue
+     * @throws InvalidPropertyValue
      */
     public function createValue(string $propertyName, $rawValue): PropertyValue;
 }

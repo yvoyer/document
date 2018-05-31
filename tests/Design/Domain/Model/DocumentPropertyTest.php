@@ -3,6 +3,7 @@
 namespace Star\Component\Document\Design\Domain\Model;
 
 use PHPUnit\Framework\TestCase;
+use Star\Component\Document\Design\Domain\Model\Types\NullType;
 
 final class DocumentPropertyTest extends TestCase
 {
@@ -15,7 +16,7 @@ final class DocumentPropertyTest extends TestCase
     {
         $this->property = DocumentProperty::fromDefinition(
             $this->createMock(DocumentDesigner::class),
-            new PropertyDefinition(new PropertyName('name'), 'type')
+            new PropertyDefinition(new PropertyName('name'), new NullType())
         );
     }
 

@@ -6,6 +6,8 @@ use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\DocumentDesignerAggregate;
 use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
+use Star\Component\Document\Design\Domain\Model\Types\BooleanType;
+use Star\Component\Document\Design\Domain\Model\Types\StringType;
 
 final class DocumentBuilder
 {
@@ -35,7 +37,20 @@ final class DocumentBuilder
      */
     public function createTextProperty(string $name): PropertyBuilder
     {
-        $definition = PropertyDefinition::textDefinition($name);
+        $definition = PropertyDefinition::fromString($name, StringType::class);
+        $this->document->createProperty($definition);
+
+        return new PropertyBuilder($definition, $this->document, $this);
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return PropertyBuilder
+     */
+    public function createBooleanProperty(string $name): PropertyBuilder
+    {
+        $definition = PropertyDefinition::fromString($name, BooleanType::class);
         $this->document->createProperty($definition);
 
         return new PropertyBuilder($definition, $this->document, $this);

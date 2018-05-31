@@ -2,6 +2,8 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Model;
 
+use Star\Component\Document\Common\Domain\Model\PropertyValue;
+
 interface DocumentRecord extends ReadOnlyRecord
 {
     /**
