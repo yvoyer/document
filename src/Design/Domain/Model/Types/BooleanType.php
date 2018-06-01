@@ -29,7 +29,7 @@ final class BooleanType implements PropertyType
     public function createValue(string $propertyName, $rawValue): PropertyValue
     {
         if (! $this->isValid($rawValue)) {
-            throw new InvalidPropertyValue($propertyName, 'boolean', $rawValue);
+            throw InvalidPropertyValue::invalidValueForType($propertyName, 'boolean', $rawValue);
         }
 
         if ($rawValue === 'false') {

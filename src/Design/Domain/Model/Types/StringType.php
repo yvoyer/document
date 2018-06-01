@@ -29,7 +29,7 @@ final class StringType implements PropertyType
     public function createValue(string $propertyName, $rawValue): PropertyValue
     {
         if (! $this->isValid($rawValue)) {
-            throw new InvalidPropertyValue($propertyName, 'string', $rawValue);
+            throw InvalidPropertyValue::invalidValueForType($propertyName, 'string', $rawValue);
         }
 
         return new StringValue($propertyName, $rawValue);

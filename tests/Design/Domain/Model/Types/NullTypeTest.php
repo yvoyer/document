@@ -19,28 +19,28 @@ final class NullTypeTest extends TypeTest
     {
         return [
             "Boolean true should be invalid" => [
-                true, 'The property "name" expected a "null" value, "boolean" given.'
+                true, 'The property "name" expected a "null" value, "true" given.'
             ],
             "Boolean false should be invalid" => [
-                false, 'The property "name" expected a "null" value, "boolean" given.'
+                false, 'The property "name" expected a "null" value, "false" given.'
             ],
             "String value should be invalid" => [
-                'invalid', 'The property "name" expected a "null" value, "string" given.'
+                'invalid', 'The property "name" expected a "null" value, "invalid" given.'
             ],
             "String numeric should be invalid" => [
-                '12.34', 'The property "name" expected a "null" value, "string" given.'
+                '12.34', 'The property "name" expected a "null" value, "12.34" given.'
             ],
             "Float should be invalid" => [
-                12.34, 'The property "name" expected a "null" value, "double" given.'
+                12.34, 'The property "name" expected a "null" value, "12.34" given.'
             ],
             "Integer should be invalid" => [
-                34, 'The property "name" expected a "null" value, "integer" given.'
+                34, 'The property "name" expected a "null" value, "34" given.'
             ],
             "Array should be invalid" => [
-                [], 'The property "name" expected a "null" value, "array" given.'
+                [], 'The property "name" expected a "null" value, "a:0:{}" given.'
             ],
             "Object should be invalid" => [
-                (object) [], 'The property "name" expected a "null" value, "object" given.'
+                (object) [], 'The property "name" expected a "null" value, "stdClass" given.'
             ],
         ];
     }

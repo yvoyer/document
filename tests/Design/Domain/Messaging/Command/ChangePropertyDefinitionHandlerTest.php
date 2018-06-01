@@ -7,8 +7,8 @@ use Star\Component\Document\Design\Domain\Exception\ReferencePropertyNotFound;
 use Star\Component\Document\Design\Domain\Model\Definition\RequiredProperty;
 use Star\Component\Document\Design\Domain\Model\PropertyAttribute;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
-use Star\Component\Document\Design\Domain\Model\Tools\DocumentBuilder;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
+use Star\Component\Document\Tools\DocumentBuilder;
 
 final class ChangePropertyDefinitionHandlerTest extends TestCase
 {

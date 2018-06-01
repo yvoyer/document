@@ -31,8 +31,7 @@ use Star\Component\Document\Design\Domain\Messaging\Command\CreatePropertyHandle
 use Star\Component\Document\Design\Domain\Model\Definition\RequiredProperty;
 use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
 use Star\Component\Document\Design\Domain\Model\ReadOnlyDocument;
-use Star\Component\Document\Design\Domain\Model\Types\BooleanType;
-use Star\Component\Document\Design\Domain\Model\Types\StringType;
+use Star\Component\Document\Design\Domain\Model\Types;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
 
@@ -189,6 +188,15 @@ class FeatureContext implements Context
     }
 
     /**
+     * @Given The document :arg1 is created with a date property named :arg2
+     */
+    public function theDocumentIsCreatedWithADatePropertyNamed(string $documentId, string $property)
+    {
+        $this->iCreateADocumentNamed($documentId);
+        $this->iCreateADateFieldNamedInDocument($property, $documentId);
+    }
+
+    /**
      * @When I create a document named :arg1
      */
     public function iCreateADocumentNamed(string $documentId)
@@ -204,7 +212,7 @@ class FeatureContext implements Context
         $this->bus->handleCommand(
             CreateProperty::fromString(
                 $documentId,
-                PropertyDefinition::fromString($property, StringType::class)
+                PropertyDefinition::fromString($property, Types\StringType::class)
             )
         );
     }
@@ -217,7 +225,20 @@ class FeatureContext implements Context
         $this->bus->handleCommand(
             CreateProperty::fromString(
                 $documentId,
-                PropertyDefinition::fromString($property, BooleanType::class)
+                PropertyDefinition::fromString($property, Types\BooleanType::class)
+            )
+        );
+    }
+
+    /**
+     * @When I create a date field named :arg1 in document :arg2
+     */
+    public function iCreateADateFieldNamedInDocument(string $property, string $documentId)
+    {
+        $this->bus->handleCommand(
+            CreateProperty::fromString(
+                $documentId,
+                PropertyDefinition::fromString($property, Types\DateType::class)
             )
         );
     }
