@@ -10,9 +10,7 @@ use Star\Component\Document\DataEntry\Domain\Model\RecordId;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\DocumentDesignerAggregate;
 use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
-use Star\Component\Document\Design\Domain\Model\Types\BooleanType;
-use Star\Component\Document\Design\Domain\Model\Types\DateType;
-use Star\Component\Document\Design\Domain\Model\Types\StringType;
+use Star\Component\Document\Design\Domain\Model\Types;
 
 final class DocumentBuilder
 {
@@ -42,7 +40,7 @@ final class DocumentBuilder
      */
     public function createTextProperty(string $name): PropertyBuilder
     {
-        return $this->createProperty($name, StringType::class);
+        return $this->createProperty($name, Types\StringType::class);
     }
 
     /**
@@ -52,7 +50,7 @@ final class DocumentBuilder
      */
     public function createBooleanProperty(string $name): PropertyBuilder
     {
-        return $this->createProperty($name, BooleanType::class);
+        return $this->createProperty($name, Types\BooleanType::class);
     }
 
     /**
@@ -62,7 +60,17 @@ final class DocumentBuilder
      */
     public function createDateProperty(string $name): PropertyBuilder
     {
-        return $this->createProperty($name, DateType::class);
+        return $this->createProperty($name, Types\DateType::class);
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return PropertyBuilder
+     */
+    public function createNumberProperty(string $name): PropertyBuilder
+    {
+        return $this->createProperty($name, Types\NumberType::class);
     }
 
     /**

@@ -62,16 +62,32 @@ final class DocumentBuilderTest extends TestCase
         );
     }
 
+    public function test_it_should_create_a_number_property()
+    {
+        $document = DocumentBuilder::createBuilder('id')
+            ->createNumberProperty('number')->endProperty()
+            ->build();
+        $this->assertInstanceOf(
+            Types\NumberType::class,
+            $document->getPropertyDefinition('number')->getType()
+        );
+    }
+
     public function test_it_should_build_a_record_with_all_types_of_properties()
     {
         $builder = DocumentBuilder::createBuilder('doc')
             ->createTextProperty('text')->endProperty()
             ->createBooleanProperty('bool')->endProperty()
             ->createDateProperty('date')->endProperty()
+            ->createNumberProperty('int')->endProperty()
+            ->createNumberProperty('float')->endProperty()
             ->startRecord('record')
             ->setValue('text', 'my text')
             ->setValue('bool', true)
-            ->setValue('date', '2000-01-01');
+            ->setValue('date', '2000-01-01')
+            ->setValue('int', 123)
+            ->setValue('float', 12.34)
+        ;
         $record = $builder->getRecord();
         $document = $builder->endRecord()->build();
 
@@ -97,5 +113,17 @@ final class DocumentBuilderTest extends TestCase
             $document->getPropertyDefinition('date')->getType()
         );
         $this->assertSame('2000-01-01', $record->getValue('date')->toString());
+
+        $this->assertInstanceOf(
+            Types\NumberType::class,
+            $document->getPropertyDefinition('int')->getType()
+        );
+        $this->assertSame('123', $record->getValue('int')->toString());
+
+        $this->assertInstanceOf(
+            Types\NumberType::class,
+            $document->getPropertyDefinition('float')->getType()
+        );
+        $this->assertSame('12.34', $record->getValue('float')->toString());
     }
 }

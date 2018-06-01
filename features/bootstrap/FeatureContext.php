@@ -197,6 +197,15 @@ class FeatureContext implements Context
     }
 
     /**
+     * @Given The document :arg1 is created with a number property named :arg2
+     */
+    public function theDocumentIsCreatedWithANumberPropertyNamed(string $documentId, string $property)
+    {
+        $this->iCreateADocumentNamed($documentId);
+        $this->iCreateANumberFieldNamedInDocument($property, $documentId);
+    }
+
+    /**
      * @When I create a document named :arg1
      */
     public function iCreateADocumentNamed(string $documentId)
@@ -239,6 +248,19 @@ class FeatureContext implements Context
             CreateProperty::fromString(
                 $documentId,
                 PropertyDefinition::fromString($property, Types\DateType::class)
+            )
+        );
+    }
+
+    /**
+     * @When I create a number field named :arg1 in document :arg2
+     */
+    public function iCreateANumberFieldNamedInDocument(string $property, string $documentId)
+    {
+        $this->bus->handleCommand(
+            CreateProperty::fromString(
+                $documentId,
+                PropertyDefinition::fromString($property, Types\NumberType::class)
             )
         );
     }
