@@ -2,8 +2,8 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
-use Star\Component\Document\Common\Domain\Model\PropertyValue;
 use Star\Component\Document\Design\Domain\Exception\InvalidPropertyValue;
+use Star\Component\Document\Design\Domain\Model\PropertyValue;
 use Star\Component\Document\Design\Domain\Model\Values\StringValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 
@@ -33,5 +33,13 @@ final class StringType implements PropertyType
         }
 
         return new StringValue($propertyName, $rawValue);
+    }
+
+    /**
+     * @return string
+     */
+    public function toString(): string
+    {
+        return 'string';
     }
 }

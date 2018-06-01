@@ -37,7 +37,7 @@ final class NullTypeTest extends TypeTest
                 34, 'The property "name" expected a "null" value, "34" given.'
             ],
             "Array should be invalid" => [
-                [], 'The property "name" expected a "null" value, "a:0:{}" given.'
+                [], 'The property "name" expected a "null" value, "[]" given.'
             ],
             "Object should be invalid" => [
                 (object) [], 'The property "name" expected a "null" value, "stdClass" given.'

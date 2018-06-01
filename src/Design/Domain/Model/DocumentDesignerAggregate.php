@@ -51,11 +51,35 @@ final class DocumentDesignerAggregate implements DocumentDesigner
 
     /**
      * @param PropertyName $name
-     * @param PropertyAttribute $attribute
+     * @param string $constraintName
+     * @param PropertyConstraint $constraint
      */
-    public function changePropertyAttribute(PropertyName $name, PropertyAttribute $attribute)
+    public function addConstraint(PropertyName $name, string $constraintName, PropertyConstraint $constraint)
     {
-        $attribute->updateDefinition($this->getPropertyDefinition($name->toString()));
+        foreach ($this->properties as $key => $property) {
+            if ($property->matchName($name)) {
+                $property->addConstraint($constraintName, $constraint);
+                return;
+            }
+        }
+
+        throw new ReferencePropertyNotFound($name);
+    }
+
+    /**
+     * @param PropertyName $name
+     * @param string $constraintName
+     */
+    public function removeConstraint(PropertyName $name, string $constraintName)
+    {
+        foreach ($this->properties as $key => $property) {
+            if ($property->matchName($name)) {
+                $property->removeConstraint($constraintName);
+                return;
+            }
+        }
+
+        throw new ReferencePropertyNotFound($name);
     }
 
     /**

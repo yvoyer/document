@@ -4,7 +4,7 @@ namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
 use Star\Component\Document\Design\Domain\Model\DocumentRepository;
 
-final class ChangePropertyDefinitionHandler
+final class AddPropertyConstraintHandler
 {
     /**
      * @var DocumentRepository
@@ -20,12 +20,12 @@ final class ChangePropertyDefinitionHandler
     }
 
     /**
-     * @param ChangePropertyDefinition $command
+     * @param AddPropertyConstraint $command
      */
-    public function __invoke(ChangePropertyDefinition $command)
+    public function __invoke(AddPropertyConstraint $command)
     {
         $document = $this->documents->getDocumentByIdentity($command->documentId());
-        $document->changePropertyAttribute($command->name(), $command->attribute());
+        $document->addConstraint($command->name(), $command->constraintName(), $command->constraint());
 
         $this->documents->saveDocument($command->documentId(), $document);
     }

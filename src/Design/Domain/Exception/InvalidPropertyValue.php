@@ -21,13 +21,30 @@ final class InvalidPropertyValue extends \InvalidArgumentException implements De
      */
     public static function invalidValueForType(string $propertyName, string $type, $value): self
     {
+        return new self(
+            sprintf(
+                'The property "%s" expected a "%s" value, "%s" given.',
+                $propertyName,
+                $type,
+                self::getValueType($value)
+            )
+        );
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return string
+     */
+    public static function getValueType($value): string
+    {
         switch (\gettype($value)) {
             case 'boolean':
-                $value = ($value) ? 'true': 'false';
+                $value = ($value) ? 'true' : 'false';
                 break;
 
             case 'array':
-                $value = serialize($value);
+                $value = json_encode($value);
                 break;
 
             case 'object':
@@ -39,13 +56,6 @@ final class InvalidPropertyValue extends \InvalidArgumentException implements De
                 break;
         }
 
-        return new self(
-            sprintf(
-                'The property "%s" expected a "%s" value, "%s" given.',
-                $propertyName,
-                $type,
-                $value
-            )
-        );
+        return (string) $value;
     }
 }

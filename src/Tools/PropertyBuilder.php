@@ -2,7 +2,8 @@
 
 namespace Star\Component\Document\Tools;
 
-use Star\Component\Document\Design\Domain\Model\Definition\RequiredProperty;
+use Star\Component\Document\Design\Domain\Model\Constraints\RequiredValue;
+use Star\Component\Document\Design\Domain\Model\Constraints\RequireSingleOption;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
 
@@ -43,9 +44,24 @@ final class PropertyBuilder
      */
     public function required(): self
     {
-        $this->document->changePropertyAttribute(
+        $this->document->addConstraint(
             $this->definition->getName(),
-            new RequiredProperty()
+            'required',
+            new RequiredValue()
+        );
+
+        return $this;
+    }
+
+    /**
+     * @return PropertyBuilder
+     */
+    public function singleOption(): self
+    {
+        $this->document->addConstraint(
+            $this->definition->getName(),
+            'single-option',
+            new RequireSingleOption()
         );
 
         return $this;

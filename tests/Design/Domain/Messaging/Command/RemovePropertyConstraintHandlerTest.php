@@ -4,16 +4,13 @@ namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Design\Domain\Exception\ReferencePropertyNotFound;
-use Star\Component\Document\Design\Domain\Model\Definition\RequiredProperty;
-use Star\Component\Document\Design\Domain\Model\PropertyAttribute;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
 use Star\Component\Document\Tools\DocumentBuilder;
 
-final class ChangePropertyDefinitionHandlerTest extends TestCase
+final class RemovePropertyConstraintHandlerTest extends TestCase
 {
     /**
-     * @var ChangePropertyDefinitionHandler
+     * @var RemovePropertyConstraintHandler
      */
     private $handler;
 
@@ -24,31 +21,29 @@ final class ChangePropertyDefinitionHandlerTest extends TestCase
 
     public function setUp()
     {
-        $this->documents = new DocumentCollection();
-        $this->handler = new ChangePropertyDefinitionHandler(
-            $this->documents
+        $this->handler = new RemovePropertyConstraintHandler(
+            $this->documents = new DocumentCollection()
         );
     }
 
-    public function test_it_should_change_the_attribute_of_the_property()
+    public function test_it_should_remove_constraint()
     {
-        $name = new PropertyName('section');
         $document = DocumentBuilder::createBuilder('d')
-            ->createTextProperty($name->toString())->endProperty()
+            ->createText('text')->required()->endProperty()
             ->build();
         $this->documents->saveDocument($document->getIdentity(), $document);
 
-        $this->assertFalse($document->getPropertyDefinition($name->toString())->isRequired());
+        $this->assertTrue($document->getPropertyDefinition('text')->hasConstraint('required'));
 
         $this->handler->__invoke(
-            ChangePropertyDefinition::fromString(
+            RemovePropertyConstraint::fromString(
                 $document->getIdentity()->toString(),
-                $name->toString(),
-                new RequiredProperty()
+                'text',
+                'required'
             )
         );
 
-        $this->assertTrue($document->getPropertyDefinition($name->toString())->isRequired());
+        $this->assertFalse($document->getPropertyDefinition('text')->hasConstraint('required'));
     }
 
     public function test_it_should_throw_exception_when_property_not_found_in_document()
@@ -59,10 +54,10 @@ final class ChangePropertyDefinitionHandlerTest extends TestCase
         $this->expectException(ReferencePropertyNotFound::class);
         $this->expectExceptionMessage('The property with name "not found" could not be found.');
         $this->handler->__invoke(
-            ChangePropertyDefinition::fromString(
+            RemovePropertyConstraint::fromString(
                 $document->getIdentity()->toString(),
                 'not found',
-                $this->createMock(PropertyAttribute::class)
+                'const'
             )
         );
     }

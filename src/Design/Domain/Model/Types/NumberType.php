@@ -2,9 +2,9 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
-use Star\Component\Document\Common\Domain\Model\PropertyValue;
 use Star\Component\Document\Design\Domain\Exception\InvalidPropertyValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
+use Star\Component\Document\Design\Domain\Model\PropertyValue;
 use Star\Component\Document\Design\Domain\Model\Values\FloatValue;
 use Star\Component\Document\Design\Domain\Model\Values\NumberValue;
 
@@ -38,5 +38,13 @@ final class NumberType implements PropertyType
         }
 
         return FloatValue::fromString($propertyName, (string) $rawValue);
+    }
+
+    /**
+     * @return string
+     */
+    public function toString(): string
+    {
+        return 'number';
     }
 }

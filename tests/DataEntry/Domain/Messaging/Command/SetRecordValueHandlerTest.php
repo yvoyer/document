@@ -6,9 +6,9 @@ use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\AlwaysReturnSchema;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
-use Star\Component\Document\DataEntry\Domain\Model\AlwaysCreateStringValue;
 use Star\Component\Document\DataEntry\Domain\Model\RecordAggregate;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Stub\StubSchema;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
 
 final class SetRecordValueHandlerTest extends TestCase
@@ -27,7 +27,7 @@ final class SetRecordValueHandlerTest extends TestCase
     {
         $this->handler = new SetRecordValueHandler(
             $this->records = new RecordCollection(),
-            new AlwaysReturnSchema(new AlwaysCreateStringValue())
+            new AlwaysReturnSchema(StubSchema::allOptional())
         );
     }
 
@@ -75,7 +75,7 @@ final class SetRecordValueHandlerTest extends TestCase
     public function test_it_should_use_the_old_record_to_store_value()
     {
         $recordId = new RecordId('r1');
-        $record = new RecordAggregate($recordId, new AlwaysCreateStringValue());
+        $record = new RecordAggregate($recordId, StubSchema::allOptional());
         $record->setValue('name', 'old-value');
         $this->records->saveRecord($recordId, $record);
         $this->assertCount(1, $this->records);

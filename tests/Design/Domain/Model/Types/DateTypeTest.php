@@ -35,7 +35,7 @@ final class DateTypeTest extends TypeTest
                 34, 'The property "name" expected a "date" value, "34" given.'
             ],
             "Array should be invalid" => [
-                [], 'The property "name" expected a "date" value, "a:0:{}" given.'
+                [], 'The property "name" expected a "date" value, "[]" given.'
             ],
             "Object should be invalid" => [
                 (object) [], 'The property "name" expected a "date" value, "stdClass" given.'

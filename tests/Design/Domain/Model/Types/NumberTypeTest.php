@@ -26,7 +26,7 @@ final class NumberTypeTest extends TypeTest
                 'invalid', 'The property "name" expected a "number" value, "invalid" given.'
             ],
             "Array should be invalid" => [
-                [], 'The property "name" expected a "number" value, "a:0:{}" given.'
+                [], 'The property "name" expected a "number" value, "[]" given.'
             ],
             "Object should be invalid" => [
                 (object) [], 'The property "name" expected a "number" value, "stdClass" given.'

@@ -2,9 +2,9 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
-use Star\Component\Document\Common\Domain\Model\PropertyValue;
 use Star\Component\Document\Design\Domain\Exception\InvalidPropertyValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
+use Star\Component\Document\Design\Domain\Model\PropertyValue;
 use Star\Component\Document\Design\Domain\Model\Values\DateValue;
 
 final class DateType implements PropertyType
@@ -54,5 +54,13 @@ final class DateType implements PropertyType
         }
 
         return new DateValue($propertyName, $rawValue);
+    }
+
+    /**
+     * @return string
+     */
+    public function toString(): string
+    {
+        return 'date';
     }
 }

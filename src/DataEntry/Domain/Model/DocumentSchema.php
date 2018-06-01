@@ -3,7 +3,6 @@
 namespace Star\Component\Document\DataEntry\Domain\Model;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\Common\Domain\Model\PropertyValue;
 
 interface DocumentSchema
 {
@@ -16,7 +15,7 @@ interface DocumentSchema
      * @param string $propertyName
      * @param mixed $rawValue
      *
-     * @return PropertyValue
+     * @return RecordValue
      */
-    public function createValue(string $propertyName, $rawValue): PropertyValue;
+    public function createValue(string $propertyName, $rawValue): RecordValue;
 }
