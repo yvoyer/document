@@ -19,3 +19,7 @@ Feature: Designing a document
     When I create a boolean field named "Bool" in document "Doc"
     Then The document "Doc" should have a property "Bool"
 
+  Scenario: Create a document with a date field
+    Given The document "Doc" is created without any properties
+    When I create a date field named "Date" in document "Doc"
+    Then The document "Doc" should have a property "Date"

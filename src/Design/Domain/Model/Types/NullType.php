@@ -29,7 +29,7 @@ final class NullType implements PropertyType
     public function createValue(string $propertyName, $rawValue): PropertyValue
     {
         if (! $this->isValid($rawValue)) {
-            throw new InvalidPropertyValue($propertyName, 'null', $rawValue);
+            throw InvalidPropertyValue::invalidValueForType($propertyName, 'null', $rawValue);
         }
 
         return new NullValue($propertyName);

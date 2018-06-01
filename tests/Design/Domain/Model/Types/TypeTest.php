@@ -31,28 +31,28 @@ abstract class TypeTest extends TestCase
 //    {
 //        return [
 //            "Boolean true should be invalid" => [
-//                true, 'The property "name" expected a "string" value, "boolean" given.'
+//                true, 'The property "name" expected a "string" value, "true" given.'
 //            ],
 //            "Boolean false should be invalid" => [
-//                false, 'The property "name" expected a "string" value, "boolean" given.'
+//                false, 'The property "name" expected a "string" value, "false" given.'
 //            ],
 //            "String value should be invalid" => [
-//                'invalid', 'The property "name" expected a "string" value, "string" given.'
+//                'invalid', 'The property "name" expected a "string" value, "invalid" given.'
 //            ],
 //            "String numeric should be invalid" => [
-//                '12.34', 'The property "name" expected a "string" value, "string" given.'
+//                '12.34', 'The property "name" expected a "string" value, "12.34" given.'
 //            ],
 //            "Float should be invalid" => [
-//                12.34, 'The property "name" expected a "string" value, "double" given.'
+//                12.34, 'The property "name" expected a "string" value, "12.34" given.'
 //            ],
 //            "Integer should be invalid" => [
-//                34, 'The property "name" expected a "string" value, "integer" given.'
+//                34, 'The property "name" expected a "string" value, "34" given.'
 //            ],
 //            "Array should be invalid" => [
-//                [], 'The property "name" expected a "string" value, "array" given.'
+//                [], 'The property "name" expected a "string" value, "a:0:{}" given.'
 //            ],
 //            "Object should be invalid" => [
-//                (object) [], 'The property "name" expected a "string" value, "object" given.'
+//                (object) [], 'The property "name" expected a "string" value, "stdClass" given.'
 //            ],
 //            "null should be invalid" => [
 //                null, 'The property "name" expected a "string" value, "NULL" given.'

@@ -16,22 +16,22 @@ final class BooleanTypeTest extends TypeTest
     {
         return [
             "String value should be invalid" => [
-                'invalid', 'The property "name" expected a "boolean" value, "string" given.'
+                'invalid', 'The property "name" expected a "boolean" value, "invalid" given.'
             ],
             "String numeric should be invalid" => [
-                '12.34', 'The property "name" expected a "boolean" value, "string" given.'
+                '12.34', 'The property "name" expected a "boolean" value, "12.34" given.'
             ],
             "Float should be invalid" => [
-                12.34, 'The property "name" expected a "boolean" value, "double" given.'
+                12.34, 'The property "name" expected a "boolean" value, "12.34" given.'
             ],
             "Integer should be invalid" => [
-                34, 'The property "name" expected a "boolean" value, "integer" given.'
+                34, 'The property "name" expected a "boolean" value, "34" given.'
             ],
             "Array should be invalid" => [
-                [], 'The property "name" expected a "boolean" value, "array" given.'
+                [], 'The property "name" expected a "boolean" value, "a:0:{}" given.'
             ],
             "Object should be invalid" => [
-                (object) [], 'The property "name" expected a "boolean" value, "object" given.'
+                (object) [], 'The property "name" expected a "boolean" value, "stdClass" given.'
             ],
             "null should be invalid" => [
                 null, 'The property "name" expected a "boolean" value, "NULL" given.'
