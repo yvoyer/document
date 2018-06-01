@@ -23,3 +23,8 @@ Feature: Designing a document
     Given The document "Doc" is created without any properties
     When I create a date field named "Date" in document "Doc"
     Then The document "Doc" should have a property "Date"
+
+  Scenario: Create a document with a number field
+    Given The document "Doc" is created without any properties
+    When I create a number field named "Number" in document "Doc"
+    Then The document "Doc" should have a property "Number"

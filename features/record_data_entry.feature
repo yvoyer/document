@@ -41,3 +41,14 @@ Feature: Enter values on document using property rules
       | record-id | property | value      |
       | 1         | My date  | 2001-10-01 |
       | 2         | My date  | 2002-01-01 |
+
+  Scenario: Enter a number value
+    Given The document "My document" is created with a number property named "My number"
+    When I enter the following values to document "My document"
+      | record-id | property  | value |
+      | 1         | My number | 2001  |
+      | 2         | My number | 2002  |
+    Then The records list of document the "My document" should looks like:
+      | record-id | property  | value |
+      | 1         | My number | 2001  |
+      | 2         | My number | 2002  |
