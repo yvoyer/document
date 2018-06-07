@@ -28,3 +28,34 @@ Feature: Designing a document
     Given The document "Doc" is created without any properties
     When I create a number field named "Number" in document "Doc"
     Then The document "Doc" should have a property "Number"
+
+  Scenario: Create a document with a custom list field
+    Given The document "Doc" is created without any properties
+    When I create a custom list field named "Custom list" in document "Doc" with the following options:
+      | option-id | option-value |
+      | 1         | Option 1     |
+      | 2         | Option 2     |
+      | 3         | Option 3     |
+    Then The document "Doc" should have a property "Custom list"
+
+  Scenario: Create a document with a custom list that allows only one option
+    Given The document "Doc" is created without any properties
+    When I create a single option custom list field named "Custom list" in document "Doc" with the following options:
+      | option-id | option-value |
+      | 1         | Option 1     |
+      | 2         | Option 2     |
+      | 3         | Option 3     |
+    Then The document "Doc" should have a property "Custom list"
+
+  Scenario: Change the property definition of a document property
+    Given The document "Doc" is created with a custom list property named "List" having the options:
+      | option-id | option-value |
+      | 1         | Option 1     |
+      | 2         | Option 2     |
+      | 3         | Option 3     |
+    When I mark the property "List" as required on the document "Doc"
+    And I mark the property "List" as single option on the document "Doc"
+    Then The property "List" of document "Doc" should have the following definition:
+      | type        | constraint    |
+      | custom-list | required      |
+      | custom-list | single-option |

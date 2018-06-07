@@ -3,7 +3,6 @@
 namespace Star\Component\Document\DataEntry\Domain\Model;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\Common\Domain\Model\PropertyValue;
 use Star\Component\Document\DataEntry\Domain\Exception\UndefinedProperty;
 
 final class RecordAggregate implements DocumentRecord
@@ -19,9 +18,9 @@ final class RecordAggregate implements DocumentRecord
     private $schema;
 
     /**
-     * @var PropertyValue[]
+     * @var RecordValue[]
      */
-    private $properties = [];
+    private $values = [];
 
     /**
      * @param RecordId $id
@@ -51,25 +50,25 @@ final class RecordAggregate implements DocumentRecord
 
     /**
      * @param string $propertyName
-     * @param mixed $value
+     * @param mixed $rawValue
      */
-    public function setValue(string $propertyName, $value)
+    public function setValue(string $propertyName, $rawValue)
     {
-        $this->properties[$propertyName] = $this->schema->createValue($propertyName, $value);
+        $this->values[$propertyName] = $this->schema->createValue($propertyName, $rawValue);
     }
 
     /**
      * @param string $propertyName
      *
-     * @return PropertyValue
+     * @return RecordValue
      */
-    public function getValue(string $propertyName): PropertyValue
+    public function getValue(string $propertyName): RecordValue
     {
         if (! $this->hasProperty($propertyName)) {
             throw new UndefinedProperty($propertyName);
         }
 
-        return $this->properties[$propertyName];
+        return $this->values[$propertyName];
     }
 
     /**
@@ -79,6 +78,6 @@ final class RecordAggregate implements DocumentRecord
      */
     private function hasProperty(string $propertyName): bool
     {
-        return isset($this->properties[$propertyName]);
+        return isset($this->values[$propertyName]);
     }
 }

@@ -52,3 +52,20 @@ Feature: Enter values on document using property rules
       | record-id | property  | value |
       | 1         | My number | 2001  |
       | 2         | My number | 2002  |
+
+  Scenario: Enter values for a custom list property
+    Given The document "My document" is created with a custom list property named "My list" having the options:
+      | option-id | option-value |
+      | 1         | Option 1     |
+      | 2         | Option 2     |
+      | 3         | Option 3     |
+    When I enter the following values to document "My document"
+      | record-id | property  | value |
+      | 1         | My list   |       |
+      | 2         | My list   | 1     |
+      | 3         | My list   | 1;2;3 |
+    Then The records list of document the "My document" should looks like:
+      | record-id | property  | value                      |
+      | 1         | My list   |                            |
+      | 2         | My list   | Option 1                   |
+      | 3         | My list   | Option 1;Option 2;Option 3 |

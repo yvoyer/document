@@ -3,21 +3,22 @@
 namespace Star\Component\Document\Application\Port;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\Common\Domain\Model\PropertyValue;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentSchema;
-use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+use Star\Component\Document\Design\Domain\Model\ReadOnlyDocument;
 
-final class DefinitionToSchema implements DocumentSchema
+// todo rename to DefinitionSchema
+final class DesigningToDataEntry implements DocumentSchema
 {
     /**
-     * @var DocumentDesigner
+     * @var ReadOnlyDocument
      */
     private $document;
 
     /**
-     * @param DocumentDesigner $document
+     * @param ReadOnlyDocument $document
      */
-    public function __construct(DocumentDesigner $document)
+    public function __construct(ReadOnlyDocument $document)
     {
         $this->document = $document;
     }
@@ -34,13 +35,14 @@ final class DefinitionToSchema implements DocumentSchema
      * @param string $propertyName
      * @param mixed $rawValue
      *
-     * @return PropertyValue
+     * @return RecordValue
      */
-    public function createValue(string $propertyName, $rawValue): PropertyValue
+    public function createValue(string $propertyName, $rawValue): RecordValue
     {
         $definition = $this->document->getPropertyDefinition($propertyName);
-        $propertyType = $definition->getType();
+        $definition->validateRawValue($rawValue);
+        $type = $definition->getType();
 
-        return $propertyType->createValue($propertyName, $rawValue);
+        return $type->createValue($propertyName, $rawValue);
     }
 }

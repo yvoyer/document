@@ -16,7 +16,14 @@ interface DocumentDesigner extends ReadOnlyDocument
 
     /**
      * @param PropertyName $name
-     * @param PropertyAttribute $attribute
+     * @param string $constraintName
+     * @param PropertyConstraint $constraint
      */
-    public function changePropertyAttribute(PropertyName $name, PropertyAttribute $attribute);
+    public function addConstraint(PropertyName $name, string $constraintName, PropertyConstraint $constraint);
+
+    /**
+     * @param PropertyName $name
+     * @param string $constraintName
+     */
+    public function removeConstraint(PropertyName $name, string $constraintName);
 }

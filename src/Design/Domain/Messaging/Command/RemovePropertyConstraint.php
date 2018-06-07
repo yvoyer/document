@@ -4,10 +4,9 @@ namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
 use Star\Component\Document\Common\Domain\Messaging\Command;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\PropertyAttribute;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 
-final class ChangePropertyDefinition implements Command
+final class RemovePropertyConstraint implements Command
 {
     /**
      * @var DocumentId
@@ -20,20 +19,23 @@ final class ChangePropertyDefinition implements Command
     private $name;
 
     /**
-     * @var PropertyAttribute
+     * @var string
      */
-    private $attribute;
+    private $constraintName;
 
     /**
      * @param DocumentId $documentId
      * @param PropertyName $name
-     * @param PropertyAttribute $attribute
+     * @param string $constraintName
      */
-    public function __construct(DocumentId $documentId, PropertyName $name, PropertyAttribute $attribute)
-    {
+    public function __construct(
+        DocumentId $documentId,
+        PropertyName $name,
+        $constraintName
+    ) {
         $this->documentId = $documentId;
         $this->name = $name;
-        $this->attribute = $attribute;
+        $this->constraintName = $constraintName;
     }
 
     /**
@@ -53,26 +55,29 @@ final class ChangePropertyDefinition implements Command
     }
 
     /**
-     * @return PropertyAttribute
+     * @return string
      */
-    public function attribute(): PropertyAttribute
+    public function constraintName(): string
     {
-        return $this->attribute;
+        return $this->constraintName;
     }
 
     /**
      * @param string $documentId
-     * @param string $name
-     * @param PropertyAttribute $attribute
+     * @param string $propertyName
+     * @param string $constraintName
      *
-     * @return ChangePropertyDefinition
+     * @return RemovePropertyConstraint
      */
-    public static function fromString(string $documentId, string $name, PropertyAttribute $attribute): self
-    {
+    public static function fromString(
+        string $documentId,
+        string $propertyName,
+        string $constraintName
+    ): self {
         return new self(
             new DocumentId($documentId),
-            new PropertyName($name),
-            $attribute
+            new PropertyName($propertyName),
+            $constraintName
         );
     }
 }

@@ -28,7 +28,7 @@ final class StringTypeTest extends TypeTest
                 34, 'The property "name" expected a "string" value, "34" given.'
             ],
             "Array should be invalid" => [
-                [], 'The property "name" expected a "string" value, "a:0:{}" given.'
+                [], 'The property "name" expected a "string" value, "[]" given.'
             ],
             "Object should be invalid" => [
                 (object) [], 'The property "name" expected a "string" value, "stdClass" given.'

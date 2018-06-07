@@ -25,6 +25,23 @@ final class DocumentProperty implements ReadOnlyProperty
     }
 
     /**
+     * @param string $name
+     * @param PropertyConstraint $constraint
+     */
+    public function addConstraint(string $name, PropertyConstraint $constraint)
+    {
+        $this->definition = $this->definition->addConstraint($name, $constraint);
+    }
+
+    /**
+     * @param string $name
+     */
+    public function removeConstraint(string $name)
+    {
+        $this->definition = $this->definition->removeConstraint($name);
+    }
+
+    /**
      * @param DocumentVisitor $visitor
      */
     public function acceptDocumentVisitor(DocumentVisitor $visitor)

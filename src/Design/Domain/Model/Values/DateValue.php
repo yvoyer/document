@@ -2,7 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Values;
 
-use Star\Component\Document\Common\Domain\Model\PropertyValue;
+use Star\Component\Document\Design\Domain\Model\PropertyValue;
 
 final class DateValue implements PropertyValue
 {

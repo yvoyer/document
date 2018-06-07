@@ -2,20 +2,18 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Model;
 
-use Star\Component\Document\Common\Domain\Model\PropertyValue;
-
 interface DocumentRecord extends ReadOnlyRecord
 {
     /**
      * @param string $propertyName
-     * @param mixed $value
+     * @param mixed $rawValue
      */
-    public function setValue(string $propertyName, $value);
+    public function setValue(string $propertyName, $rawValue);
 
     /**
      * @param string $propertyName
      *
-     * @return PropertyValue
+     * @return RecordValue
      */
-    public function getValue(string $propertyName): PropertyValue;
+    public function getValue(string $propertyName): RecordValue;
 }

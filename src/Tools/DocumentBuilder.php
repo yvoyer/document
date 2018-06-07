@@ -2,8 +2,7 @@
 
 namespace Star\Component\Document\Tools;
 
-use Star\Component\Document\Adapter\DocumentDesignerToSchema;
-use Star\Component\Document\Application\Port\DefinitionToSchema;
+use Star\Component\Document\Application\Port\DesigningToDataEntry;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\RecordAggregate;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
@@ -38,7 +37,7 @@ final class DocumentBuilder
      *
      * @return PropertyBuilder
      */
-    public function createTextProperty(string $name): PropertyBuilder
+    public function createText(string $name): PropertyBuilder
     {
         return $this->createProperty($name, Types\StringType::class);
     }
@@ -48,7 +47,7 @@ final class DocumentBuilder
      *
      * @return PropertyBuilder
      */
-    public function createBooleanProperty(string $name): PropertyBuilder
+    public function createBoolean(string $name): PropertyBuilder
     {
         return $this->createProperty($name, Types\BooleanType::class);
     }
@@ -58,7 +57,7 @@ final class DocumentBuilder
      *
      * @return PropertyBuilder
      */
-    public function createDateProperty(string $name): PropertyBuilder
+    public function createDate(string $name): PropertyBuilder
     {
         return $this->createProperty($name, Types\DateType::class);
     }
@@ -68,9 +67,23 @@ final class DocumentBuilder
      *
      * @return PropertyBuilder
      */
-    public function createNumberProperty(string $name): PropertyBuilder
+    public function createNumber(string $name): PropertyBuilder
     {
         return $this->createProperty($name, Types\NumberType::class);
+    }
+
+    /**
+     * @param string $name
+     * @param string[] $options
+     *
+     * @return PropertyBuilder
+     */
+    public function createCustomList(string $name, array $options): PropertyBuilder
+    {
+        $definition = new PropertyDefinition($name, new Types\CustomListType($options));
+        $this->document->createProperty($definition);
+
+        return new PropertyBuilder($definition, $this->document, $this);
     }
 
     /**
@@ -83,7 +96,7 @@ final class DocumentBuilder
         return new RecordBuilder(
             new RecordAggregate(
                 new RecordId($recordId),
-                new DefinitionToSchema($this->document)
+                new DesigningToDataEntry($this->document)
             ),
             $this
         );
@@ -109,6 +122,14 @@ final class DocumentBuilder
         $this->document->createProperty($definition);
 
         return new PropertyBuilder($definition, $this->document, $this);
+    }
+
+    /**
+     * @return ConstraintBuilder
+     */
+    public static function constraints(): ConstraintBuilder
+    {
+        return new ConstraintBuilder();
     }
 
     /**

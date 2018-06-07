@@ -4,7 +4,6 @@ namespace Star\Component\Document\Design\Domain\Model;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Design\Domain\Exception\InvalidPropertyType;
-use Star\Component\Document\Design\Domain\Model\Types\BooleanType;
 use Star\Component\Document\Design\Domain\Model\Types\NullType;
 use Star\Component\Document\Design\Domain\Model\Types\StringType;
 
@@ -20,25 +19,84 @@ final class PropertyDefinitionTest extends TestCase
         PropertyDefinition::fromString('name', 'not-found');
     }
 
-    public function test_it_should_create_text_property()
+    public function test_it_should_create_property_with_type()
     {
-        $definition = PropertyDefinition::fromString('name', StringType::class);
+        $definition = new PropertyDefinition('name', new NullType());
         $this->assertSame('name', $definition->getName()->toString());
-        $this->assertInstanceOf(StringType::class, $definition->getType());
+        $this->assertInstanceOf(PropertyType::class, $definition->getType());
+        $this->assertInstanceOf(NullType::class, $definition->getType());
+    }   #
+
+    public function test_it_should_add_constraint()
+    {
+        $definition = new PropertyDefinition('name', new NullType());
+        $new = $definition->addConstraint('const', $constraint = $this->createMock(PropertyConstraint::class));
+        $this->assertInstanceOf(PropertyDefinition::class, $new);
+        $constraint
+            ->expects($this->once())
+            ->method('validate')
+            ->with($this->isInstanceOf(PropertyDefinition::class), '');
+
+        $new->validateRawValue('');
     }
 
-    public function test_it_should_create_a_required_property()
+    public function test_it_should_use_the_name_of_the_callee_when_merging_definitions()
     {
-        $definition = PropertyDefinition::fromString('name', NullType::class);
-        $this->assertFalse($definition->isRequired());
-        $definition->setMandatory(true);
-        $this->assertTrue($definition->isRequired());
+        $callee = new PropertyDefinition('callee', new NullType());
+        $argument = new PropertyDefinition('argument', $this->createMock(PropertyType::class));
+        $new = $callee->merge($argument);
+
+        $this->assertInstanceOf(PropertyDefinition::class, $new);
+        $this->assertSame('callee', $new->getName()->toString());
     }
 
-    public function test_it_should_create_a_boolean_property()
+    public function test_it_should_use_the_type_of_the_callee_when_merging_definitions()
     {
-        $definition = PropertyDefinition::fromString('name', BooleanType::class);
-        $this->assertSame('name', $definition->getName()->toString());
-        $this->assertInstanceOf(BooleanType::class, $definition->getType());
+        $callee = new PropertyDefinition('callee', new NullType());
+        $argument = new PropertyDefinition('argument', $this->createMock(PropertyType::class));
+        $new = $callee->merge($argument);
+
+        $this->assertInstanceOf(PropertyDefinition::class, $new);
+        $this->assertSame('null', $new->getType()->toString());
+    }
+
+    public function test_it_should_merge_constraints_when_merging_definitions()
+    {
+        $callee = (new PropertyDefinition('callee', new NullType()))
+            ->addConstraint(
+                'const',
+                $constraint = $this->createMock(PropertyConstraint::class)
+            );
+        $argument = new PropertyDefinition('argument', $this->createMock(PropertyType::class));
+        $this->assertTrue($callee->hasConstraint('const'));
+        $this->assertFalse($argument->hasConstraint('const'));
+
+        $new = $callee->merge($argument);
+
+        $this->assertInstanceOf(PropertyDefinition::class, $new);
+        $this->assertTrue($new->hasConstraint('const'));
+        $this->assertSame($constraint, $new->getConstraint('const'));
+    }
+
+    public function test_it_should_use_the_given_definition_when_overriding_a_constraint_on_merge()
+    {
+        $callee = (new PropertyDefinition('callee', new NullType()))
+            ->addConstraint(
+                'const',
+                $calleeConstraint = $this->createMock(PropertyConstraint::class)
+            );
+        $argument = (new PropertyDefinition('argument', $this->createMock(PropertyType::class)))
+            ->addConstraint(
+                'const',
+                $argumentConstraint = $this->createMock(PropertyConstraint::class)
+            );
+        $this->assertTrue($callee->hasConstraint('const'));
+        $this->assertTrue($argument->hasConstraint('const'));
+
+        $new = $callee->merge($argument);
+
+        $this->assertInstanceOf(PropertyDefinition::class, $new);
+        $this->assertTrue($new->hasConstraint('const'));
+        $this->assertSame($argumentConstraint, $new->getConstraint('const'));
     }
 }

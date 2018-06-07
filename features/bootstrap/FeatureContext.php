@@ -22,18 +22,18 @@ use Star\Component\Document\DataEntry\Domain\Messaging\Query\GetAllRecordsOfDocu
 use Star\Component\Document\DataEntry\Domain\Messaging\Query\GetAllRecordsOfDocumentHandler;
 use Star\Component\Document\DataEntry\Domain\Messaging\Query\RecordRow;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
-use Star\Component\Document\Design\Domain\Messaging\Command\ChangePropertyDefinition;
-use Star\Component\Document\Design\Domain\Messaging\Command\ChangePropertyDefinitionHandler;
+use Star\Component\Document\Design\Domain\Messaging\Command\AddPropertyConstraint;
+use Star\Component\Document\Design\Domain\Messaging\Command\AddPropertyConstraintHandler;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocument;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocumentHandler;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateProperty;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreatePropertyHandler;
-use Star\Component\Document\Design\Domain\Model\Definition\RequiredProperty;
 use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
 use Star\Component\Document\Design\Domain\Model\ReadOnlyDocument;
 use Star\Component\Document\Design\Domain\Model\Types;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
+use Star\Component\Document\Tools\DocumentBuilder;
 
 /**
  * Defines application features from the specific context.
@@ -69,7 +69,7 @@ class FeatureContext implements Context
         $handlers = [
             new CreateDocumentHandler($this->documents),
             new CreatePropertyHandler($this->documents),
-            new ChangePropertyDefinitionHandler($this->documents),
+            new AddPropertyConstraintHandler($this->documents),
             new SetRecordValueHandler($records, new DocumentDesignerToSchema($this->documents)),
         ];
 
@@ -206,6 +206,18 @@ class FeatureContext implements Context
     }
 
     /**
+     * @Given The document :arg1 is created with a custom list property named :arg2 having the options:
+     */
+    public function theDocumentIsCreatedWithACustomListPropertyNamedHavingTheOptions(
+        string $documentId,
+        string $property,
+        TableNode $table
+    ) {
+        $this->iCreateADocumentNamed($documentId);
+        $this->iCreateACustomListFieldNamedInDocumentWithTheFollowingOptions($property, $documentId, $table);
+    }
+
+    /**
      * @When I create a document named :arg1
      */
     public function iCreateADocumentNamed(string $documentId)
@@ -266,15 +278,74 @@ class FeatureContext implements Context
     }
 
     /**
+     * @When I create a custom list field named :arg1 in document :arg2 with the following options:
+     */
+    public function iCreateACustomListFieldNamedInDocumentWithTheFollowingOptions(
+        string $property,
+        string $documentId,
+        TableNode $table
+    ) {
+        $allowed = array_combine(
+            array_map(
+                function (array $data) {
+                    return $data['option-id'];
+                },
+                $table->getColumnsHash()
+            ),
+            array_map(
+                function (array $data) {
+                    return $data['option-value'];
+                },
+                $table->getColumnsHash()
+            )
+        );
+
+        $this->bus->handleCommand(
+            CreateProperty::fromString(
+                $documentId,
+                new PropertyDefinition($property, new Types\CustomListType($allowed))
+            )
+        );
+    }
+
+    /**
+     * @When I create a single option custom list field named :arg1 in document :arg2 with the following options:
+     */
+    public function iCreateASingleOptionCustomListFieldNamedInDocumentWithTheFollowingOptions(
+        string $property,
+        string $documentId,
+        TableNode $table
+    ) {
+        $this->iCreateACustomListFieldNamedInDocumentWithTheFollowingOptions($property, $documentId, $table);
+        $this->iMarkThePropertyAsSingleOptionOnTheDocument($property, $documentId);
+    }
+
+    /**
      * @When I mark the property :arg1 as required on the document :arg2
      */
     public function iMarkThePropertyAsRequiredOnTheDocument(string $fieldId, string $documentId)
     {
         $this->bus->handleCommand(
-            ChangePropertyDefinition::fromString(
+            AddPropertyConstraint::fromString(
                 $documentId,
                 $fieldId,
-                new RequiredProperty()
+                'required',
+                DocumentBuilder::constraints()->required()
+            )
+        );
+    }
+
+    /**
+     * @When I mark the property :arg1 as single option on the document :arg2
+     */
+    public function iMarkThePropertyAsSingleOptionOnTheDocument(string $fieldId, string $documentId)
+    {
+        $this->bus->handleCommand(
+            AddPropertyConstraint::fromString(
+                $documentId,
+                $fieldId,
+                'single-option',
+                DocumentBuilder::constraints()->singleOption()
             )
         );
     }
@@ -355,7 +426,27 @@ class FeatureContext implements Context
         Assert::assertTrue(
             $this->getDocument($documentId)
                 ->getPropertyDefinition($name)
-                ->isRequired()
+                ->hasConstraint('required')
         );
+    }
+
+    /**
+     * @Then The property :arg1 of document :arg2 should have the following definition:
+     */
+    public function thePropertyOfDocumentShouldHaveTheFollowingDefinition($property, $documentId, TableNode $table)
+    {
+        foreach ($table->getHash() as $options) {
+            Assert::assertSame(
+                $options['type'],
+                $this->getDocument($documentId)
+                    ->getPropertyDefinition($property)
+                    ->getType()->toString()
+            );
+            Assert::assertTrue(
+                $this->getDocument($documentId)
+                    ->getPropertyDefinition($property)
+                    ->hasConstraint($options['constraint'])
+            );
+        }
     }
 }

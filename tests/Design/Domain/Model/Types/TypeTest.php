@@ -49,7 +49,7 @@ abstract class TypeTest extends TestCase
 //                34, 'The property "name" expected a "todo" value, "34" given.'
 //            ],
 //            "Array should be invalid" => [
-//                [], 'The property "name" expected a "todo" value, "a:0:{}" given.'
+//                [], 'The property "name" expected a "todo" value, "[]" given.'
 //            ],
 //            "Object should be invalid" => [
 //                (object) [], 'The property "name" expected a "todo" value, "stdClass" given.'
