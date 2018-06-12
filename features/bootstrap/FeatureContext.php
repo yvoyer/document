@@ -8,7 +8,6 @@ use Behat\Gherkin\Node\TableNode;
 use PHPUnit\Framework\Assert;
 use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
-use Star\Component\Document\Application\Port\DocumentDesignerToSchema;
 use Star\Component\Document\Common\Domain\Messaging\Command;
 use Star\Component\Document\Common\Domain\Messaging\CommandBus;
 use Star\Component\Document\Common\Domain\Messaging\Query;
@@ -21,8 +20,11 @@ use Star\Component\Document\DataEntry\Domain\Messaging\Query\GetAllRecordsOfDocu
 use Star\Component\Document\DataEntry\Domain\Messaging\Query\RecordRow;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
+use Star\Component\Document\DataEntry\Infrastructure\Port\DocumentDesignerToSchema;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddPropertyConstraint;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddPropertyConstraintHandler;
+use Star\Component\Document\Design\Domain\Messaging\Command\AddValueTransformer;
+use Star\Component\Document\Design\Domain\Messaging\Command\AddValueTransformerHandler;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocument;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocumentHandler;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateProperty;
@@ -66,11 +68,13 @@ class FeatureContext implements Context
     {
         $records = new RecordCollection();
         $this->documents = new DocumentCollection();
+        $transformers = new TransformerRegistry();
         $handlers = [
             new CreateDocumentHandler($this->documents),
             new CreatePropertyHandler($this->documents),
             new AddPropertyConstraintHandler($this->documents),
             new SetRecordValueHandler($records, new DocumentDesignerToSchema($this->documents)),
+            new AddValueTransformerHandler($this->documents, $transformers)
         ];
 
         $this->bus = new class($handlers) implements CommandBus {
@@ -194,6 +198,23 @@ class FeatureContext implements Context
     {
         $this->iCreateADocumentNamed($documentId);
         $this->iCreateADateFieldNamedInDocument($property, $documentId);
+    }
+
+    /**
+     * @Given The document :arg1 is created with a formatted date property named :arg2:
+     */
+    public function theDocumentIsCreatedWithAFormattedDatePropertyNamed(
+        string $documentId, string $property, TableNode $table
+    ) {
+        $this->iCreateADocumentNamed($documentId);
+        $this->iCreateADateFieldNamedInDocument($property, $documentId);
+        foreach ($table->getHash() as $info) {
+            $name = $info['name'];
+            $format = $info['format'];
+            $this->bus->handleCommand(
+                new AddValueTransformer($property, $name, $format)
+            );
+        }
     }
 
     /**

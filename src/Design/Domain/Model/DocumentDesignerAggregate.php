@@ -4,6 +4,7 @@ namespace Star\Component\Document\Design\Domain\Model;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Exception\ReferencePropertyNotFound;
+use Star\Component\Document\Design\Domain\Model\Transformation\ValueTransformer;
 use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
 use Star\Component\Document\Design\Domain\Model\Events;
 use Star\Component\DomainEvent\AggregateRoot;
@@ -75,6 +76,18 @@ final class DocumentDesignerAggregate extends AggregateRoot implements DocumentD
         foreach ($this->properties as $key => $property) {
             if ($property->matchName($name)) {
                 $property->removeConstraint($constraintName);
+                return;
+            }
+        }
+
+        throw new ReferencePropertyNotFound($name);
+    }
+
+    public function addTransformer(ValueTransformer $transformer)
+    {
+        foreach ($this->properties as $key => $property) {
+            if ($property->matchName($name)) {
+                $property->adremoveConstraint($constraintName);
                 return;
             }
         }

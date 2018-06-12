@@ -69,3 +69,20 @@ Feature: Enter values on document using property rules
       | 1         | My list   |                            |
       | 2         | My list   | Option 1                   |
       | 3         | My list   | Option 1;Option 2;Option 3 |
+
+  Scenario: Enter a date value to be outputed as multiple format
+    Given The document "With formatter date" is created with a formatted date property named "My date":
+      | name  | format |
+      | year  | Y-m-d  |
+      | month | M      |
+      | time  | H:i:s  |
+    When I enter the following values to document "With formatter date"
+      | record-id | property | value               |
+      | 1         | My date  |                     |
+      | 2         | My date  | 2002-12-01 12:34:56 |
+      | 3         | My date  | 2000-02-29          |
+    Then The records list of document the "With formatter date" should looks like:
+      | record-id | property | value               | year | month    | time     |
+      | 1         | My date  |                     |      |          |          |
+      | 2         | My date  | 2002-12-01 12:34:56 | 2002 | December | 12:34:56 |
+      | 3         | My date  | 2000-02-29          | 2000 | February | 00:00:00 |

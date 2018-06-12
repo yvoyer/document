@@ -2,16 +2,18 @@
 
 namespace Star\Component\Document\Tools;
 
-use Star\Component\Document\Application\Port\DesigningToDataEntry;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\RecordAggregate;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
 use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
+use Star\Component\Document\DataEntry\Infrastructure\Port\DesignToDataEntry;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\DocumentDesignerAggregate;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
+use Star\Component\Document\Design\Domain\Model\Transformation\TransformerFactory;
+use Star\Component\Document\Design\Domain\Model\Transformation\TransformerRegistry;
 use Star\Component\Document\Design\Domain\Model\Types;
 use Star\Component\Document\Design\Domain\Model\Values\ListOptionValue;
 
@@ -27,10 +29,19 @@ final class DocumentBuilder
      */
     private $document;
 
+    /**
+     * @var TransformerFactory
+     */
+    private $factory;
+
+    /**
+     * @param DocumentId $id
+     */
     private function __construct(DocumentId $id)
     {
         $this->id = $id;
         $this->document = DocumentDesignerAggregate::draft($id);
+        $this->factory = new TransformerRegistry();
     }
 
     public function createText(string $name): PropertyBuilder
@@ -66,6 +77,10 @@ final class DocumentBuilder
                 )
             )
         );
+        $definition = new PropertyDefinition($name, new Types\CustomListType($options));
+        $this->document->createProperty($definition);
+
+        return new PropertyBuilder($definition, $this->document, $this, $this->factory);
     }
 
     public function startRecord(string $recordId): RecordBuilder
@@ -73,7 +88,7 @@ final class DocumentBuilder
         return new RecordBuilder(
             new RecordAggregate(
                 new RecordId($recordId),
-                new DesigningToDataEntry($this->document)
+                new DesignToDataEntry($this->document, $this->factory)
             ),
             $this
         );
@@ -105,6 +120,7 @@ final class DocumentBuilder
         );
 
         return $this->loadProperty($name);
+        return new PropertyBuilder($definition, $this->document, $this, $this->factory);
     }
 
     public static function constraints(): ConstraintBuilder

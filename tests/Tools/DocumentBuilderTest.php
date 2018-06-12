@@ -4,12 +4,14 @@ namespace Star\Component\Document\Tools;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
+use Star\Component\Document\DataEntry\Domain\Model\Transformation\StringToDate;
 use Star\Component\Document\Design\Domain\Exception\EmptyRequiredValue;
 use Star\Component\Document\Design\Domain\Exception\TooManyValues;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\ReadOnlyDocument;
 use Star\Component\Document\Design\Domain\Model\Types;
+use Star\Component\Document\Design\Domain\Model\ValueTransformer;
 
 final class DocumentBuilderTest extends TestCase
 {
