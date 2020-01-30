@@ -5,13 +5,13 @@ echo "############## Running PHPUnit ##############"
 bin/phpunit
 
 echo "############## Running Behat ##############"
-bin/behat
+bin/behat --format progress -v
 
 echo "############## Running PHP Code sniffer ##############"
 bin/phpcs
 
 echo "############## Running PHPStan ##############"
-bin/phpstan analyse -l max -c phpstan.neon src/ tests/
+bin/phpstan analyse -l max -c phpstan.neon src/
 
 echo "############## Running Infection ##############"
-bin/infection
+bin/infection --formatter=progress

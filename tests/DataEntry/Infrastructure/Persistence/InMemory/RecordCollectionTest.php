@@ -14,12 +14,12 @@ final class RecordCollectionTest extends TestCase
      */
     private $collection;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->collection = new RecordCollection();
     }
 
-    public function test_it_should_save_the_record()
+    public function test_it_should_save_the_record(): void
     {
         $this->assertCount(0, $this->collection);
 
@@ -33,7 +33,7 @@ final class RecordCollectionTest extends TestCase
         $this->assertSame($record, $this->collection->getRecordWithIdentity($id));
     }
 
-    public function test_it_should_throw_exception_when_not_found()
+    public function test_it_should_throw_exception_when_not_found(): void
     {
         $id = new RecordId('not-found');
         $this->assertCount(0, $this->collection);

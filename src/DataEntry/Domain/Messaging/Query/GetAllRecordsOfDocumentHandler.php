@@ -13,19 +13,12 @@ final class GetAllRecordsOfDocumentHandler
      */
     private $records;
 
-    /**
-     * @param RecordRepository $records
-     */
     public function __construct(RecordRepository $records)
     {
         $this->records = $records;
     }
 
-    /**
-     * @param GetAllRecordsOfDocument $message
-     * @param Deferred $deferred
-     */
-    public function __invoke(GetAllRecordsOfDocument $message, Deferred $deferred)
+    public function __invoke(GetAllRecordsOfDocument $message, Deferred $deferred): void
     {
         $deferred->resolve(
             array_map(

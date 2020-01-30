@@ -5,7 +5,9 @@ namespace Star\Component\Document\Design\Domain\Model;
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Exception\ReferencePropertyNotFound;
+use Star\Component\Document\Design\Domain\Model\Constraints;
 use Star\Component\Document\Design\Domain\Model\Types\NullType;
+use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
 
 final class DocumentDesignerAggregateTest extends TestCase
 {
@@ -14,35 +16,40 @@ final class DocumentDesignerAggregateTest extends TestCase
      */
     private $document;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->document = new DocumentDesignerAggregate(new DocumentId('id'));
+        $this->document = DocumentDesignerAggregate::draft(DocumentId::fromString('id'));
     }
 
-    public function test_it_should_publish_document()
+    public function test_it_should_publish_document(): void
     {
         $this->assertFalse($this->document->isPublished());
 
+        $this->document->addProperty(
+            PropertyName::fixture(),
+            new NullType(),
+            new Constraints\RequiresValue()
+        );
         $this->document->publish();
 
         $this->assertTrue($this->document->isPublished());
     }
 
-    public function test_it_should_create_property()
+    public function test_it_should_create_property(): void
     {
-        $this->assertAttributeCount(0, 'properties', $this->document);
+        $this->document->acceptDocumentVisitor($visitor = new PropertyExtractor());
+        $this->assertCount(0, $visitor->properties());
 
-        $name = 'name';
-        $this->document->createProperty(new PropertyDefinition($name, new NullType()));
+        $name = PropertyName::fromString('name');
+        $this->document->addProperty($name, new NullType(), new Constraints\NoConstraint());
 
-        $this->assertInstanceOf(
-            PropertyDefinition::class,
-            $definition = $this->document->getPropertyDefinition($name)
-        );
-        $this->assertEquals(new PropertyName($name), $definition->getName());
+        $this->document->acceptDocumentVisitor($visitor = new PropertyExtractor());
+        $this->assertCount(1, $visitor->properties());
+        $definition = $this->document->getPropertyDefinition($name);
+        $this->assertSame('name', $definition->getName()->toString());
     }
 
-    public function test_it_should_visit_the_document()
+    public function test_it_should_visit_the_document(): void
     {
         $visitor = $this->createMock(DocumentVisitor::class);
         $visitor
@@ -52,10 +59,12 @@ final class DocumentDesignerAggregateTest extends TestCase
         $this->document->acceptDocumentVisitor($visitor);
     }
 
-    public function test_it_should_visit_the_document_properties()
+    public function test_it_should_visit_the_document_properties(): void
     {
-        $this->document->createProperty(
-            new PropertyDefinition('name', new NullType())
+        $this->document->addProperty(
+            PropertyName::fixture(),
+            new NullType(),
+            new Constraints\NoConstraint()
         );
         $visitor = $this->createMock(DocumentVisitor::class);
         $visitor
@@ -65,41 +74,30 @@ final class DocumentDesignerAggregateTest extends TestCase
         $this->document->acceptDocumentVisitor($visitor);
     }
 
-    public function test_it_should_add_a_constraint()
+    public function test_it_should_add_a_constraint(): void
     {
-        $name = new PropertyName('name');
-        $definition = new PropertyDefinition($name->toString(), new NullType());
-        $this->document->createProperty($definition);
+        $name = PropertyName::fixture();
+        $this->document->addProperty(
+            $name,
+            new NullType(),
+            new Constraints\RequiresValue()
+        );
 
-        $this->assertFalse($this->document->getPropertyDefinition('name')->hasConstraint('const'));
+        $this->assertFalse($this->document->getPropertyDefinition($name)->hasConstraint('const'));
 
-        $this->document->addConstraint(
+        $this->document->addPropertyConstraint(
             $name,
             'const',
             $this->createMock(PropertyConstraint::class)
         );
 
-        $this->assertTrue($this->document->getPropertyDefinition('name')->hasConstraint('const'));
+        $this->assertTrue($this->document->getPropertyDefinition($name)->hasConstraint('const'));
     }
 
-    public function test_it_should_remove_the_constraint()
-    {
-        $name = new PropertyName('name');
-        $definition = new PropertyDefinition($name->toString(), new NullType());
-        $definition = $definition->addConstraint('const', $this->createMock(PropertyConstraint::class));
-        $this->document->createProperty($definition);
-
-        $this->assertTrue($this->document->getPropertyDefinition('name')->hasConstraint('const'));
-
-        $this->document->removeConstraint($name, 'const');
-
-        $this->assertFalse($this->document->getPropertyDefinition('name')->hasConstraint('const'));
-    }
-
-    public function test_it_should_throw_exception_when_property_not_defined()
+    public function test_it_should_throw_exception_when_property_not_defined(): void
     {
         $this->expectException(ReferencePropertyNotFound::class);
         $this->expectExceptionMessage('The property with name "not found" could not be found.');
-        $this->document->getPropertyDefinition('not found');
+        $this->document->getPropertyDefinition(PropertyName::fromString('not found'));
     }
 }

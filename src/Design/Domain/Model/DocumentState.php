@@ -17,9 +17,6 @@ final class DocumentState extends StateMetadata
         return $this->isInState('published');
     }
 
-    /**
-     * @return DocumentState
-     */
     public function publish(): DocumentState
     {
         return $this->transit('publish', 'document');
@@ -30,7 +27,7 @@ final class DocumentState extends StateMetadata
      *
      * @param StateBuilder $builder
      */
-    protected function configure(StateBuilder $builder)
+    protected function configure(StateBuilder $builder): void
     {
         $builder->allowTransition('publish', 'draft', 'published');
     }

@@ -11,21 +11,13 @@ final class StringType implements PropertyType
 {
     /**
      * @param mixed $value
-     *
      * @return bool
      */
-    public function isValid($value): bool
+    private function isValid($value): bool
     {
-        return is_string($value);
+        return \is_string($value);
     }
 
-    /**
-     * @param string $propertyName
-     * @param mixed $rawValue
-     *
-     * @return PropertyValue
-     * @throws InvalidPropertyValue
-     */
     public function createValue(string $propertyName, $rawValue): PropertyValue
     {
         if (! $this->isValid($rawValue)) {
@@ -35,9 +27,6 @@ final class StringType implements PropertyType
         return new StringValue($propertyName, $rawValue);
     }
 
-    /**
-     * @return string
-     */
     public function toString(): string
     {
         return 'string';

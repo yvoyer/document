@@ -6,15 +6,9 @@ use Star\Component\Document\Design\Domain\Exception\EmptyRequiredValue;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
 
-final class RequiredValue implements PropertyConstraint
+final class RequiresValue implements PropertyConstraint
 {
-    /**
-     * @param PropertyDefinition $definition
-     * @param mixed $value
-     *
-     * @throws \LogicException
-     */
-    public function validate(PropertyDefinition $definition, $value)
+    public function validate(PropertyDefinition $definition, $value): void
     {
         if (empty($value)) {
             throw new EmptyRequiredValue(

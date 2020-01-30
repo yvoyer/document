@@ -3,7 +3,6 @@
 namespace Star\Component\Document\Design\Domain\Model;
 
 use Star\Component\Document\Design\Domain\Exception\InvalidPropertyConstraint;
-use Star\Component\Document\Design\Domain\Exception\InvalidPropertyType;
 
 final class PropertyDefinition
 {
@@ -22,38 +21,22 @@ final class PropertyDefinition
      */
     private $constraints = [];
 
-    /**
-     * @param string $name The property name
-     * @param PropertyType $type The property type
-     */
-    public function __construct(string $name, PropertyType $type)
+    public function __construct(PropertyName $name, PropertyType $type)
     {
-        $this->name = new PropertyName($name);
+        $this->name = $name;
         $this->type = $type;
     }
 
-    /**
-     * @return PropertyName
-     */
     public function getName(): PropertyName
     {
         return $this->name;
     }
 
-    /**
-     * @return PropertyType
-     */
     public function getType(): PropertyType
     {
         return $this->type;
     }
 
-    /**
-     * @param string $name
-     * @param PropertyConstraint $constraint
-     *
-     * @return PropertyDefinition
-     */
     public function addConstraint(string $name, PropertyConstraint $constraint): PropertyDefinition
     {
         $new = $this->merge($this);
@@ -62,34 +45,19 @@ final class PropertyDefinition
         return $new;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return PropertyDefinition
-     */
     public function removeConstraint(string $name): PropertyDefinition
     {
-        $new = new self($this->getName()->toString(), $this->getType());
+        $new = new self($this->getName(), $this->getType());
         unset($new->constraints[$name]);
 
         return $new;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return bool
-     */
     public function hasConstraint(string $name): bool
     {
         return isset($this->constraints[$name]);
     }
 
-    /**
-     * @param string $name
-     *
-     * @return PropertyConstraint
-     */
     public function getConstraint(string $name): PropertyConstraint
     {
         if (! $this->hasConstraint($name)) {
@@ -102,7 +70,7 @@ final class PropertyDefinition
     /**
      * @param mixed $rawValue
      */
-    public function validateRawValue($rawValue)
+    public function validateRawValue($rawValue): void
     {
         foreach ($this->constraints as $constraint) {
             // todo should allow to use different sttrategy for error handling
@@ -122,27 +90,9 @@ final class PropertyDefinition
      */
     public function merge(PropertyDefinition $definition): PropertyDefinition
     {
-        $new = new self($this->name->toString(), $this->type);
+        $new = new self($this->name, $this->type);
         $new->constraints = array_merge($this->constraints, $definition->constraints);
 
         return $new;
-    }
-
-    /**
-     * @param string $name
-     * @param string $type
-     *
-     * @return PropertyDefinition
-     */
-    public static function fromString(string $name, string $type): self
-    {
-        /**
-         * @var PropertyType $type
-         */
-        if (! class_exists($type) && ! is_a($type, PropertyType::class)) {
-            throw new InvalidPropertyType($type);
-        }
-
-        return new self($name, new $type());
     }
 }

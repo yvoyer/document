@@ -12,21 +12,21 @@ final class DocumentPropertyTest extends TestCase
      */
     private $property;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->property = DocumentProperty::fromDefinition(
+        $this->property = new DocumentProperty(
             $this->createMock(DocumentDesigner::class),
-            new PropertyDefinition('name', new NullType())
+            new PropertyDefinition(PropertyName::fromString('name'), new NullType())
         );
     }
 
-    public function test_it_should_match_definition_name()
+    public function test_it_should_match_definition_name(): void
     {
-        $this->assertTrue($this->property->matchName(new PropertyName('name')));
-        $this->assertFalse($this->property->matchName(new PropertyName('not name')));
+        $this->assertTrue($this->property->matchName(PropertyName::fromString('name')));
+        $this->assertFalse($this->property->matchName(PropertyName::fromString('not name')));
     }
 
-    public function test_it_should_add_constraint()
+    public function test_it_should_add_constraint(): DocumentProperty
     {
         $this->assertFalse($this->property->getDefinition()->hasConstraint('name'));
 
@@ -42,7 +42,7 @@ final class DocumentPropertyTest extends TestCase
      *
      * @param DocumentProperty $property
      */
-    public function test_it_should_remove_constraint(DocumentProperty $property)
+    public function test_it_should_remove_constraint(DocumentProperty $property): void
     {
         $this->assertTrue($property->getDefinition()->hasConstraint('name'));
 

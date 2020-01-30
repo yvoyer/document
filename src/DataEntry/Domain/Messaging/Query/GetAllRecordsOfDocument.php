@@ -28,13 +28,8 @@ final class GetAllRecordsOfDocument implements Query
         return $this->documentId;
     }
 
-    /**
-     * @param string $documentId
-     *
-     * @return GetAllRecordsOfDocument
-     */
     public static function fromString(string $documentId): self
     {
-        return new self(new DocumentId($documentId));
+        return new self(DocumentId::fromString($documentId));
     }
 }

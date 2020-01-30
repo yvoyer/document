@@ -21,45 +21,45 @@ final class AddPropertyConstraintHandlerTest extends TestCase
      */
     private $documents;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->documents = new DocumentCollection();
         $this->handler = new AddPropertyConstraintHandler($this->documents);
     }
 
-    public function test_it_should_change_the_attribute_of_the_property()
+    public function test_it_should_change_the_attribute_of_the_property(): void
     {
-        $name = new PropertyName('section');
-        $document = DocumentBuilder::createBuilder('d')
+        $name = PropertyName::fromString('section');
+        $document = DocumentBuilder::createDocument('d')
             ->createText($name->toString())->endProperty()
-            ->build();
+            ->getDocument();
         $this->documents->saveDocument($document->getIdentity(), $document);
 
-        $this->assertFalse($document->getPropertyDefinition($name->toString())->hasConstraint('attribute'));
+        $this->assertFalse($document->getPropertyDefinition($name)->hasConstraint('attribute'));
 
         $this->handler->__invoke(
-            AddPropertyConstraint::fromString(
-                $document->getIdentity()->toString(),
-                $name->toString(),
+            new AddPropertyConstraint(
+                $document->getIdentity(),
+                $name,
                 'attribute',
                 $this->createMock(PropertyConstraint::class)
             )
         );
 
-        $this->assertTrue($document->getPropertyDefinition($name->toString())->hasConstraint('attribute'));
+        $this->assertTrue($document->getPropertyDefinition($name)->hasConstraint('attribute'));
     }
 
-    public function test_it_should_throw_exception_when_property_not_found_in_document()
+    public function test_it_should_throw_exception_when_property_not_found_in_document(): void
     {
-        $document = DocumentBuilder::createBuilder('d')->build();
+        $document = DocumentBuilder::createDocument('d')->getDocument();
         $this->documents->saveDocument($document->getIdentity(), $document);
 
         $this->expectException(ReferencePropertyNotFound::class);
         $this->expectExceptionMessage('The property with name "not found" could not be found.');
         $this->handler->__invoke(
-            AddPropertyConstraint::fromString(
-                $document->getIdentity()->toString(),
-                'not found',
+            new AddPropertyConstraint(
+                $document->getIdentity(),
+                PropertyName::fromString('not found'),
                 'const',
                 $this->createMock(PropertyConstraint::class)
             )

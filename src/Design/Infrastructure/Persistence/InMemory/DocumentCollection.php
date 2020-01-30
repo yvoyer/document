@@ -29,18 +29,11 @@ final class DocumentCollection implements DocumentRepository, \Countable
         return $this->documents[$id->toString()];
     }
 
-    /**
-     * @param DocumentId $id
-     * @param DocumentDesigner $document
-     */
-    public function saveDocument(DocumentId $id, DocumentDesigner $document)
+    public function saveDocument(DocumentId $id, DocumentDesigner $document): void
     {
         $this->documents[$id->toString()] = $document;
     }
 
-    /**
-     * @return int
-     */
     public function count(): int
     {
         return count($this->documents);

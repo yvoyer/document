@@ -9,26 +9,9 @@ use Star\Component\Document\Design\Domain\Model\Values\BooleanValue;
 
 final class BooleanType implements PropertyType
 {
-    /**
-     * @param mixed $value
-     *
-     * @return bool
-     */
-    public function isValid($value): bool
-    {
-        return in_array($value, [1, 0, true, false, 'true', 'false', '1', '0'], true);
-    }
-
-    /**
-     * @param string $propertyName
-     * @param mixed $rawValue
-     *
-     * @return PropertyValue
-     * @throws InvalidPropertyValue
-     */
     public function createValue(string $propertyName, $rawValue): PropertyValue
     {
-        if (! $this->isValid($rawValue)) {
+        if (! in_array($rawValue, [1, 0, true, false, 'true', 'false', '1', '0'], true)) {
             throw InvalidPropertyValue::invalidValueForType($propertyName, 'boolean', $rawValue);
         }
 
@@ -39,9 +22,6 @@ final class BooleanType implements PropertyType
         return new BooleanValue($propertyName, (bool) $rawValue);
     }
 
-    /**
-     * @return string
-     */
     public function toString(): string
     {
         return 'boolean';

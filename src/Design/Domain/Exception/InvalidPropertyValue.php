@@ -44,11 +44,11 @@ final class InvalidPropertyValue extends \InvalidArgumentException implements De
                 break;
 
             case 'array':
-                $value = json_encode($value);
+                $value = \json_encode($value);
                 break;
 
             case 'object':
-                $value = get_class($value);
+                $value = \get_class($value);
                 break;
 
             case 'NULL':

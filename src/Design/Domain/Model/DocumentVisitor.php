@@ -6,13 +6,12 @@ use Star\Component\Document\Common\Domain\Model\DocumentId;
 
 interface DocumentVisitor
 {
-    /**
-     * @param DocumentId $id
-     */
-    public function visitDocument(DocumentId $id);
+    public function visitDocument(DocumentId $id): void;
+
+    public function visitProperty(PropertyDefinition $definition): void;
 
     /**
-     * @param PropertyDefinition $definition
+     * @param DocumentProperty[] $properties
      */
-    public function visitProperty(PropertyDefinition $definition);
+    public function visitEnded(array $properties): void;
 }

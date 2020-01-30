@@ -9,45 +9,31 @@ final class ListValue implements PropertyValue
     /**
      * @var string
      */
-    private $property;
+    private $name;
 
     /**
-     * @var PropertyValue[]
+     * @var ListOptionValue[]
      */
-    private $values;
+    private $values = [];
 
-    /**
-     * @param string $property
-     * @param PropertyValue[] ...$value
-     */
-    public function __construct(string $property, PropertyValue ...$value)
+    public function __construct(string $name, ListOptionValue ...$value)
     {
-        $this->property = $property;
+        $this->name = $name;
         $this->values = $value;
     }
 
-    /**
-     * Return the property name
-     *
-     * @return string
-     */
     public function getName(): string
     {
-        return $this->property;
+        return $this->name;
     }
 
-    /**
-     * Returns the string representation of contained value.
-     *
-     * @return string
-     */
     public function toString(): string
     {
         return implode(
             ';',
-            array_map(
-                function (PropertyValue $value) {
-                    return $value->toString();
+            \array_map(
+                function (ListOptionValue $value) {
+                    return $value->getLabel();
                 },
                 $this->values
             )

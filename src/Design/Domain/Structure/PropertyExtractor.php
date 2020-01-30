@@ -21,29 +21,22 @@ final class PropertyExtractor implements DocumentVisitor
         return array_values($this->properties);
     }
 
-    /**
-     * @param string $name
-     *
-     * @return bool
-     */
     public function hasProperty(string $name): bool
     {
         return isset($this->properties[$name]);
     }
 
-    /**
-     * @param DocumentId $id
-     */
-    public function visitDocument(DocumentId $id)
+    public function visitDocument(DocumentId $id): void
     {
     }
 
-    /**
-     * @param PropertyDefinition $definition
-     */
-    public function visitProperty(PropertyDefinition $definition)
+    public function visitProperty(PropertyDefinition $definition): void
     {
         $name = $definition->getName();
         $this->properties[$name->toString()] = $definition;
+    }
+
+    public function visitEnded(array $properties): void
+    {
     }
 }

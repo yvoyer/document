@@ -11,18 +11,12 @@ final class RemovePropertyConstraintHandler
      */
     private $documents;
 
-    /**
-     * @param DocumentRepository $documents
-     */
     public function __construct(DocumentRepository $documents)
     {
         $this->documents = $documents;
     }
 
-    /**
-     * @param RemovePropertyConstraint $command
-     */
-    public function __invoke(RemovePropertyConstraint $command)
+    public function __invoke(RemovePropertyConstraint $command): void
     {
         $document = $this->documents->getDocumentByIdentity($command->documentId());
         $document->removeConstraint($command->name(), $command->constraintName());

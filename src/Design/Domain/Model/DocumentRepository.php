@@ -19,5 +19,5 @@ interface DocumentRepository
      * @param DocumentId $id
      * @param DocumentDesigner $document
      */
-    public function saveDocument(DocumentId $id, DocumentDesigner $document);
+    public function saveDocument(DocumentId $id, DocumentDesigner $document): void;
 }

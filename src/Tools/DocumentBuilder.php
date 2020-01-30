@@ -6,10 +6,14 @@ use Star\Component\Document\Application\Port\DesigningToDataEntry;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\RecordAggregate;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
+use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\DocumentDesignerAggregate;
-use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
+use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Types;
+use Star\Component\Document\Design\Domain\Model\Values\ListOptionValue;
 
 final class DocumentBuilder
 {
@@ -19,78 +23,51 @@ final class DocumentBuilder
     private $id;
 
     /**
-     * @var DocumentDesigner
+     * @var DocumentDesignerAggregate
      */
     private $document;
 
-    /**
-     * @param DocumentId $id
-     */
     private function __construct(DocumentId $id)
     {
         $this->id = $id;
-        $this->document = new DocumentDesignerAggregate($id);
+        $this->document = DocumentDesignerAggregate::draft($id);
     }
 
-    /**
-     * @param string $name
-     *
-     * @return PropertyBuilder
-     */
     public function createText(string $name): PropertyBuilder
     {
-        return $this->createProperty($name, Types\StringType::class);
+        return $this->createProperty($name, new Types\StringType());
     }
 
-    /**
-     * @param string $name
-     *
-     * @return PropertyBuilder
-     */
     public function createBoolean(string $name): PropertyBuilder
     {
-        return $this->createProperty($name, Types\BooleanType::class);
+        return $this->createProperty($name, new Types\BooleanType());
     }
 
-    /**
-     * @param string $name
-     *
-     * @return PropertyBuilder
-     */
     public function createDate(string $name): PropertyBuilder
     {
-        return $this->createProperty($name, Types\DateType::class);
+        return $this->createProperty($name, new Types\DateType());
     }
 
-    /**
-     * @param string $name
-     *
-     * @return PropertyBuilder
-     */
     public function createNumber(string $name): PropertyBuilder
     {
-        return $this->createProperty($name, Types\NumberType::class);
+        return $this->createProperty($name, new Types\NumberType());
     }
 
-    /**
-     * @param string $name
-     * @param string[] $options
-     *
-     * @return PropertyBuilder
-     */
-    public function createCustomList(string $name, array $options): PropertyBuilder
+    public function createCustomList(string $name, string ...$options): PropertyBuilder
     {
-        $definition = new PropertyDefinition($name, new Types\CustomListType($options));
-        $this->document->createProperty($definition);
-
-        return new PropertyBuilder($definition, $this->document, $this);
+        return $this->createProperty(
+            $name,
+            new Types\CustomListType(
+                ...\array_map(
+                    function (int $key) use ($options) {
+                        return ListOptionValue::withValueAsLabel($key + 1, $options[$key]);
+                    },
+                    \array_keys($options)
+                )
+            )
+        );
     }
 
-    /**
-     * @param string $recordId
-     *
-     * @return RecordBuilder
-     */
     public function startRecord(string $recordId): RecordBuilder
     {
         return new RecordBuilder(
@@ -102,43 +79,45 @@ final class DocumentBuilder
         );
     }
 
-    /**
-     * @return DocumentDesigner
-     */
-    public function build(): DocumentDesigner
+    public function withConstraint(DocumentConstraint $constraint): self
+    {
+        $this->document->setDocumentConstraint($constraint);
+
+        return $this;
+    }
+
+    public function getDocument(): DocumentDesigner
     {
         return $this->document;
     }
 
-    /**
-     * @param string $name
-     * @param string $type
-     *
-     * @return PropertyBuilder
-     */
-    private function createProperty(string $name, string $type): PropertyBuilder
+    private function loadProperty(PropertyName $name): PropertyBuilder
     {
-        $definition = PropertyDefinition::fromString($name, $type);
-        $this->document->createProperty($definition);
-
-        return new PropertyBuilder($definition, $this->document, $this);
+        return new PropertyBuilder($name, $this->document, $this);
     }
 
-    /**
-     * @return ConstraintBuilder
-     */
+    private function createProperty(string $name, PropertyType $type): PropertyBuilder
+    {
+        $this->document->addProperty(
+            $name = PropertyName::fromString($name),
+            $type,
+            new NoConstraint()
+        );
+
+        return $this->loadProperty($name);
+    }
+
     public static function constraints(): ConstraintBuilder
     {
         return new ConstraintBuilder();
     }
 
-    /**
-     * @param string $id
-     *
-     * @return DocumentBuilder
-     */
-    public static function createBuilder(string $id): self
+    public static function createDocument(string $id = null): self
     {
-        return new self(new DocumentId($id));
+        if (null === $id) {
+            $id = DocumentId::random()->toString();
+        }
+
+        return new self(DocumentId::fromString($id));
     }
 }

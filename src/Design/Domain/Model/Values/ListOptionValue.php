@@ -2,17 +2,15 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Values;
 
-use Star\Component\Document\Design\Domain\Model\PropertyValue;
-
-final class ListOptionValue implements PropertyValue
+final class ListOptionValue
 {
     /**
-     * @var string
+     * @var int
      */
-    private $property;
+    private $id;
 
     /**
-     * @var string|int
+     * @var string
      */
     private $value;
 
@@ -21,35 +19,30 @@ final class ListOptionValue implements PropertyValue
      */
     private $label;
 
-    /**
-     * @param string $property
-     * @param string|int $value
-     * @param string $label
-     */
-    public function __construct(string $property, $value, string $label)
+    public function __construct(int $id, string $value, string $label)
     {
-        $this->property = $property;
+        $this->id = $id;
         $this->value = $value;
         $this->label = $label;
     }
 
-    /**
-     * Return the property name
-     *
-     * @return string
-     */
-    public function getName(): string
+    public function getId(): int
     {
-        return $this->property;
+        return $this->id;
     }
 
-    /**
-     * Returns the string representation of contained value.
-     *
-     * @return string
-     */
-    public function toString(): string
+    public function getValue(): string
+    {
+        return $this->value;
+    }
+
+    public function getLabel(): string
     {
         return $this->label;
+    }
+
+    public static function withValueAsLabel(int $id, string $value): self
+    {
+        return new self($id, $value, $value);
     }
 }

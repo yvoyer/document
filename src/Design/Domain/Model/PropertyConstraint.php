@@ -10,5 +10,5 @@ interface PropertyConstraint
      *
      * @throws \LogicException
      */
-    public function validate(PropertyDefinition $definition, $value);
+    public function validate(PropertyDefinition $definition, $value): void;
 }

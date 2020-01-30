@@ -46,25 +46,16 @@ final class SetRecordValue implements Command
         $this->value = $value;
     }
 
-    /**
-     * @return DocumentId
-     */
     public function documentId(): DocumentId
     {
         return $this->documentId;
     }
 
-    /**
-     * @return RecordId
-     */
     public function recordId(): RecordId
     {
         return $this->recordId;
     }
 
-    /**
-     * @return string
-     */
     public function property(): string
     {
         return $this->property;
@@ -76,18 +67,5 @@ final class SetRecordValue implements Command
     public function value()
     {
         return $this->value;
-    }
-
-    /**
-     * @param string $documentId
-     * @param string $recordId
-     * @param string $property
-     * @param mixed $value
-     *
-     * @return SetRecordValue
-     */
-    public static function fromString(string $documentId, string $recordId, string $property, $value): self
-    {
-        return new self(new DocumentId($documentId), new RecordId($recordId), $property, $value);
     }
 }

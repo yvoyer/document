@@ -11,30 +11,29 @@ final class PropertyName
      */
     private $value;
 
-    /**
-     * @param string $value
-     */
-    public function __construct(string $value)
+    private function __construct(string $value)
     {
         Assertion::notBlank($value);
         $this->value = $value;
     }
 
-    /**
-     * @return string
-     */
     public function toString(): string
     {
         return $this->value;
     }
 
-    /**
-     * @param PropertyName $name
-     *
-     * @return bool
-     */
     public function matchName(PropertyName $name): bool
     {
         return $name->toString() === $this->toString();
+    }
+
+    public static function fromString(string $value): self
+    {
+        return new self($value);
+    }
+
+    public static function fixture(): self
+    {
+        return self::fromString(\uniqid('property-'));
     }
 }

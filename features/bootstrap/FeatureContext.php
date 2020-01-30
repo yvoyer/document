@@ -4,8 +4,6 @@ namespace Star\Component\Document;
 
 use Assert\Assertion;
 use Behat\Behat\Context\Context;
-use Behat\Behat\Tester\Exception\PendingException;
-use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use PHPUnit\Framework\Assert;
 use React\Promise\Deferred;
@@ -21,6 +19,7 @@ use Star\Component\Document\DataEntry\Domain\Messaging\Command\SetRecordValueHan
 use Star\Component\Document\DataEntry\Domain\Messaging\Query\GetAllRecordsOfDocument;
 use Star\Component\Document\DataEntry\Domain\Messaging\Query\GetAllRecordsOfDocumentHandler;
 use Star\Component\Document\DataEntry\Domain\Messaging\Query\RecordRow;
+use Star\Component\Document\DataEntry\Domain\Model\RecordId;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddPropertyConstraint;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddPropertyConstraintHandler;
@@ -28,9 +27,10 @@ use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocument;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocumentHandler;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateProperty;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreatePropertyHandler;
-use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
+use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\ReadOnlyDocument;
 use Star\Component\Document\Design\Domain\Model\Types;
+use Star\Component\Document\Design\Domain\Model\Values\ListOptionValue;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
 use Star\Component\Document\Tools\DocumentBuilder;
@@ -93,7 +93,7 @@ class FeatureContext implements Context
                 );
             }
 
-            public function handleCommand(Command $command)
+            public function handleCommand(Command $command): void
             {
                 $class = get_class($command);
                 if (! isset($this->handlers[$class])) {
@@ -158,7 +158,7 @@ class FeatureContext implements Context
 
     private function getDocument(string $documentId): ReadOnlyDocument
     {
-        return $this->documents->getDocumentByIdentity(new DocumentId($documentId));
+        return $this->documents->getDocumentByIdentity(DocumentId::fromString($documentId));
     }
 
     /**
@@ -222,7 +222,7 @@ class FeatureContext implements Context
      */
     public function iCreateADocumentNamed(string $documentId)
     {
-        $this->bus->handleCommand(CreateDocument::fromString($documentId));
+        $this->bus->handleCommand(new CreateDocument(DocumentId::fromString($documentId)));
     }
 
     /**
@@ -231,9 +231,10 @@ class FeatureContext implements Context
     public function iCreateATextFieldNamedInDocument(string $property, string $documentId)
     {
         $this->bus->handleCommand(
-            CreateProperty::fromString(
-                $documentId,
-                PropertyDefinition::fromString($property, Types\StringType::class)
+            new CreateProperty(
+                DocumentId::fromString($documentId),
+                PropertyName::fromString($property),
+                new Types\StringType()
             )
         );
     }
@@ -244,9 +245,10 @@ class FeatureContext implements Context
     public function iCreateABooleanFieldNamedInDocument(string $property, string $documentId)
     {
         $this->bus->handleCommand(
-            CreateProperty::fromString(
-                $documentId,
-                PropertyDefinition::fromString($property, Types\BooleanType::class)
+            new CreateProperty(
+                DocumentId::fromString($documentId),
+                PropertyName::fromString($property),
+                new Types\BooleanType()
             )
         );
     }
@@ -257,9 +259,10 @@ class FeatureContext implements Context
     public function iCreateADateFieldNamedInDocument(string $property, string $documentId)
     {
         $this->bus->handleCommand(
-            CreateProperty::fromString(
-                $documentId,
-                PropertyDefinition::fromString($property, Types\DateType::class)
+            new CreateProperty(
+                DocumentId::fromString($documentId),
+                PropertyName::fromString($property),
+                new Types\DateType()
             )
         );
     }
@@ -270,9 +273,10 @@ class FeatureContext implements Context
     public function iCreateANumberFieldNamedInDocument(string $property, string $documentId)
     {
         $this->bus->handleCommand(
-            CreateProperty::fromString(
-                $documentId,
-                PropertyDefinition::fromString($property, Types\NumberType::class)
+            new CreateProperty(
+                DocumentId::fromString($documentId),
+                PropertyName::fromString($property),
+                new Types\NumberType()
             )
         );
     }
@@ -301,9 +305,17 @@ class FeatureContext implements Context
         );
 
         $this->bus->handleCommand(
-            CreateProperty::fromString(
-                $documentId,
-                new PropertyDefinition($property, new Types\CustomListType($allowed))
+            new CreateProperty(
+                DocumentId::fromString($documentId),
+                PropertyName::fromString($property),
+                new Types\CustomListType(
+                    ...\array_map(
+                        function (int $key) use ($allowed) {
+                            return ListOptionValue::withValueAsLabel($key, $allowed[$key]);
+                        },
+                        \array_keys($allowed)
+                    )
+                )
             )
         );
     }
@@ -326,9 +338,9 @@ class FeatureContext implements Context
     public function iMarkThePropertyAsRequiredOnTheDocument(string $fieldId, string $documentId)
     {
         $this->bus->handleCommand(
-            AddPropertyConstraint::fromString(
-                $documentId,
-                $fieldId,
+            new AddPropertyConstraint(
+                DocumentId::fromString($documentId),
+                PropertyName::fromString($fieldId),
                 'required',
                 DocumentBuilder::constraints()->required()
             )
@@ -341,9 +353,9 @@ class FeatureContext implements Context
     public function iMarkThePropertyAsSingleOptionOnTheDocument(string $fieldId, string $documentId)
     {
         $this->bus->handleCommand(
-            AddPropertyConstraint::fromString(
-                $documentId,
-                $fieldId,
+            new AddPropertyConstraint(
+                DocumentId::fromString($documentId),
+                PropertyName::fromString($fieldId),
                 'single-option',
                 DocumentBuilder::constraints()->singleOption()
             )
@@ -357,9 +369,9 @@ class FeatureContext implements Context
     {
         foreach ($table->getHash() as $data) {
             $this->bus->handleCommand(
-                SetRecordValue::fromString(
-                    $documentId,
-                    $data['record-id'],
+                new SetRecordValue(
+                    DocumentId::fromString($documentId),
+                    new RecordId($data['record-id']),
                     $data['property'],
                     $data['value']
                 )
@@ -425,7 +437,7 @@ class FeatureContext implements Context
     {
         Assert::assertTrue(
             $this->getDocument($documentId)
-                ->getPropertyDefinition($name)
+                ->getPropertyDefinition(PropertyName::fromString($name))
                 ->hasConstraint('required')
         );
     }
@@ -439,12 +451,12 @@ class FeatureContext implements Context
             Assert::assertSame(
                 $options['type'],
                 $this->getDocument($documentId)
-                    ->getPropertyDefinition($property)
+                    ->getPropertyDefinition(PropertyName::fromString($property))
                     ->getType()->toString()
             );
             Assert::assertTrue(
                 $this->getDocument($documentId)
-                    ->getPropertyDefinition($property)
+                    ->getPropertyDefinition(PropertyName::fromString($property))
                     ->hasConstraint($options['constraint'])
             );
         }

@@ -2,7 +2,6 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
-use Star\Component\Document\Design\Domain\Exception\EmptyAllowedOptions;
 use Star\Component\Document\Design\Domain\Exception\InvalidPropertyValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\PropertyValue;
@@ -11,43 +10,41 @@ use Star\Component\Document\Design\Domain\Model\Values\ListValue;
 
 final class CustomListType implements PropertyType
 {
+    private const SEPARATOR = ';';
     /**
-     * @var string[]|int[]|float[]
+     * @var ListOptionValue[]
      */
-    private $allowed;
+    private $allowed = [];
 
-    /**
-     * @param float[]|int[]|string[] $allowed
-     */
-    public function __construct(array $allowed)
+    public function __construct(ListOptionValue $first, ListOptionValue ...$others)
     {
-        if (empty($allowed)) {
-            throw new EmptyAllowedOptions(
-                'Custom list properties must receive at least one option, none given.'
-            );
+        /**
+         * @var ListOptionValue[] $allowed
+         */
+        $allowed = \array_merge([$first], $others);
+        foreach ($allowed as $option) {
+            $this->allowed[$option->getId()] = $option;
         }
-        $this->allowed = $allowed;
     }
 
     /**
-     * @param mixed $value
-     *
+     * @param mixed $values
      * @return bool
      */
-    public function isValid($value): bool
+    private function isValid($values): bool
     {
-        if (! is_array($value)) {
+        if (! \is_array($values)) {
             return false;
         }
 
-        foreach ($value as $keyValue) {
-            if (! is_string($keyValue) && ! is_numeric($keyValue)) {
-                return false;
+        foreach ($values as $id) {
+            if (\is_string($id) || \is_int($id)) {
+                if (\array_key_exists($id, $this->allowed)) {
+                    continue;
+                }
             }
 
-            if (! isset($this->allowed[$keyValue])) {
-                return false;
-            }
+            return false;
         }
 
         return true;
@@ -55,28 +52,34 @@ final class CustomListType implements PropertyType
 
     /**
      * @param string $propertyName
-     * @param mixed $rawValue
-     *
+     * @param string|string[]|int[] $rawValue
      * @return PropertyValue
-     * @throws InvalidPropertyValue
      */
     public function createValue(string $propertyName, $rawValue): PropertyValue
     {
-        $value = $rawValue;
-        if (is_string($rawValue)) {
-            if (empty($value)) {
-                $value = [];
-            } else {
-                $value = explode(';', $value);
-            }
+        $convertedValue = $rawValue;
+        if (\is_string($rawValue)) {
+            $convertedValue = \explode(self::SEPARATOR, $rawValue);
         }
 
-        if (! $this->isValid($value)) {
+        if ($rawValue === '') {
+            $convertedValue = [];
+        }
+
+        if (! $this->isValid($convertedValue)) {
             throw new InvalidPropertyValue(
-                sprintf(
+                \sprintf(
                     'The property "%s" only accepts an array made of the following values: "%s", "%s" given.',
                     $propertyName,
-                    implode(';', array_keys($this->allowed)),
+                    \implode(
+                        self::SEPARATOR,
+                        \array_map(
+                            function (ListOptionValue $value): int {
+                                return $value->getId();
+                            },
+                            $this->allowed
+                        )
+                    ),
                     InvalidPropertyValue::getValueType($rawValue)
                 )
             );
@@ -84,18 +87,15 @@ final class CustomListType implements PropertyType
 
         return new ListValue(
             $propertyName,
-            ...array_map(
-                function ($key_value) use ($propertyName) {
-                    return new ListOptionValue($propertyName, $key_value, (string) $this->allowed[$key_value]);
+            ...\array_map(
+                function (int $key_value) {
+                    return $this->allowed[$key_value];
                 },
-                $value
+                (array) $convertedValue
             )
         );
     }
 
-    /**
-     * @return string
-     */
     public function toString(): string
     {
         return 'custom-list';

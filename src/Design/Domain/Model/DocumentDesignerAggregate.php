@@ -4,8 +4,11 @@ namespace Star\Component\Document\Design\Domain\Model;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Exception\ReferencePropertyNotFound;
+use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
+use Star\Component\Document\Design\Domain\Model\Events;
+use Star\Component\DomainEvent\AggregateRoot;
 
-final class DocumentDesignerAggregate implements DocumentDesigner
+final class DocumentDesignerAggregate extends AggregateRoot implements DocumentDesigner
 {
     /**
      * @var DocumentId
@@ -23,39 +26,30 @@ final class DocumentDesignerAggregate implements DocumentDesigner
     private $properties = [];
 
     /**
-     * @param DocumentId $id
+     * @var DocumentConstraint
      */
-    public function __construct(DocumentId $id)
-    {
-        $this->id = $id;
-        $this->state = new DocumentState();
-    }
+    private $constraints;
 
     public function getIdentity(): DocumentId
     {
         return $this->id;
     }
 
-    public function publish()
+    public function publish(): void
     {
-        $this->state = $this->state->publish();
+        $this->mutate(new Events\DocumentPublished($this->getIdentity()));
     }
 
-    /**
-     * @param PropertyDefinition $definition
-     */
-    public function createProperty(PropertyDefinition $definition)
+    public function addProperty(PropertyName $name, PropertyType $type, PropertyConstraint $constraint): void
     {
-        $this->properties[] = DocumentProperty::fromDefinition($this, $definition);
+        $this->mutate(new Events\PropertyAdded($name, $type, $constraint));
     }
 
-    /**
-     * @param PropertyName $name
-     * @param string $constraintName
-     * @param PropertyConstraint $constraint
-     */
-    public function addConstraint(PropertyName $name, string $constraintName, PropertyConstraint $constraint)
-    {
+    public function addPropertyConstraint(
+        PropertyName $name,
+        string $constraintName,
+        PropertyConstraint $constraint
+    ): void {
         foreach ($this->properties as $key => $property) {
             if ($property->matchName($name)) {
                 $property->addConstraint($constraintName, $constraint);
@@ -66,11 +60,17 @@ final class DocumentDesignerAggregate implements DocumentDesigner
         throw new ReferencePropertyNotFound($name);
     }
 
-    /**
-     * @param PropertyName $name
-     * @param string $constraintName
-     */
-    public function removeConstraint(PropertyName $name, string $constraintName)
+    public function setDocumentConstraint(DocumentConstraint $constraint): void
+    {
+        $this->mutate(new Events\DocumentConstraintRegistered($this->getIdentity(), $constraint));
+    }
+
+    protected function onDocumentConstraintRegistered(Events\DocumentConstraintRegistered $event): void
+    {
+        $this->constraints = $event->constraint();
+    }
+
+    public function removeConstraint(PropertyName $name, string $constraintName): void
     {
         foreach ($this->properties as $key => $property) {
             if ($property->matchName($name)) {
@@ -82,22 +82,13 @@ final class DocumentDesignerAggregate implements DocumentDesigner
         throw new ReferencePropertyNotFound($name);
     }
 
-    /**
-     * @return bool
-     */
     public function isPublished(): bool
     {
         return $this->state->isPublished();
     }
 
-    /**
-     * @param string $name
-     *
-     * @return PropertyDefinition
-     */
-    public function getPropertyDefinition(string $name): PropertyDefinition
+    public function getPropertyDefinition(PropertyName $name): PropertyDefinition
     {
-        $name = new PropertyName($name);
         foreach ($this->properties as $property) {
             if ($property->matchName($name)) {
                 return $property->getDefinition();
@@ -107,14 +98,39 @@ final class DocumentDesignerAggregate implements DocumentDesigner
         throw new ReferencePropertyNotFound($name);
     }
 
-    /**
-     * @param DocumentVisitor $visitor
-     */
-    public function acceptDocumentVisitor(DocumentVisitor $visitor)
+    public function acceptDocumentVisitor(DocumentVisitor $visitor): void
     {
         $visitor->visitDocument($this->getIdentity());
         foreach ($this->properties as $property) {
             $property->acceptDocumentVisitor($visitor);
         }
+
+        $visitor->visitEnded($this->properties);
+    }
+
+    protected function onDocumentCreated(Events\DocumentCreated $event): void
+    {
+        $this->id = $event->documentId();
+        $this->state = new DocumentState();
+        $this->constraints = new NoConstraint();
+    }
+
+    protected function onDocumentPublished(Events\DocumentPublished $event): void
+    {
+        $this->state = $this->state->publish();
+        $this->constraints->onPublish($this);
+    }
+
+    protected function onPropertyAdded(Events\PropertyAdded $event): void
+    {
+        $definition = new PropertyDefinition($event->name(), $event->type());
+        $property = new DocumentProperty($this, $definition);
+
+        $this->properties[] = $property;
+    }
+
+    public static function draft(DocumentId $id): self
+    {
+        return self::fromStream([new Events\DocumentCreated($id)]);
     }
 }

@@ -52,7 +52,7 @@ final class RecordAggregate implements DocumentRecord
      * @param string $propertyName
      * @param mixed $rawValue
      */
-    public function setValue(string $propertyName, $rawValue)
+    public function setValue(string $propertyName, $rawValue): void
     {
         $this->values[$propertyName] = $this->schema->createValue($propertyName, $rawValue);
     }

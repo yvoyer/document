@@ -5,26 +5,27 @@ namespace Star\Component\Document\Design\Domain\Model\Constraints;
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Design\Domain\Exception\TooManyValues;
 use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
+use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\Types\NullType;
 
 final class RequireSingleOptionTest extends TestCase
 {
     /**
-     * @var RequireSingleOption
+     * @var RequiresSingleOption
      */
     private $constraint;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->constraint = new RequireSingleOption();
+        $this->constraint = new RequiresSingleOption();
     }
 
-    public function test_it_should_throw_exception_when_setting_multiple_values_on_single_value_property()
+    public function test_it_should_throw_exception_when_setting_multiple_values_on_single_value_property(): void
     {
         $this->expectException(TooManyValues::class);
         $this->expectExceptionMessage('Property named "name" requires maximum one option, "[1,2]" given.');
         $this->constraint->validate(
-            PropertyDefinition::fromString('name', NullType::class),
+            new PropertyDefinition(PropertyName::fromString('name'), new NullType()),
             [1, 2]
         );
     }

@@ -29,16 +29,10 @@ final class AddPropertyConstraint implements Command
      */
     private $constraint;
 
-    /**
-     * @param DocumentId $documentId
-     * @param PropertyName $name
-     * @param string $constraintName
-     * @param PropertyConstraint $constraint
-     */
     public function __construct(
         DocumentId $documentId,
         PropertyName $name,
-        $constraintName,
+        string $constraintName,
         PropertyConstraint $constraint
     ) {
         $this->documentId = $documentId;
@@ -47,57 +41,23 @@ final class AddPropertyConstraint implements Command
         $this->constraint = $constraint;
     }
 
-    /**
-     * @return DocumentId
-     */
     public function documentId(): DocumentId
     {
         return $this->documentId;
     }
 
-    /**
-     * @return PropertyName
-     */
     public function name(): PropertyName
     {
         return $this->name;
     }
 
-    /**
-     * @return string
-     */
     public function constraintName(): string
     {
         return $this->constraintName;
     }
 
-    /**
-     * @return PropertyConstraint
-     */
     public function constraint(): PropertyConstraint
     {
         return $this->constraint;
-    }
-
-    /**
-     * @param string $documentId
-     * @param string $propertyName
-     * @param string $constraintName
-     * @param PropertyConstraint $constraint
-     *
-     * @return AddPropertyConstraint
-     */
-    public static function fromString(
-        string $documentId,
-        string $propertyName,
-        string $constraintName,
-        PropertyConstraint $constraint
-    ): self {
-        return new self(
-            new DocumentId($documentId),
-            new PropertyName($propertyName),
-            $constraintName,
-            $constraint
-        );
     }
 }
