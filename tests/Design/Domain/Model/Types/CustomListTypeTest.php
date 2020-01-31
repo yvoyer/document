@@ -2,23 +2,24 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
-use Star\Component\Document\Design\Domain\Exception\EmptyAllowedOptions;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
+use Star\Component\Document\Design\Domain\Model\Values\ListOptionValue;
 use Star\Component\Document\Design\Domain\Model\Values\ListValue;
 
 final class CustomListTypeTest extends TypeTest
 {
-    /**
-     * @return PropertyType
-     */
     protected function getType(): PropertyType
     {
-        return new CustomListType([0 => 'value 1', 1 => 'value 2', 2 => 'value 3']);
+        return new CustomListType(
+            ListOptionValue::withValueAsLabel(1, 'value 1'),
+            ListOptionValue::withValueAsLabel(2, 'value 2'),
+            ListOptionValue::withValueAsLabel(3, 'value 3')
+        );
     }
 
     public static function provideInvalidValuesExceptions(): array
     {
-        $message = 'The property "name" only accepts an array made of the following values: "0;1;2", ';
+        $message = 'The property "name" only accepts an array made of the following values: "1;2;3", ';
         return [
             "Boolean true should be invalid" => [
                 true, $message . '"true" given.'
@@ -62,6 +63,9 @@ final class CustomListTypeTest extends TypeTest
             "null should be invalid" => [
                 null, $message . '"NULL" given.'
             ],
+            "invalid second id should be invalid" => [
+                [1, 999], $message . '"[1,999]" given.'
+            ],
         ];
     }
 
@@ -78,7 +82,7 @@ final class CustomListTypeTest extends TypeTest
     {
         $this->assertInstanceOf(
             ListValue::class,
-            $value = $this->getType()->createValue('prop', [0])
+            $value = $this->getType()->createValue('prop', [1])
         );
         $this->assertSame('value 1', $value->toString());
     }
@@ -87,7 +91,7 @@ final class CustomListTypeTest extends TypeTest
     {
         $this->assertInstanceOf(
             ListValue::class,
-            $value = $this->getType()->createValue('prop', [0, 2])
+            $value = $this->getType()->createValue('prop', [1, 3])
         );
         $this->assertSame('value 1;value 3', $value->toString());
     }
@@ -96,7 +100,7 @@ final class CustomListTypeTest extends TypeTest
     {
         $this->assertInstanceOf(
             ListValue::class,
-            $value = $this->getType()->createValue('prop', [1, 0, 2])
+            $value = $this->getType()->createValue('prop', [2, 1, 3])
         );
         $this->assertSame('value 2;value 1;value 3', $value->toString());
     }
@@ -105,7 +109,7 @@ final class CustomListTypeTest extends TypeTest
     {
         $this->assertInstanceOf(
             ListValue::class,
-            $value = $this->getType()->createValue('prop', ["0", "1", "2"])
+            $value = $this->getType()->createValue('prop', ["1", "2", "3"])
         );
         $this->assertSame('value 1;value 2;value 3', $value->toString());
     }
@@ -120,21 +124,14 @@ final class CustomListTypeTest extends TypeTest
 
         $this->assertInstanceOf(
             ListValue::class,
-            $value = $this->getType()->createValue('prop', "1")
+            $value = $this->getType()->createValue('prop', "2")
         );
         $this->assertSame('value 2', $value->toString());
 
         $this->assertInstanceOf(
             ListValue::class,
-            $value = $this->getType()->createValue('prop', "0;1;2")
+            $value = $this->getType()->createValue('prop', "1;2;3")
         );
         $this->assertSame('value 1;value 2;value 3', $value->toString());
-    }
-
-    public function test_it_should_throw_exception_when_configuring_option_list_with_no_values()
-    {
-        $this->expectException(EmptyAllowedOptions::class);
-        $this->expectExceptionMessage('Custom list properties must receive at least one option, none given.');
-        new CustomListType([]);
     }
 }

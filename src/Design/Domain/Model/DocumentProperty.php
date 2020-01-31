@@ -14,67 +14,34 @@ final class DocumentProperty implements ReadOnlyProperty
      */
     private $definition;
 
-    /**
-     * @param DocumentDesigner $document
-     * @param PropertyDefinition $definition
-     */
-    private function __construct(DocumentDesigner $document, PropertyDefinition $definition)
+    public function __construct(DocumentDesigner $document, PropertyDefinition $definition)
     {
         $this->document = $document;
         $this->definition = $definition;
     }
 
-    /**
-     * @param string $name
-     * @param PropertyConstraint $constraint
-     */
-    public function addConstraint(string $name, PropertyConstraint $constraint)
+    public function addConstraint(string $name, PropertyConstraint $constraint): void
     {
         $this->definition = $this->definition->addConstraint($name, $constraint);
     }
 
-    /**
-     * @param string $name
-     */
-    public function removeConstraint(string $name)
+    public function removeConstraint(string $name): void
     {
         $this->definition = $this->definition->removeConstraint($name);
     }
 
-    /**
-     * @param DocumentVisitor $visitor
-     */
-    public function acceptDocumentVisitor(DocumentVisitor $visitor)
+    public function acceptDocumentVisitor(DocumentVisitor $visitor): void
     {
         $visitor->visitProperty($this->getDefinition());
     }
 
-    /**
-     * @param PropertyName $name
-     *
-     * @return bool
-     */
     public function matchName(PropertyName $name): bool
     {
         return $name->matchName($this->definition->getName());
     }
 
-    /**
-     * @return PropertyDefinition
-     */
     public function getDefinition(): PropertyDefinition
     {
         return $this->definition;
-    }
-
-    /**
-     * @param DocumentDesigner $document
-     * @param PropertyDefinition $definition
-     *
-     * @return DocumentProperty
-     */
-    public static function fromDefinition(DocumentDesigner $document, PropertyDefinition $definition): self
-    {
-        return new self($document, $definition);
     }
 }

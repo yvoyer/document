@@ -3,3 +3,5 @@
 .idea
 !/bin/build.sh
 /infection-log.txt
+/composer.lock
+/.phpunit.result.cache

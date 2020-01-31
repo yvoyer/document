@@ -12,21 +12,13 @@ final class NumberType implements PropertyType
 {
     /**
      * @param mixed $value
-     *
      * @return bool
      */
-    public function isValid($value): bool
+    private function isValid($value): bool
     {
-        return is_numeric($value);
+        return \is_numeric($value);
     }
 
-    /**
-     * @param string $propertyName
-     * @param mixed $rawValue
-     *
-     * @return PropertyValue
-     * @throws InvalidPropertyValue
-     */
     public function createValue(string $propertyName, $rawValue): PropertyValue
     {
         if (! $this->isValid($rawValue)) {
@@ -40,9 +32,6 @@ final class NumberType implements PropertyType
         return FloatValue::fromString($propertyName, (string) $rawValue);
     }
 
-    /**
-     * @return string
-     */
     public function toString(): string
     {
         return 'number';

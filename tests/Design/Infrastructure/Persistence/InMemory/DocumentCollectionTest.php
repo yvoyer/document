@@ -14,17 +14,17 @@ final class DocumentCollectionTest extends TestCase
      */
     private $collection;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->collection = new DocumentCollection();
     }
 
-    public function test_it_should_save_the_document()
+    public function test_it_should_save_the_document(): void
     {
         $this->assertCount(0, $this->collection);
 
         $this->collection->saveDocument(
-            $id = new DocumentId('d1'),
+            $id = DocumentId::fromString('d1'),
             $document = $this->createMock(DocumentDesigner::class)
         );
 
@@ -32,9 +32,9 @@ final class DocumentCollectionTest extends TestCase
         $this->assertSame($document, $this->collection->getDocumentByIdentity($id));
     }
 
-    public function test_it_should_throw_exception_when_not_found()
+    public function test_it_should_throw_exception_when_not_found(): void
     {
-        $id = new DocumentId('not-found');
+        $id = DocumentId::fromString('not-found');
         $this->assertCount(0, $this->collection);
 
         $this->expectException(EntityNotFoundException::class);

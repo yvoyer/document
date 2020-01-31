@@ -12,21 +12,12 @@ final class All implements PropertyConstraint
      */
     private $constraints;
 
-    /**
-     * @param PropertyConstraint[] ...$constraints
-     */
-    public function __construct(PropertyConstraint ...$constraints)
+    public function __construct(PropertyConstraint $first, PropertyConstraint ...$constraints)
     {
-        $this->constraints = $constraints;
+        $this->constraints = \array_merge([$first], $constraints);
     }
 
-    /**
-     * @param PropertyDefinition $definition
-     * @param mixed $value
-     *
-     * @throws \LogicException
-     */
-    public function validate(PropertyDefinition $definition, $value)
+    public function validate(PropertyDefinition $definition, $value): void
     {
         foreach ($this->constraints as $constraint) {
             $constraint->validate($definition, $value);

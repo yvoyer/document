@@ -2,17 +2,17 @@
 
 namespace Star\Component\Document\Tools;
 
-use Star\Component\Document\Design\Domain\Model\Constraints\RequiredValue;
-use Star\Component\Document\Design\Domain\Model\Constraints\RequireSingleOption;
+use Star\Component\Document\Design\Domain\Model\Constraints\RequiresValue;
+use Star\Component\Document\Design\Domain\Model\Constraints\RequiresSingleOption;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
-use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
+use Star\Component\Document\Design\Domain\Model\PropertyName;
 
 final class PropertyBuilder
 {
     /**
-     * @var PropertyDefinition
+     * @var PropertyName
      */
-    private $definition;
+    private $name;
 
     /**
      * @var DocumentDesigner
@@ -24,52 +24,38 @@ final class PropertyBuilder
      */
     private $builder;
 
-    /**
-     * @param PropertyDefinition $definition
-     * @param DocumentDesigner $document
-     * @param DocumentBuilder $builder
-     */
     public function __construct(
-        PropertyDefinition $definition,
+        PropertyName $name,
         DocumentDesigner $document,
         DocumentBuilder $builder
     ) {
-        $this->definition = $definition;
+        $this->name = $name;
         $this->document = $document;
         $this->builder = $builder;
     }
 
-    /**
-     * @return PropertyBuilder
-     */
     public function required(): self
     {
-        $this->document->addConstraint(
-            $this->definition->getName(),
+        $this->document->addPropertyConstraint(
+            $this->name,
             'required',
-            new RequiredValue()
+            new RequiresValue()
         );
 
         return $this;
     }
 
-    /**
-     * @return PropertyBuilder
-     */
     public function singleOption(): self
     {
-        $this->document->addConstraint(
-            $this->definition->getName(),
+        $this->document->addPropertyConstraint(
+            $this->name,
             'single-option',
-            new RequireSingleOption()
+            new RequiresSingleOption()
         );
 
         return $this;
     }
 
-    /**
-     * @return DocumentBuilder
-     */
     public function endProperty(): DocumentBuilder
     {
         return $this->builder;

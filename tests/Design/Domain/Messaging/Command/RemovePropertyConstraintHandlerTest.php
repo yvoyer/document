@@ -4,6 +4,7 @@ namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Design\Domain\Exception\ReferencePropertyNotFound;
+use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
 use Star\Component\Document\Tools\DocumentBuilder;
 
@@ -19,44 +20,45 @@ final class RemovePropertyConstraintHandlerTest extends TestCase
      */
     private $documents;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->handler = new RemovePropertyConstraintHandler(
             $this->documents = new DocumentCollection()
         );
     }
 
-    public function test_it_should_remove_constraint()
+    public function test_it_should_remove_constraint(): void
     {
-        $document = DocumentBuilder::createBuilder('d')
+        $document = DocumentBuilder::createDocument('d')
             ->createText('text')->required()->endProperty()
-            ->build();
+            ->getDocument();
         $this->documents->saveDocument($document->getIdentity(), $document);
+        $name = PropertyName::fromString('text');
 
-        $this->assertTrue($document->getPropertyDefinition('text')->hasConstraint('required'));
+        $this->assertTrue($document->getPropertyDefinition($name)->hasConstraint('required'));
 
         $this->handler->__invoke(
-            RemovePropertyConstraint::fromString(
-                $document->getIdentity()->toString(),
-                'text',
+            new RemovePropertyConstraint(
+                $document->getIdentity(),
+                $name,
                 'required'
             )
         );
 
-        $this->assertFalse($document->getPropertyDefinition('text')->hasConstraint('required'));
+        $this->assertFalse($document->getPropertyDefinition($name)->hasConstraint('required'));
     }
 
-    public function test_it_should_throw_exception_when_property_not_found_in_document()
+    public function test_it_should_throw_exception_when_property_not_found_in_document(): void
     {
-        $document = DocumentBuilder::createBuilder('d')->build();
+        $document = DocumentBuilder::createDocument('d')->getDocument();
         $this->documents->saveDocument($document->getIdentity(), $document);
 
         $this->expectException(ReferencePropertyNotFound::class);
         $this->expectExceptionMessage('The property with name "not found" could not be found.');
         $this->handler->__invoke(
-            RemovePropertyConstraint::fromString(
-                $document->getIdentity()->toString(),
-                'not found',
+            new RemovePropertyConstraint(
+                $document->getIdentity(),
+                PropertyName::fromString('not found'),
                 'const'
             )
         );

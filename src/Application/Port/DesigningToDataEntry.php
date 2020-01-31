@@ -5,6 +5,7 @@ namespace Star\Component\Document\Application\Port;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentSchema;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\ReadOnlyDocument;
 
 // todo rename to DefinitionSchema
@@ -39,7 +40,7 @@ final class DesigningToDataEntry implements DocumentSchema
      */
     public function createValue(string $propertyName, $rawValue): RecordValue
     {
-        $definition = $this->document->getPropertyDefinition($propertyName);
+        $definition = $this->document->getPropertyDefinition(PropertyName::fromString($propertyName));
         $definition->validateRawValue($rawValue);
         $type = $definition->getType();
 

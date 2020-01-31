@@ -20,8 +20,6 @@ abstract class TypeTest extends TestCase
      */
     final public function test_it_should_throw_exception_when_setting_invalid_value($value, string $message)
     {
-        $this->assertFalse($this->getType()->isValid($value));
-
         $this->expectException(InvalidPropertyValue::class);
         $this->expectExceptionMessage($message);
         $this->getType()->createValue('name', $value);

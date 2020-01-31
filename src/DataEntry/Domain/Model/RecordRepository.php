@@ -26,7 +26,7 @@ interface RecordRepository
      * @param RecordId $id
      * @param DocumentRecord $record
      */
-    public function saveRecord(RecordId $id, DocumentRecord $record);
+    public function saveRecord(RecordId $id, DocumentRecord $record): void;
 
     /**
      * @param DocumentId $id

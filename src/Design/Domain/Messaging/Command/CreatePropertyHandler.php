@@ -2,6 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
+use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentRepository;
 
 final class CreatePropertyHandler
@@ -11,21 +12,15 @@ final class CreatePropertyHandler
      */
     private $documents;
 
-    /**
-     * @param DocumentRepository $documents
-     */
     public function __construct(DocumentRepository $documents)
     {
         $this->documents = $documents;
     }
 
-    /**
-     * @param CreateProperty $command
-     */
-    public function __invoke(CreateProperty $command)
+    public function __invoke(CreateProperty $command): void
     {
         $document = $this->documents->getDocumentByIdentity($command->documentId());
-        $document->createProperty($command->definition());
+        $document->addProperty($command->name(), $command->type(), new NoConstraint());
 
         $this->documents->saveDocument($command->documentId(), $document);
     }

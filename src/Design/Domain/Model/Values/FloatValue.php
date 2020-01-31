@@ -21,11 +21,6 @@ final class FloatValue implements PropertyValue
      */
     private $decimal;
 
-    /**
-     * @param string $property
-     * @param int $value
-     * @param int $decimal
-     */
     public function __construct(string $property, int $value, int $decimal)
     {
         $this->property = $property;
@@ -33,24 +28,14 @@ final class FloatValue implements PropertyValue
         $this->decimal = $decimal;
     }
 
-    /**
-     * Return the property name
-     *
-     * @return string
-     */
     public function getName(): string
     {
         return $this->property;
     }
 
-    /**
-     * Returns the string representation of contained value.
-     *
-     * @return string
-     */
     public function toString(): string
     {
-        return substr_replace($this->value, '.', - $this->decimal, 0);
+        return (string) \substr_replace((string) $this->value, '.', - $this->decimal, 0);
     }
 
     /**
@@ -61,8 +46,8 @@ final class FloatValue implements PropertyValue
      */
     public static function fromString(string $property, string $value): self
     {
-        $parts = explode('.', $value);
+        $parts = \explode('.', $value);
 
-        return new self($property, (int) str_replace('.', '', $value), strlen($parts[1]));
+        return new self($property, (int) \str_replace('.', '', $value), \mb_strlen($parts[1]));
     }
 }

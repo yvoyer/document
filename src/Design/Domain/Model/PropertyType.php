@@ -7,13 +7,6 @@ use Star\Component\Document\Design\Domain\Exception\InvalidPropertyValue;
 interface PropertyType
 {
     /**
-     * @param mixed $value
-     *
-     * @return bool
-     */
-    public function isValid($value): bool;
-
-    /**
      * @param string $propertyName
      * @param mixed $rawValue
      *

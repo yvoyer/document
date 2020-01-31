@@ -1,19 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Design\Domain\Messaging\Command;
+namespace Star\Component\Document\Design\Domain\Model\Events;
 
-use Star\Component\Document\Common\Domain\Messaging\Command;
-use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
+use Star\Component\DomainEvent\DomainEvent;
 
-final class CreateProperty implements Command
+final class PropertyAdded implements DomainEvent
 {
-    /**
-     * @var DocumentId
-     */
-    private $documentId;
-
     /**
      * @var PropertyName
      */
@@ -24,19 +19,19 @@ final class CreateProperty implements Command
      */
     private $type;
 
+    /**
+     * @var PropertyConstraint
+     */
+    private $constraint;
+
     public function __construct(
-        DocumentId $documentId,
         PropertyName $name,
-        PropertyType $type
+        PropertyType $type,
+        PropertyConstraint $constraint
     ) {
-        $this->documentId = $documentId;
         $this->name = $name;
         $this->type = $type;
-    }
-
-    public function documentId(): DocumentId
-    {
-        return $this->documentId;
+        $this->constraint = $constraint;
     }
 
     public function name(): PropertyName
@@ -47,5 +42,10 @@ final class CreateProperty implements Command
     public function type(): PropertyType
     {
         return $this->type;
+    }
+
+    public function constraint(): PropertyConstraint
+    {
+        return $this->constraint;
     }
 }

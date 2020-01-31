@@ -19,7 +19,7 @@ final class RecordCollection implements RecordRepository, \Countable
      * @param RecordId $id
      * @param DocumentRecord $record
      */
-    public function saveRecord(RecordId $id, DocumentRecord $record)
+    public function saveRecord(RecordId $id, DocumentRecord $record): void
     {
         $this->records[$id->toString()] = $record;
     }

@@ -14,10 +14,7 @@ final class DocumentId implements Identity
      */
     private $value;
 
-    /**
-     * @param string $value
-     */
-    public function __construct(string $value)
+    private function __construct(string $value)
     {
         Assertion::notBlank($value);
         $this->value = $value;
@@ -51,5 +48,15 @@ final class DocumentId implements Identity
     public function toString()
     {
         return $this->value;
+    }
+
+    public static function fromString(string $value): self
+    {
+        return new self($value);
+    }
+
+    public static function random(): self
+    {
+        return self::fromString(\uniqid('document-'));
     }
 }

@@ -23,61 +23,28 @@ final class RemovePropertyConstraint implements Command
      */
     private $constraintName;
 
-    /**
-     * @param DocumentId $documentId
-     * @param PropertyName $name
-     * @param string $constraintName
-     */
     public function __construct(
         DocumentId $documentId,
         PropertyName $name,
-        $constraintName
+        string $constraintName
     ) {
         $this->documentId = $documentId;
         $this->name = $name;
         $this->constraintName = $constraintName;
     }
 
-    /**
-     * @return DocumentId
-     */
     public function documentId(): DocumentId
     {
         return $this->documentId;
     }
 
-    /**
-     * @return PropertyName
-     */
     public function name(): PropertyName
     {
         return $this->name;
     }
 
-    /**
-     * @return string
-     */
     public function constraintName(): string
     {
         return $this->constraintName;
-    }
-
-    /**
-     * @param string $documentId
-     * @param string $propertyName
-     * @param string $constraintName
-     *
-     * @return RemovePropertyConstraint
-     */
-    public static function fromString(
-        string $documentId,
-        string $propertyName,
-        string $constraintName
-    ): self {
-        return new self(
-            new DocumentId($documentId),
-            new PropertyName($propertyName),
-            $constraintName
-        );
     }
 }

@@ -2,25 +2,19 @@
 
 namespace Star\Component\Document\Tools;
 
-use Star\Component\Document\Design\Domain\Model\Constraints\RequiredValue;
-use Star\Component\Document\Design\Domain\Model\Constraints\RequireSingleOption;
+use Star\Component\Document\Design\Domain\Model\Constraints\RequiresValue;
+use Star\Component\Document\Design\Domain\Model\Constraints\RequiresSingleOption;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 
 final class ConstraintBuilder
 {
-    /**
-     * @return PropertyConstraint
-     */
     public function required(): PropertyConstraint
     {
-        return new RequiredValue();
+        return new RequiresValue();
     }
 
-    /**
-     * @return PropertyConstraint
-     */
     public function singleOption(): PropertyConstraint
     {
-        return new RequireSingleOption();
+        return new RequiresSingleOption();
     }
 }

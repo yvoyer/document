@@ -23,7 +23,7 @@ final class SetRecordValueHandlerTest extends TestCase
      */
     private $records;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->handler = new SetRecordValueHandler(
             $this->records = new RecordCollection(),
@@ -31,13 +31,13 @@ final class SetRecordValueHandlerTest extends TestCase
         );
     }
 
-    public function test_it_should_return_not_data_when_no_value_entered()
+    public function test_it_should_return_not_data_when_no_value_entered(): void
     {
         $this->assertCount(0, $this->records);
 
         $recordId = new RecordId('id');
         $this->handler->__invoke(
-            SetRecordValue::fromString('id', $recordId->toString(), 'name', 'value')
+            new SetRecordValue(DocumentId::random(), $recordId, 'name', 'value')
         );
 
         $this->assertCount(1, $this->records);
@@ -48,18 +48,18 @@ final class SetRecordValueHandlerTest extends TestCase
         $this->assertSame('value', $record->getValue('name')->toString());
     }
 
-    public function test_it_should_return_all_records_when_values_entered()
+    public function test_it_should_return_all_records_when_values_entered(): void
     {
-        $documentId = new DocumentId('id');
+        $documentId = DocumentId::fromString('id');
         $recordId = new RecordId('id');
         $this->handler->__invoke(
-            SetRecordValue::fromString($documentId->toString(), $recordId->toString(), 'p1', 'v1')
+            new SetRecordValue($documentId, $recordId, 'p1', 'v1')
         );
         $this->handler->__invoke(
-            SetRecordValue::fromString($documentId->toString(), $recordId->toString(), 'p2', 'v2')
+            new SetRecordValue($documentId, $recordId, 'p2', 'v2')
         );
         $this->handler->__invoke(
-            SetRecordValue::fromString($documentId->toString(), $recordId->toString(), 'p3', 'v3')
+            new SetRecordValue($documentId, $recordId, 'p3', 'v3')
         );
 
         $this->assertCount(1, $this->records);
@@ -72,7 +72,7 @@ final class SetRecordValueHandlerTest extends TestCase
         $this->assertSame('v3', $record->getValue('p3')->toString());
     }
 
-    public function test_it_should_use_the_old_record_to_store_value()
+    public function test_it_should_use_the_old_record_to_store_value(): void
     {
         $recordId = new RecordId('r1');
         $record = new RecordAggregate($recordId, StubSchema::allOptional());
@@ -83,7 +83,7 @@ final class SetRecordValueHandlerTest extends TestCase
         $this->assertSame('old-value', $record->getValue('name')->toString());
 
         $this->handler->__invoke(
-            SetRecordValue::fromString('id', $recordId->toString(), 'name', 'new-value')
+            new SetRecordValue(DocumentId::random(), $recordId, 'name', 'new-value')
         );
 
         $this->assertSame('new-value', $record->getValue('name')->toString());

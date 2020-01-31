@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Design\Domain\Messaging\Command;
+namespace Star\Component\Document\Design\Domain\Model\Events;
 
-use Star\Component\Document\Common\Domain\Messaging\Command;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\DomainEvent\DomainEvent;
 
-final class CreateDocument implements Command
+final class DocumentCreated implements DomainEvent
 {
     /**
      * @var DocumentId

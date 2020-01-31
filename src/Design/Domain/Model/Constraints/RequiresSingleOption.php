@@ -6,15 +6,9 @@ use Star\Component\Document\Design\Domain\Exception\TooManyValues;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
 
-final class RequireSingleOption implements PropertyConstraint
+final class RequiresSingleOption implements PropertyConstraint
 {
-    /**
-     * @param PropertyDefinition $definition
-     * @param mixed $value
-     *
-     * @throws \LogicException
-     */
-    public function validate(PropertyDefinition $definition, $value)
+    public function validate(PropertyDefinition $definition, $value): void
     {
         if (count($value) > 1) {
             throw new TooManyValues(

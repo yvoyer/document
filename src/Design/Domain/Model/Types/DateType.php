@@ -2,6 +2,8 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
+use DateTimeImmutable;
+use DateTimeInterface;
 use Star\Component\Document\Design\Domain\Exception\InvalidPropertyValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\PropertyValue;
@@ -10,13 +12,12 @@ use Star\Component\Document\Design\Domain\Model\Values\DateValue;
 final class DateType implements PropertyType
 {
     /**
-     * @param mixed $value
-     *
+     * @param DateTimeInterface|string $value
      * @return bool
      */
-    public function isValid($value): bool
+    private function isValid($value): bool
     {
-        if ($value instanceof \DateTimeInterface) {
+        if ($value instanceof DateTimeInterface) {
             return true;
         }
 
@@ -26,7 +27,7 @@ final class DateType implements PropertyType
 
         if (is_string($value)) {
             try {
-                new \DateTimeImmutable($value);
+                new DateTimeImmutable($value);
                 return true;
             } catch (\Throwable $exception) {
                 // invalid format
@@ -36,29 +37,19 @@ final class DateType implements PropertyType
         return false;
     }
 
-    /**
-     * @param string $propertyName
-     * @param mixed $rawValue
-     *
-     * @return PropertyValue
-     * @throws InvalidPropertyValue
-     */
     public function createValue(string $propertyName, $rawValue): PropertyValue
     {
         if (! $this->isValid($rawValue)) {
             throw InvalidPropertyValue::invalidValueForType($propertyName, 'date', $rawValue);
         }
 
-        if (! $rawValue instanceof \DateTimeInterface) {
-            $rawValue = new \DateTimeImmutable($rawValue);
+        if (! $rawValue instanceof DateTimeInterface) {
+            $rawValue = new DateTimeImmutable($rawValue);
         }
 
         return new DateValue($propertyName, $rawValue);
     }
 
-    /**
-     * @return string
-     */
     public function toString(): string
     {
         return 'date';

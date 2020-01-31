@@ -5,6 +5,7 @@ namespace Star\Component\Document\Design\Domain\Model\Constraints;
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
+use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\Types\NullType;
 
 final class AllTest extends TestCase
@@ -27,7 +28,7 @@ final class AllTest extends TestCase
             ->method('validate');
 
         $constraint->validate(
-            PropertyDefinition::fromString('name', NullType::class),
+            new PropertyDefinition(PropertyName::fromString('name'), new NullType()),
             'test'
         );
     }

@@ -19,20 +19,20 @@ final class CreateDocumentHandlerTest extends TestCase
      */
     private $documents;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->handler = new CreateDocumentHandler(
             $this->documents = new DocumentCollection()
         );
     }
 
-    public function test_it_create_a_draft_document()
+    public function test_it_create_a_draft_document(): void
     {
         $this->assertCount(0, $this->documents);
-        $id = new DocumentId('id');
+        $id = DocumentId::fromString('id');
 
         $handler = $this->handler;
-        $handler(CreateDocument::fromString($id->toString()));
+        $handler(new CreateDocument($id));
 
         $this->assertCount(1, $this->documents);
         $document = $this->documents->getDocumentByIdentity($id);

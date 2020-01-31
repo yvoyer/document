@@ -8,7 +8,7 @@ interface DocumentRecord extends ReadOnlyRecord
      * @param string $propertyName
      * @param mixed $rawValue
      */
-    public function setValue(string $propertyName, $rawValue);
+    public function setValue(string $propertyName, $rawValue): void;
 
     /**
      * @param string $propertyName
