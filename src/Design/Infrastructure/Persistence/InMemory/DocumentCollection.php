@@ -14,12 +14,16 @@ final class DocumentCollection implements DocumentRepository, \Countable
      */
     private $documents = [];
 
-    /**
-     * @param DocumentId $id
-     *
-     * @return DocumentDesigner
-     * @throws EntityNotFoundException
-     */
+    public function __construct(DocumentDesigner ...$documents)
+    {
+        \array_map(
+            function (DocumentDesigner $document) {
+                $this->saveDocument($document->getIdentity(), $document);
+            },
+            $documents
+        );
+    }
+
     public function getDocumentByIdentity(DocumentId $id): DocumentDesigner
     {
         if (! isset($this->documents[$id->toString()])) {

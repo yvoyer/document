@@ -3,6 +3,8 @@
 namespace Star\Component\Document\Design\Domain\Model;
 
 use Star\Component\Document\Design\Domain\Exception\InvalidPropertyConstraint;
+use Star\Component\Document\Design\Domain\Model\Transformation\TransformerFactory;
+use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 
 final class PropertyDefinition
 {
@@ -20,6 +22,11 @@ final class PropertyDefinition
      * @var PropertyConstraint[]
      */
     private $constraints = [];
+
+    /**
+     * @var TransformerIdentifier[]
+     */
+    private $transformers = [];
 
     public function __construct(PropertyName $name, PropertyType $type)
     {
@@ -67,6 +74,34 @@ final class PropertyDefinition
         return $this->constraints[$name];
     }
 
+    public function addTransformer(TransformerIdentifier $identifier): PropertyDefinition
+    {
+        $new = new self($this->getName(), $this->getType());
+        $new->transformers[$identifier->toString()] = $identifier;
+
+        return $this->merge($new);
+    }
+
+    public function hasTransformer(TransformerIdentifier $identifier): bool
+    {
+        return \array_key_exists($identifier->toString(), $this->transformers);
+    }
+
+    /**
+     * @param mixed $rawValue
+     * @param TransformerFactory $factory
+     *
+     * @return mixed
+     */
+    public function transformValue($rawValue, TransformerFactory $factory)
+    {
+        foreach ($this->transformers as $id) {
+            $rawValue = $factory->createTransformer($id)->transform($rawValue);
+        }
+
+        return $rawValue;
+    }
+
     /**
      * @param mixed $rawValue
      */
@@ -92,6 +127,7 @@ final class PropertyDefinition
     {
         $new = new self($this->name, $this->type);
         $new->constraints = array_merge($this->constraints, $definition->constraints);
+        $new->transformers = array_merge($this->transformers, $definition->transformers);
 
         return $new;
     }

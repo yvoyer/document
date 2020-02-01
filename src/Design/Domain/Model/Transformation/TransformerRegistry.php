@@ -12,31 +12,18 @@ final class TransformerRegistry implements TransformerFactory
      */
     private $transformers = [];
 
-    /**
-     * @param string $transformer
-     *
-     * @return ValueTransformer
-     * @throws NotFoundTransformer
-     */
-    public function createTransformer(string $transformer): ValueTransformer
+    public function createTransformer(TransformerIdentifier $id): ValueTransformer
     {
-        if (! $this->isRegistered($transformer)) {
-            throw new NotFoundTransformer(
-                sprintf('Transformer "%s" was not found.', $transformer)
-            );
+        if (! $this->transformerExists($id)) {
+            throw new NotFoundTransformer($id);
         }
 
-        return $this->transformers[$transformer];
+        return $this->transformers[$id->toString()];
     }
 
-    /**
-     * @param string $id
-     * @param ValueTransformer $transformer
-     * @throws DuplicateTransformer
-     */
-    public function registerTransformer(string $id, ValueTransformer $transformer)
+    public function registerTransformer(string $id, ValueTransformer $transformer): void
     {
-        if ($this->isRegistered($id)) {
+        if ($this->transformerExists(TransformerIdentifier::fromString($id))) {
             throw new DuplicateTransformer(
                 sprintf('Transformer "%s" is already registered.', $id)
             );
@@ -45,13 +32,8 @@ final class TransformerRegistry implements TransformerFactory
         $this->transformers[$id] = $transformer;
     }
 
-    /**
-     * @param string $transformer
-     *
-     * @return bool
-     */
-    private function isRegistered(string $transformer): bool
+    public function transformerExists(TransformerIdentifier $identifier): bool
     {
-        return array_key_exists($transformer, $this->transformers);
+        return array_key_exists($identifier->toString(), $this->transformers);
     }
 }

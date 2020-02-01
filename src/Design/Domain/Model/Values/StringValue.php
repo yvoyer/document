@@ -16,11 +16,7 @@ final class StringValue implements PropertyValue
      */
     private $value;
 
-    /**
-     * @param string $property
-     * @param string $value
-     */
-    public function __construct(string $property, string $value)
+    private function __construct(string $property, string $value)
     {
         $this->property = $property;
         $this->value = $value;
@@ -42,5 +38,10 @@ final class StringValue implements PropertyValue
     public function toString(): string
     {
         return $this->value;
+    }
+
+    public static function fromString(string $property, string $value): self
+    {
+        return new self($property, $value);
     }
 }

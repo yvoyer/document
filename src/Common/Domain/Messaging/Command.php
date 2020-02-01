@@ -2,6 +2,6 @@
 
 namespace Star\Component\Document\Common\Domain\Messaging;
 
-interface Command
+interface Command extends \Star\Component\DomainEvent\Messaging\Command
 {
 }

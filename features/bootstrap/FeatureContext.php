@@ -1,15 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Star\Component\Document;
 
 use Assert\Assertion;
 use Behat\Behat\Context\Context;
+use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
 use PHPUnit\Framework\Assert;
 use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
-use Star\Component\Document\Common\Domain\Messaging\Command;
-use Star\Component\Document\Common\Domain\Messaging\CommandBus;
 use Star\Component\Document\Common\Domain\Messaging\Query;
 use Star\Component\Document\Common\Domain\Messaging\QueryBus;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
@@ -21,21 +20,28 @@ use Star\Component\Document\DataEntry\Domain\Messaging\Query\RecordRow;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
 use Star\Component\Document\DataEntry\Infrastructure\Port\DocumentDesignerToSchema;
+use Star\Component\Document\Design\Domain\Messaging\Command\AddValueTransformerOnProperty;
+use Star\Component\Document\Design\Domain\Messaging\Command\AddValueTransformerOnPropertyHandler;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddPropertyConstraint;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddPropertyConstraintHandler;
-use Star\Component\Document\Design\Domain\Messaging\Command\AddValueTransformer;
-use Star\Component\Document\Design\Domain\Messaging\Command\AddValueTransformerHandler;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocument;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocumentHandler;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateProperty;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreatePropertyHandler;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\ReadOnlyDocument;
+use Star\Component\Document\Design\Domain\Model\Transformation\ArrayTransformer;
+use Star\Component\Document\Design\Domain\Model\Transformation\DateTimeToString;
+use Star\Component\Document\Design\Domain\Model\Transformation\StringToDateTime;
+use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
+use Star\Component\Document\Design\Domain\Model\Transformation\TransformerRegistry;
 use Star\Component\Document\Design\Domain\Model\Types;
 use Star\Component\Document\Design\Domain\Model\Values\ListOptionValue;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
 use Star\Component\Document\Tools\DocumentBuilder;
+use Star\Component\DomainEvent\Messaging\CommandBus;
+use Star\Component\DomainEvent\Messaging\MessageMapBus;
 
 /**
  * Defines application features from the specific context.
@@ -58,6 +64,11 @@ class FeatureContext implements Context
     private $queries;
 
     /**
+     * @var TransformerRegistry
+     */
+    private $factory;
+
+    /**
      * Initializes context.
      *
      * Every scenario gets its own context instance.
@@ -68,50 +79,22 @@ class FeatureContext implements Context
     {
         $records = new RecordCollection();
         $this->documents = new DocumentCollection();
-        $transformers = new TransformerRegistry();
-        $handlers = [
-            new CreateDocumentHandler($this->documents),
-            new CreatePropertyHandler($this->documents),
-            new AddPropertyConstraintHandler($this->documents),
-            new SetRecordValueHandler($records, new DocumentDesignerToSchema($this->documents)),
-            new AddValueTransformerHandler($this->documents, $transformers)
-        ];
+        $this->factory = new TransformerRegistry();
 
-        $this->bus = new class($handlers) implements CommandBus {
-            /**
-             * @var callable[]
-             */
-            private $handlers;
-
-            /**
-             * @param callable[] $handlers
-             */
-            public function __construct(array $handlers)
-            {
-                array_map(
-                    function ($handler) {
-                        $command = str_replace('Handler', '', get_class($handler));
-                        $this->handlers[$command] = $handler;
-                    },
-                    $handlers
-                );
-            }
-
-            public function handleCommand(Command $command): void
-            {
-                $class = get_class($command);
-                if (! isset($this->handlers[$class])) {
-                    throw new \RuntimeException('Handler for class ' . get_class($command) . ' is not implemented yet.');
-                }
-
-                $handler = $this->handlers[$class];
-                Assertion::true(
-                    is_callable($handler),
-                    sprintf('Command handler "%s" must be invokable.', $class)
-                );
-                $handler($command);
-            }
-        };
+        $this->bus = new MessageMapBus();
+        $this->bus->registerHandler(CreateDocument::class, new CreateDocumentHandler($this->documents));
+        $this->bus->registerHandler(CreateProperty::class, new CreatePropertyHandler($this->documents));
+        $this->bus->registerHandler(
+            AddPropertyConstraint::class, new AddPropertyConstraintHandler($this->documents)
+        );
+        $this->bus->registerHandler(
+            SetRecordValue::class,
+            new SetRecordValueHandler($records, new DocumentDesignerToSchema($this->documents, $this->factory))
+        );
+        $this->bus->registerHandler(
+            AddValueTransformerOnProperty::class,
+            new AddValueTransformerOnPropertyHandler($this->factory, $this->documents)
+        );
 
         $queries = [
             new GetAllRecordsOfDocumentHandler($records),
@@ -201,20 +184,30 @@ class FeatureContext implements Context
     }
 
     /**
-     * @Given The document :arg1 is created with a formatted date property named :arg2:
+     * @Given The date transformer with id :arg1 is registered with format :arg2
      */
-    public function theDocumentIsCreatedWithAFormattedDatePropertyNamed(
-        string $documentId, string $property, TableNode $table
-    ) {
+    public function theDateTransformerWithIdIsRegisteredWithFormat($identifier, $format)
+    {
+        $this->factory->registerTransformer(
+            $identifier,
+            new ArrayTransformer(new StringToDateTime(), new DateTimeToString($format))
+        );
+    }
+
+    /**
+     * @Given The property :arg1 in document :arg2 is configured with format :arg3
+     */
+    public function thePropertyInDocumentIsConfiguredWithFormat($property, $documentId, $format)
+    {
         $this->iCreateADocumentNamed($documentId);
         $this->iCreateADateFieldNamedInDocument($property, $documentId);
-        foreach ($table->getHash() as $info) {
-            $name = $info['name'];
-            $format = $info['format'];
-            $this->bus->handleCommand(
-                new AddValueTransformer($property, $name, $format)
-            );
-        }
+        $this->bus->dispatchCommand(
+            new AddValueTransformerOnProperty(
+                DocumentId::fromString($documentId),
+                PropertyName::fromString($property),
+                TransformerIdentifier::fromString($format)
+            )
+        );
     }
 
     /**
@@ -243,7 +236,7 @@ class FeatureContext implements Context
      */
     public function iCreateADocumentNamed(string $documentId)
     {
-        $this->bus->handleCommand(new CreateDocument(DocumentId::fromString($documentId)));
+        $this->bus->dispatchCommand(new CreateDocument(DocumentId::fromString($documentId)));
     }
 
     /**
@@ -251,7 +244,7 @@ class FeatureContext implements Context
      */
     public function iCreateATextFieldNamedInDocument(string $property, string $documentId)
     {
-        $this->bus->handleCommand(
+        $this->bus->dispatchCommand(
             new CreateProperty(
                 DocumentId::fromString($documentId),
                 PropertyName::fromString($property),
@@ -265,7 +258,7 @@ class FeatureContext implements Context
      */
     public function iCreateABooleanFieldNamedInDocument(string $property, string $documentId)
     {
-        $this->bus->handleCommand(
+        $this->bus->dispatchCommand(
             new CreateProperty(
                 DocumentId::fromString($documentId),
                 PropertyName::fromString($property),
@@ -279,7 +272,7 @@ class FeatureContext implements Context
      */
     public function iCreateADateFieldNamedInDocument(string $property, string $documentId)
     {
-        $this->bus->handleCommand(
+        $this->bus->dispatchCommand(
             new CreateProperty(
                 DocumentId::fromString($documentId),
                 PropertyName::fromString($property),
@@ -293,7 +286,7 @@ class FeatureContext implements Context
      */
     public function iCreateANumberFieldNamedInDocument(string $property, string $documentId)
     {
-        $this->bus->handleCommand(
+        $this->bus->dispatchCommand(
             new CreateProperty(
                 DocumentId::fromString($documentId),
                 PropertyName::fromString($property),
@@ -325,7 +318,7 @@ class FeatureContext implements Context
             )
         );
 
-        $this->bus->handleCommand(
+        $this->bus->dispatchCommand(
             new CreateProperty(
                 DocumentId::fromString($documentId),
                 PropertyName::fromString($property),
@@ -358,7 +351,7 @@ class FeatureContext implements Context
      */
     public function iMarkThePropertyAsRequiredOnTheDocument(string $fieldId, string $documentId)
     {
-        $this->bus->handleCommand(
+        $this->bus->dispatchCommand(
             new AddPropertyConstraint(
                 DocumentId::fromString($documentId),
                 PropertyName::fromString($fieldId),
@@ -373,7 +366,7 @@ class FeatureContext implements Context
      */
     public function iMarkThePropertyAsSingleOptionOnTheDocument(string $fieldId, string $documentId)
     {
-        $this->bus->handleCommand(
+        $this->bus->dispatchCommand(
             new AddPropertyConstraint(
                 DocumentId::fromString($documentId),
                 PropertyName::fromString($fieldId),
@@ -389,7 +382,7 @@ class FeatureContext implements Context
     public function iEnterTheFollowingValuesToDocument(string $documentId, TableNode $table)
     {
         foreach ($table->getHash() as $data) {
-            $this->bus->handleCommand(
+            $this->bus->dispatchCommand(
                 new SetRecordValue(
                     DocumentId::fromString($documentId),
                     new RecordId($data['record-id']),
@@ -428,7 +421,7 @@ class FeatureContext implements Context
             Assert::assertSame(
                 $expected[$key]['value'],
                 $row->getValue($expected[$key]['property']),
-                'Property value not as expected'
+                \sprintf('Value of property "%s" is not as expected', $expected[$key]['property'])
             );
         }
     }

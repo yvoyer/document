@@ -2,12 +2,16 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Transformation;
 
+use Star\Component\Document\Design\Domain\Exception\NotFoundTransformer;
+
 interface TransformerFactory
 {
     /**
-     * @param string $transformer
-     *
+     * @param TransformerIdentifier $identifier
      * @return ValueTransformer
+     * @throws NotFoundTransformer
      */
-    public function createTransformer(string $transformer): ValueTransformer;
+    public function createTransformer(TransformerIdentifier $identifier): ValueTransformer;
+
+    public function transformerExists(TransformerIdentifier $identifier): bool;
 }

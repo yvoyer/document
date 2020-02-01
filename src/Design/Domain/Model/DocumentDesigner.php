@@ -2,6 +2,8 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
+use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
+
 interface DocumentDesigner extends ReadOnlyDocument
 {
     public function publish(): void;
@@ -17,6 +19,8 @@ interface DocumentDesigner extends ReadOnlyDocument
         string $constraintName,
         PropertyConstraint $constraint
     ): void;
+
+    public function addPropertyTransformer(PropertyName $property, TransformerIdentifier $identifier): void;
 
     public function setDocumentConstraint(DocumentConstraint $constraint): void;
 

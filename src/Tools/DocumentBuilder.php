@@ -5,9 +5,9 @@ namespace Star\Component\Document\Tools;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\RecordAggregate;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Infrastructure\Port\DesignToDataEntry;
 use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
-use Star\Component\Document\DataEntry\Infrastructure\Port\DesignToDataEntry;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\DocumentDesignerAggregate;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
@@ -30,13 +30,10 @@ final class DocumentBuilder
     private $document;
 
     /**
-     * @var TransformerFactory
+     * @var TransformerRegistry
      */
     private $factory;
 
-    /**
-     * @param DocumentId $id
-     */
     private function __construct(DocumentId $id)
     {
         $this->id = $id;
@@ -77,10 +74,6 @@ final class DocumentBuilder
                 )
             )
         );
-        $definition = new PropertyDefinition($name, new Types\CustomListType($options));
-        $this->document->createProperty($definition);
-
-        return new PropertyBuilder($definition, $this->document, $this, $this->factory);
     }
 
     public function startRecord(string $recordId): RecordBuilder
@@ -108,7 +101,7 @@ final class DocumentBuilder
 
     private function loadProperty(PropertyName $name): PropertyBuilder
     {
-        return new PropertyBuilder($name, $this->document, $this);
+        return new PropertyBuilder($name, $this->document, $this, $this->factory);
     }
 
     private function createProperty(string $name, PropertyType $type): PropertyBuilder
@@ -120,7 +113,6 @@ final class DocumentBuilder
         );
 
         return $this->loadProperty($name);
-        return new PropertyBuilder($definition, $this->document, $this, $this->factory);
     }
 
     public static function constraints(): ConstraintBuilder

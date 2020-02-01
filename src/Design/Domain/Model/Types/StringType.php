@@ -24,7 +24,7 @@ final class StringType implements PropertyType
             throw InvalidPropertyValue::invalidValueForType($propertyName, 'string', $rawValue);
         }
 
-        return new StringValue($propertyName, $rawValue);
+        return StringValue::fromString($propertyName, $rawValue);
     }
 
     public function toString(): string

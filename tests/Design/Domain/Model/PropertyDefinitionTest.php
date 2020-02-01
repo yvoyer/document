@@ -3,6 +3,9 @@
 namespace Star\Component\Document\Design\Domain\Model;
 
 use PHPUnit\Framework\TestCase;
+use Star\Component\Document\Design\Domain\Model\Transformation\TransformerFactory;
+use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
+use Star\Component\Document\Design\Domain\Model\Transformation\ValueTransformer;
 use Star\Component\Document\Design\Domain\Model\Types\NullType;
 
 final class PropertyDefinitionTest extends TestCase
@@ -101,5 +104,33 @@ final class PropertyDefinitionTest extends TestCase
         $this->assertInstanceOf(PropertyDefinition::class, $new);
         $this->assertTrue($new->hasConstraint('const'));
         $this->assertSame($argumentConstraint, $new->getConstraint('const'));
+    }
+
+    public function test_it_should_contain_value_transformer()
+    {
+        $definition = new PropertyDefinition(PropertyName::fromString('name'), new NullType());
+        $factory = new class implements TransformerFactory {
+            public function createTransformer(TransformerIdentifier $transformer): ValueTransformer
+            {
+                return new class () implements ValueTransformer {
+                    public function transform($rawValue)
+                    {
+                        return 'transformed value';
+                    }
+                };
+            }
+
+            public function transformerExists(TransformerIdentifier $identifier): bool
+            {
+                throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+            }
+        };
+
+        $new = $definition->addTransformer(TransformerIdentifier::fromString('t1'));
+
+        $this->assertSame(
+            'transformed value',
+            $new->transformValue('raw', $factory)
+        );
     }
 }

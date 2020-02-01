@@ -21,10 +21,6 @@ final class DesignToDataEntry implements DocumentSchema
      */
     private $factory;
 
-    /**
-     * @param ReadOnlyDocument $document
-     * @param TransformerFactory $factory
-     */
     public function __construct(ReadOnlyDocument $document, TransformerFactory $factory)
     {
         $this->document = $document;
@@ -47,7 +43,8 @@ final class DesignToDataEntry implements DocumentSchema
      */
     public function createValue(string $propertyName, $rawValue): RecordValue
     {
-        $definition = $this->document->getPropertyDefinition(PropertyName::fromString($propertyName));
+        $name = PropertyName::fromString($propertyName);
+        $definition = $this->document->getPropertyDefinition($name);
         $definition->validateRawValue($rawValue);
         $type = $definition->getType();
 

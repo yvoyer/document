@@ -4,7 +4,6 @@ namespace Star\Component\Document\Design\Domain\Model\Types;
 
 use Star\Component\Document\Design\Domain\Exception\InvalidPropertyValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\Values\DateValue;
 
 final class DateTypeTest extends TypeTest
 {
@@ -48,23 +47,20 @@ final class DateTypeTest extends TypeTest
 
     public function test_it_should_set_as_text_value()
     {
-        $this->assertInstanceOf(
-            DateValue::class,
-            $value = $this->getType()->createValue('date', '2001-01-01')
+        $this->assertSame(
+            '2001-01-01',
+            $this->getType()->createValue('date', '2001-01-01')->toString()
         );
-        $this->assertSame('2001-01-01', $value->toString());
     }
 
     public function test_it_should_set_as_date_time_value()
     {
-        $this->assertInstanceOf(
-            DateValue::class,
-            $value = $this->getType()->createValue(
-                'date',
-                new \DateTimeImmutable('2002-02-05 12:34:56')
-            )
+        $this->assertSame(
+            '2002-02-05',
+            $this->getType()
+                ->createValue('date', new \DateTimeImmutable('2002-02-05 12:34:56'))
+                ->toString()
         );
-        $this->assertSame('2002-02-05', $value->toString());
     }
 
     public function test_it_should_throw_exception_when_invalid_date_format()
@@ -72,5 +68,18 @@ final class DateTypeTest extends TypeTest
         $this->expectException(InvalidPropertyValue::class);
         $this->expectExceptionMessage('The property "name" expected a "date" value, "sadsafjksbsadjn" given.');
         $this->getType()->createValue('name', 'sadsafjksbsadjn');
+    }
+
+    public function test_it_should_create_empty_value_when_null(): void
+    {
+        $this->assertSame('', $this->getType()->createValue('date', '')->toString());
+    }
+
+    public function test_it_should_create_string_value_when_string(): void
+    {
+        $this->assertSame(
+            'Feb',
+            $this->getType()->createValue('date', 'Feb')->toString()
+        );
     }
 }
