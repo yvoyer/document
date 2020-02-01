@@ -7,7 +7,7 @@ use Star\Component\Document\Design\Domain\Exception\InvalidPropertyValue;
 interface PropertyType
 {
     /**
-     * @param string $propertyName
+     * @param string $propertyName // todo Replace to PropertyName
      * @param mixed $rawValue
      *
      * @return PropertyValue

@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Application\Port;
+namespace Star\Component\Document\DataEntry\Infrastructure\Port;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentSchema;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\ReadOnlyDocument;
+use Star\Component\Document\Design\Domain\Model\Transformation\TransformerFactory;
 
-// todo rename to DefinitionSchema
-final class DesigningToDataEntry implements DocumentSchema
+final class DesignToDataEntry implements DocumentSchema
 {
     /**
      * @var ReadOnlyDocument
@@ -17,11 +17,14 @@ final class DesigningToDataEntry implements DocumentSchema
     private $document;
 
     /**
-     * @param ReadOnlyDocument $document
+     * @var TransformerFactory
      */
-    public function __construct(ReadOnlyDocument $document)
+    private $factory;
+
+    public function __construct(ReadOnlyDocument $document, TransformerFactory $factory)
     {
         $this->document = $document;
+        $this->factory = $factory;
     }
 
     /**
@@ -40,10 +43,14 @@ final class DesigningToDataEntry implements DocumentSchema
      */
     public function createValue(string $propertyName, $rawValue): RecordValue
     {
-        $definition = $this->document->getPropertyDefinition(PropertyName::fromString($propertyName));
+        $name = PropertyName::fromString($propertyName);
+        $definition = $this->document->getPropertyDefinition($name);
         $definition->validateRawValue($rawValue);
         $type = $definition->getType();
 
-        return $type->createValue($propertyName, $rawValue);
+        return $type->createValue(
+            $propertyName,
+            $definition->transformValue($rawValue, $this->factory)
+        );
     }
 }

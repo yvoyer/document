@@ -6,6 +6,8 @@ use Star\Component\Document\Design\Domain\Model\Constraints\RequiresValue;
 use Star\Component\Document\Design\Domain\Model\Constraints\RequiresSingleOption;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\Transformation\TransformerRegistry;
+use Star\Component\Document\Design\Domain\Model\Transformation\ValueTransformer;
 
 final class PropertyBuilder
 {
@@ -24,14 +26,21 @@ final class PropertyBuilder
      */
     private $builder;
 
+    /**
+     * @var TransformerRegistry
+     */
+    private $factory;
+
     public function __construct(
         PropertyName $name,
         DocumentDesigner $document,
-        DocumentBuilder $builder
+        DocumentBuilder $builder,
+        TransformerRegistry $factory
     ) {
         $this->name = $name;
         $this->document = $document;
         $this->builder = $builder;
+        $this->factory = $factory;
     }
 
     public function required(): self
@@ -56,8 +65,20 @@ final class PropertyBuilder
         return $this;
     }
 
+    public function withTransformer(ValueTransformer $transformer): self
+    {
+        $this->factory->registerTransformer(\get_class($transformer), $transformer);
+
+        return $this;
+    }
+
     public function endProperty(): DocumentBuilder
     {
         return $this->builder;
+    }
+
+    public function buildDocument(): DocumentDesigner
+    {
+        return $this->builder->getDocument();
     }
 }

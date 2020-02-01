@@ -69,3 +69,48 @@ Feature: Enter values on document using property rules
       | 1         | My list   |                            |
       | 2         | My list   | Option 1                   |
       | 3         | My list   | Option 1;Option 2;Option 3 |
+
+  Scenario: Enter a date value to be outputed as year format
+    Given The date transformer with id "year" is registered with format "Y-m-d"
+    And The document "My document" is created with a date property named "My date"
+    And The property "My date" in document "My document" is configured with format "year"
+    When I enter the following values to document "My document"
+      | record-id | property | value               |
+      | 1         | My date  |                     |
+      | 2         | My date  | 2002-12-01 12:34:56 |
+      | 3         | My date  | 2000-02-29          |
+    Then The records list of document the "My document" should looks like:
+      | record-id | property | value      |
+      | 1         | My date  |            |
+      | 2         | My date  | 2002-12-01 |
+      | 3         | My date  | 2000-02-29 |
+
+  Scenario: Enter a date value to be outputed as month format
+    Given The date transformer with id "month" is registered with format "F"
+    And The document "My document" is created with a date property named "My date"
+    And The property "My date" in document "My document" is configured with format "month"
+    When I enter the following values to document "My document"
+      | record-id | property | value               |
+      | 1         | My date  |                     |
+      | 2         | My date  | 2002-12-01 12:34:56 |
+      | 3         | My date  | 2000-02-29          |
+    Then The records list of document the "My document" should looks like:
+      | record-id | property | value    |
+      | 1         | My date  |          |
+      | 2         | My date  | December |
+      | 3         | My date  | February |
+
+  Scenario: Enter a date value to be outputed as time format
+    Given The date transformer with id "time" is registered with format "H:i:s"
+    And The document "My document" is created with a date property named "My date"
+    And The property "My date" in document "My document" is configured with format "time"
+    When I enter the following values to document "My document"
+      | record-id | property | value               |
+      | 1         | My date  |                     |
+      | 2         | My date  | 2002-12-01 12:34:56 |
+      | 3         | My date  | 2000-02-29          |
+    Then The records list of document the "My document" should looks like:
+      | record-id | property | value    |
+      | 1         | My date  |          |
+      | 2         | My date  | 12:34:56 |
+      | 3         | My date  | 00:00:00 |

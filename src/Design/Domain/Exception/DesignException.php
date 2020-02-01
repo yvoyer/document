@@ -8,4 +8,6 @@ interface DesignException
     const TOO_MANY_VALUES = 3;
     const EMPTY_REQUIRED_VALUE = 4;
     const INVALID_PROPERTY_CONSTRAINT = 6;
+    const NOT_FOUND_TRANSFORMER = 7;
+    const DUPLICATE_TRANNSFORMER = 8;
 }

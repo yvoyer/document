@@ -8,6 +8,7 @@ use Star\Component\Document\Design\Domain\Exception\InvalidPropertyValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\PropertyValue;
 use Star\Component\Document\Design\Domain\Model\Values\DateValue;
+use Star\Component\Document\Design\Domain\Model\Values\StringValue;
 
 final class DateType implements PropertyType
 {
@@ -43,8 +44,8 @@ final class DateType implements PropertyType
             throw InvalidPropertyValue::invalidValueForType($propertyName, 'date', $rawValue);
         }
 
-        if (! $rawValue instanceof DateTimeInterface) {
-            $rawValue = new DateTimeImmutable($rawValue);
+        if (\is_string($rawValue)) {
+            return StringValue::fromString($propertyName, $rawValue);
         }
 
         return new DateValue($propertyName, $rawValue);

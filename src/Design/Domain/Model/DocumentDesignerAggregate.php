@@ -4,6 +4,7 @@ namespace Star\Component\Document\Design\Domain\Model;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Exception\ReferencePropertyNotFound;
+use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
 use Star\Component\Document\Design\Domain\Model\Events;
 use Star\Component\DomainEvent\AggregateRoot;
@@ -50,14 +51,12 @@ final class DocumentDesignerAggregate extends AggregateRoot implements DocumentD
         string $constraintName,
         PropertyConstraint $constraint
     ): void {
-        foreach ($this->properties as $key => $property) {
-            if ($property->matchName($name)) {
-                $property->addConstraint($constraintName, $constraint);
-                return;
-            }
-        }
+        $this->getProperty($name)->addConstraint($constraintName, $constraint);
+    }
 
-        throw new ReferencePropertyNotFound($name);
+    public function addPropertyTransformer(PropertyName $property, TransformerIdentifier $identifier): void
+    {
+        $this->mutate(new Events\TransformerAddedOnProperty($this->getIdentity(), $property, $identifier));
     }
 
     public function setDocumentConstraint(DocumentConstraint $constraint): void
@@ -65,21 +64,9 @@ final class DocumentDesignerAggregate extends AggregateRoot implements DocumentD
         $this->mutate(new Events\DocumentConstraintRegistered($this->getIdentity(), $constraint));
     }
 
-    protected function onDocumentConstraintRegistered(Events\DocumentConstraintRegistered $event): void
-    {
-        $this->constraints = $event->constraint();
-    }
-
     public function removeConstraint(PropertyName $name, string $constraintName): void
     {
-        foreach ($this->properties as $key => $property) {
-            if ($property->matchName($name)) {
-                $property->removeConstraint($constraintName);
-                return;
-            }
-        }
-
-        throw new ReferencePropertyNotFound($name);
+        $this->getProperty($name)->removeConstraint($constraintName);
     }
 
     public function isPublished(): bool
@@ -89,13 +76,7 @@ final class DocumentDesignerAggregate extends AggregateRoot implements DocumentD
 
     public function getPropertyDefinition(PropertyName $name): PropertyDefinition
     {
-        foreach ($this->properties as $property) {
-            if ($property->matchName($name)) {
-                return $property->getDefinition();
-            }
-        }
-
-        throw new ReferencePropertyNotFound($name);
+        return $this->getProperty($name)->getDefinition();
     }
 
     public function acceptDocumentVisitor(DocumentVisitor $visitor): void
@@ -126,7 +107,31 @@ final class DocumentDesignerAggregate extends AggregateRoot implements DocumentD
         $definition = new PropertyDefinition($event->name(), $event->type());
         $property = new DocumentProperty($this, $definition);
 
-        $this->properties[] = $property;
+        $this->properties[$event->name()->toString()] = $property;
+    }
+
+    protected function onTransformerAddedOnProperty(Events\TransformerAddedOnProperty $event): void
+    {
+        $this->getProperty($event->property())->addTransformer($event->identifier());
+    }
+
+    protected function onDocumentConstraintRegistered(Events\DocumentConstraintRegistered $event): void
+    {
+        $this->constraints = $event->constraint();
+    }
+
+    private function getProperty(PropertyName $name): DocumentProperty
+    {
+        if (! $this->hasProperty($name)) {
+            throw new ReferencePropertyNotFound($name);
+        }
+
+        return $this->properties[$name->toString()];
+    }
+
+    private function hasProperty(PropertyName $name): bool
+    {
+        return \array_key_exists($name->toString(), $this->properties);
     }
 
     public static function draft(DocumentId $id): self
