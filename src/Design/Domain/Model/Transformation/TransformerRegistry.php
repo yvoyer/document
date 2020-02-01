@@ -2,9 +2,6 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Transformation;
 
-use Star\Component\Document\Design\Domain\Exception\DuplicateTransformer;
-use Star\Component\Document\Design\Domain\Exception\NotFoundTransformer;
-
 final class TransformerRegistry implements TransformerFactory
 {
     /**

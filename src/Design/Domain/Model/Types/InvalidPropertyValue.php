@@ -1,17 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Design\Domain\Exception;
+namespace Star\Component\Document\Design\Domain\Model\Types;
 
-final class InvalidPropertyValue extends \InvalidArgumentException implements DesignException
+final class InvalidPropertyValue extends \InvalidArgumentException
 {
-    /**
-     * @param string $message
-     */
-    public function __construct(string $message)
-    {
-        parent::__construct($message, self::INVALID_PROPERTY_VALUE);
-    }
-
     /**
      * @param string $propertyName
      * @param string $type

@@ -2,8 +2,6 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
-use Star\Component\Document\Design\Domain\Exception\InvalidPropertyValue;
-
 interface PropertyType
 {
     /**
@@ -11,7 +9,6 @@ interface PropertyType
      * @param mixed $rawValue
      *
      * @return PropertyValue
-     * @throws InvalidPropertyValue
      */
     public function createValue(string $propertyName, $rawValue): PropertyValue;
 

@@ -2,19 +2,21 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
-use Star\Component\Document\Design\Domain\Exception\EmptyRequiredValue;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
-use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
+use Star\Component\Document\Design\Domain\Model\PropertyName;
 
 final class RequiresValue implements PropertyConstraint
 {
-    public function validate(PropertyDefinition $definition, $value): void
+    public function validate(PropertyName $name, $value, ErrorList $errors): void
     {
         if (empty($value)) {
-            throw new EmptyRequiredValue(
-                sprintf(
+            $errors->addError(
+                $name->toString(),
+                'en',
+                \sprintf(
                     'Property named "%s" is required, but empty value given.',
-                    $definition->getName()->toString()
+                    $name->toString()
                 )
             );
         }

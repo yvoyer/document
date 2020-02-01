@@ -18,6 +18,7 @@ use Star\Component\Document\DataEntry\Domain\Messaging\Query\GetAllRecordsOfDocu
 use Star\Component\Document\DataEntry\Domain\Messaging\Query\GetAllRecordsOfDocumentHandler;
 use Star\Component\Document\DataEntry\Domain\Messaging\Query\RecordRow;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\ValidationFailedForProperty;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
 use Star\Component\Document\DataEntry\Infrastructure\Port\DocumentDesignerToSchema;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddValueTransformerOnProperty;
@@ -67,6 +68,11 @@ class FeatureContext implements Context
      * @var TransformerRegistry
      */
     private $factory;
+
+    /**
+     * @var string[][]
+     */
+    private $errors = [];
 
     /**
      * Initializes context.
@@ -347,6 +353,30 @@ class FeatureContext implements Context
     }
 
     /**
+     * @When I mark the property :arg1 of document :arg2 with constraints:
+     */
+    public function iMarkThePropertyOfDocumentWithConstraints(string $property, string $document, TableNode $table)
+    {
+        $rows = $table->getHash();
+        Assert::assertGreaterThan(0, \count($rows));
+        $documentId = DocumentId::fromString($document);
+        $propertyName = PropertyName::fromString($property);
+        foreach($rows as $row) {
+            $name = $row['name'];
+            $value = \explode(';', $row['value']);
+
+            $this->bus->dispatchCommand(
+                new AddPropertyConstraint(
+                    $documentId,
+                    $propertyName,
+                    $name,
+                    DocumentBuilder::constraints()->fromString($name, $value)
+                )
+            );
+        }
+    }
+
+    /**
      * @When I mark the property :arg1 as required on the document :arg2
      */
     public function iMarkThePropertyAsRequiredOnTheDocument(string $fieldId, string $documentId)
@@ -382,14 +412,23 @@ class FeatureContext implements Context
     public function iEnterTheFollowingValuesToDocument(string $documentId, TableNode $table)
     {
         foreach ($table->getHash() as $data) {
-            $this->bus->dispatchCommand(
-                new SetRecordValue(
-                    DocumentId::fromString($documentId),
-                    new RecordId($data['record-id']),
-                    $data['property'],
-                    $data['value']
-                )
-            );
+            $recordId = new RecordId($data['record-id']);
+            $property = $data['property'];
+
+            try {
+                $this->bus->dispatchCommand(
+                    new SetRecordValue(
+                        DocumentId::fromString($documentId),
+                        $recordId,
+                        $property,
+                        $data['value']
+                    )
+                );
+            } catch (ValidationFailedForProperty $exception) {
+                $propertyErrors = $exception->getErrors()->getErrorsForProperty($property, 'en');
+                Assert::assertCount(1, $propertyErrors);
+                $this->errors[$recordId->toString()][$property] = $propertyErrors[0];
+            }
         }
     }
 
@@ -473,6 +512,22 @@ class FeatureContext implements Context
                     ->getPropertyDefinition(PropertyName::fromString($property))
                     ->hasConstraint($options['constraint'])
             );
+        }
+    }
+
+    /**
+     * @Then The record entry should have failed:
+     */
+    public function theRecordsOfDocumentShouldHaveFailed(TableNode $table)
+    {
+        foreach ($table as $row) {
+            $recordId = $row['record-id'];
+            $property = $row['property'];
+            Assert::assertArrayHasKey($recordId, $this->errors);
+            $recordErrors = $this->errors[$recordId];
+            Assert::assertArrayHasKey($property, $recordErrors);
+            $propertyErrors = $recordErrors[$property];
+            Assert::assertSame($row['message'], $propertyErrors);
         }
     }
 }

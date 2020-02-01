@@ -5,6 +5,7 @@ namespace Star\Component\Document\DataEntry\Domain\Messaging\Command;
 use Star\Component\Document\DataEntry\Domain\Model\RecordAggregate;
 use Star\Component\Document\DataEntry\Domain\Model\RecordRepository;
 use Star\Component\Document\DataEntry\Domain\Model\SchemaFactory;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\AlwaysThrowExceptionOnValidationErrors;
 
 final class SetRecordValueHandler
 {
@@ -33,7 +34,11 @@ final class SetRecordValueHandler
             $record = new RecordAggregate($recordId, $this->factory->createSchema($command->documentId()));
         }
 
-        $record->setValue($command->property(), $command->value());
+        $record->setValue(
+            $command->property(),
+            $command->value(),
+            new AlwaysThrowExceptionOnValidationErrors()
+        );
 
         $this->records->saveRecord($recordId, $record);
     }

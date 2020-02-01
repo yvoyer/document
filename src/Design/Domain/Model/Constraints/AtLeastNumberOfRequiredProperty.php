@@ -8,7 +8,6 @@ use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\DocumentProperty;
 use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
-use Star\Component\Document\Design\Domain\Model\Exceptions\MissingRequiredProperty;
 use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
 
 final class AtLeastNumberOfRequiredProperty implements DocumentVisitor, DocumentConstraint

@@ -4,7 +4,6 @@ namespace Star\Component\Document\Design\Domain\Model;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Exception\ReferencePropertyNotFound;
 use Star\Component\Document\Design\Domain\Model\Constraints;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 use Star\Component\Document\Design\Domain\Model\Types\NullType;

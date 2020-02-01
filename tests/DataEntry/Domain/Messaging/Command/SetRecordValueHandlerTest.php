@@ -8,6 +8,7 @@ use Star\Component\Document\DataEntry\Domain\Model\AlwaysReturnSchema;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
 use Star\Component\Document\DataEntry\Domain\Model\RecordAggregate;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleValidationErrors;
 use Star\Component\Document\DataEntry\Domain\Stub\StubSchema;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
 
@@ -76,7 +77,11 @@ final class SetRecordValueHandlerTest extends TestCase
     {
         $recordId = new RecordId('r1');
         $record = new RecordAggregate($recordId, StubSchema::allOptional());
-        $record->setValue('name', 'old-value');
+        $record->setValue(
+            'name',
+            'old-value',
+            $this->createMock(StrategyToHandleValidationErrors::class)
+        );
         $this->records->saveRecord($recordId, $record);
         $this->assertCount(1, $this->records);
 

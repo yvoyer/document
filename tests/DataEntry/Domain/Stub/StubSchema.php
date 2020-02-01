@@ -5,6 +5,7 @@ namespace Star\Component\Document\DataEntry\Domain\Stub;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentSchema;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleValidationErrors;
 
 final class StubSchema implements DocumentSchema
 {
@@ -35,11 +36,15 @@ final class StubSchema implements DocumentSchema
     /**
      * @param string $propertyName
      * @param mixed $rawValue
+     * @param StrategyToHandleValidationErrors $strategy
      *
      * @return RecordValue
      */
-    public function createValue(string $propertyName, $rawValue): RecordValue
-    {
+    public function createValue(
+        string $propertyName,
+        $rawValue,
+        StrategyToHandleValidationErrors $strategy
+    ): RecordValue {
         return new class($rawValue) implements RecordValue
         {
             /**

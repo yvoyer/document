@@ -16,12 +16,10 @@ final class RecordBuilder
      */
     private $builder;
 
-    /**
-     * @param DocumentRecord $record
-     * @param DocumentBuilder $builder
-     */
-    public function __construct(DocumentRecord $record, DocumentBuilder $builder)
-    {
+    public function __construct(
+        DocumentRecord $record,
+        DocumentBuilder $builder
+    ) {
         $this->record = $record;
         $this->builder = $builder;
     }
@@ -34,7 +32,7 @@ final class RecordBuilder
      */
     public function setValue(string $property, $value): self
     {
-        $this->record->setValue($property, $value);
+        $this->record->setValue($property, $value, $this->builder->getErrorStrategyHandler());
 
         return $this;
     }

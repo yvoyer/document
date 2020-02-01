@@ -114,3 +114,64 @@ Feature: Enter values on document using property rules
       | 1         | My date  |          |
       | 2         | My date  | 12:34:56 |
       | 3         | My date  | 00:00:00 |
+
+  Scenario: Require a text field with a minimum length
+    Given The document "document" is created with a text property named "field"
+    When I mark the property "field" of document "document" with constraints:
+      | name           | value |
+      | minimum-length | 3     |
+    And I enter the following values to document "document"
+      | record-id | property | value |
+      | 1         | field    | ABCD  |
+      | 2         | field    | ABC   |
+      | 3         | field    | A     |
+      | 4         | field    |       |
+    Then The property "field" of document "document" should have the following definition:
+      | type   | constraint     | value |
+      | string | minimum-length | 3     |
+    And The records list of document the "document" should looks like:
+      | record-id | property | value |
+      | 1         | field    | ABCD  |
+      | 2         | field    | ABC   |
+    And The record entry should have failed:
+      | record-id | property | message |
+      | 3         | field    | Property "field" is too short, expected a minimum of 3 characters, "A" given. |
+      | 4         | field    | Property "field" is too short, expected a minimum of 3 characters, "" given. |
+
+  Scenario: Require a text field with maximum length
+    Given The document "document" is created with a text property named "field"
+    When I mark the property "field" of document "document" with constraints:
+      | name           | value |
+      | maximum-length | 3     |
+    And I enter the following values to document "document"
+      | record-id | property | value |
+      | 1         | field    | ABCD  |
+      | 2         | field    | ABC   |
+      | 3         | field    | A     |
+      | 4         | field    |       |
+    Then The records list of document the "document" should looks like:
+      | record-id | property | value |
+      | 2         | field    | ABC   |
+      | 3         | field    | A     |
+      | 4         | field    |       |
+    And The record entry should have failed:
+      | record-id | property | message |
+      | 1         | field    | Property "field" is too long, expected a maximum of 3 characters, "ABCD" given. |
+
+  Scenario: Require text field to have a format
+    Given The document "document" is created with a text property named "field"
+    When I mark the property "field" of document "document" with constraints:
+      | name  | value |
+      | regex | /\d+/ |
+    And I enter the following values to document "document"
+      | record-id | property | value |
+      | 1         | field    | 123   |
+      | 2         | field    | ABC   |
+      | 3         | field    |       |
+    Then The records list of document the "document" should looks like:
+      | record-id | property | value |
+      | 1         | field    | 123   |
+    And The record entry should have failed:
+      | record-id | property | message |
+      | 2         | field    | Value "ABC" do not match pattern "/\d+/". |
+      | 3         | field    | Value "" do not match pattern "/\d+/". |

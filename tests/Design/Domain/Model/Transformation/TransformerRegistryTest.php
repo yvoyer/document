@@ -3,8 +3,6 @@
 namespace Star\Component\Document\Design\Domain\Model\Transformation;
 
 use PHPUnit\Framework\TestCase;
-use Star\Component\Document\Design\Domain\Exception\DuplicateTransformer;
-use Star\Component\Document\Design\Domain\Exception\NotFoundTransformer;
 
 final class TransformerRegistryTest extends TestCase
 {

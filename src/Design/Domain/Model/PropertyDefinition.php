@@ -2,7 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
-use Star\Component\Document\Design\Domain\Exception\InvalidPropertyConstraint;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerFactory;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 
@@ -68,7 +68,7 @@ final class PropertyDefinition
     public function getConstraint(string $name): PropertyConstraint
     {
         if (! $this->hasConstraint($name)) {
-            throw new InvalidPropertyConstraint('The property "%s" do not have a constraint named "%s".');
+            throw new PropertyConstrainNotFound('The property "%s" do not have a constraint named "%s".');
         }
 
         return $this->constraints[$name];
@@ -104,12 +104,12 @@ final class PropertyDefinition
 
     /**
      * @param mixed $rawValue
+     * @param ErrorList $errors
      */
-    public function validateRawValue($rawValue): void
+    public function validateRawValue($rawValue, ErrorList $errors): void
     {
         foreach ($this->constraints as $constraint) {
-            // todo should allow to use different sttrategy for error handling
-            $constraint->validate($this, $rawValue);
+            $constraint->validate($this->name, $rawValue, $errors);
         }
     }
 

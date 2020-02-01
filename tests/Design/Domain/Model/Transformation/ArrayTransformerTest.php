@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 final class ArrayTransformerTest extends TestCase
 {
-    public function test_it_should_pass_the_raw_value_to_all_transformers()
+    public function test_it_should_pass_the_raw_value_to_all_transformers(): void
     {
         $transformer = new ArrayTransformer(
             $t1 = $this->createMock(ValueTransformer::class),
