@@ -3,14 +3,13 @@
 namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
 use PHPUnit\Framework\TestCase;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
-use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
-use Star\Component\Document\Design\Domain\Model\Types\NullType;
 
 final class AllTest extends TestCase
 {
-    public function test_it_should_validate_all_constraints()
+    public function test_it_should_validate_all_constraints(): void
     {
         $constraint = new All(
             $c1 = $this->createMock(PropertyConstraint::class),
@@ -28,8 +27,9 @@ final class AllTest extends TestCase
             ->method('validate');
 
         $constraint->validate(
-            new PropertyDefinition(PropertyName::fromString('name'), new NullType()),
-            'test'
+            PropertyName::fromString('name'),
+            'test',
+            new ErrorList()
         );
     }
 }

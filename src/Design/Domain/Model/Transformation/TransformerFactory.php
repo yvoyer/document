@@ -2,8 +2,6 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Transformation;
 
-use Star\Component\Document\Design\Domain\Exception\NotFoundTransformer;
-
 interface TransformerFactory
 {
     /**

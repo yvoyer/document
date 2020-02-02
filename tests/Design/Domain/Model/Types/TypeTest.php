@@ -3,7 +3,6 @@
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
 use PHPUnit\Framework\TestCase;
-use Star\Component\Document\Design\Domain\Exception\InvalidPropertyValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 
 abstract class TypeTest extends TestCase

@@ -5,6 +5,8 @@ namespace Star\Component\Document\Tools;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\RecordAggregate;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\AlwaysThrowExceptionOnValidationErrors;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleValidationErrors;
 use Star\Component\Document\DataEntry\Infrastructure\Port\DesignToDataEntry;
 use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
@@ -12,7 +14,6 @@ use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\DocumentDesignerAggregate;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerFactory;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerRegistry;
 use Star\Component\Document\Design\Domain\Model\Types;
 use Star\Component\Document\Design\Domain\Model\Values\ListOptionValue;
@@ -34,11 +35,17 @@ final class DocumentBuilder
      */
     private $factory;
 
+    /**
+     * @var StrategyToHandleValidationErrors
+     */
+    private $strategy;
+
     private function __construct(DocumentId $id)
     {
         $this->id = $id;
         $this->document = DocumentDesignerAggregate::draft($id);
         $this->factory = new TransformerRegistry();
+        $this->strategy = new AlwaysThrowExceptionOnValidationErrors();
     }
 
     public function createText(string $name): PropertyBuilder
@@ -92,6 +99,11 @@ final class DocumentBuilder
         $this->document->setDocumentConstraint($constraint);
 
         return $this;
+    }
+
+    public function getErrorStrategyHandler(): StrategyToHandleValidationErrors
+    {
+        return $this->strategy;
     }
 
     public function getDocument(): DocumentDesigner

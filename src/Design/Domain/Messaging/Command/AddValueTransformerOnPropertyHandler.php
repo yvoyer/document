@@ -2,8 +2,8 @@
 
 namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
-use Star\Component\Document\Design\Domain\Exception\NotFoundTransformer;
 use Star\Component\Document\Design\Domain\Model\DocumentRepository;
+use Star\Component\Document\Design\Domain\Model\Transformation\NotFoundTransformer;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerFactory;
 
 final class AddValueTransformerOnPropertyHandler

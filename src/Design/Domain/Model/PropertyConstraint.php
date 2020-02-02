@@ -2,13 +2,14 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
+use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
+
 interface PropertyConstraint
 {
     /**
-     * @param PropertyDefinition $definition
+     * @param PropertyName $name
      * @param mixed $value
-     *
-     * @throws \LogicException
+     * @param ErrorList $errors
      */
-    public function validate(PropertyDefinition $definition, $value): void;
+    public function validate(PropertyName $name, $value, ErrorList $errors): void;
 }

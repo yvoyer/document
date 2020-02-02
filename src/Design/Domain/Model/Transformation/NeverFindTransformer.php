@@ -2,8 +2,6 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Transformation;
 
-use Star\Component\Document\Design\Domain\Exception\NotFoundTransformer;
-
 final class NeverFindTransformer implements TransformerFactory
 {
     public function createTransformer(TransformerIdentifier $identifier): ValueTransformer

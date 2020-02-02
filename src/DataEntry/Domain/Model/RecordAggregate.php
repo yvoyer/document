@@ -4,6 +4,7 @@ namespace Star\Component\Document\DataEntry\Domain\Model;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Exception\UndefinedProperty;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleValidationErrors;
 
 final class RecordAggregate implements DocumentRecord
 {
@@ -51,10 +52,11 @@ final class RecordAggregate implements DocumentRecord
     /**
      * @param string $propertyName
      * @param mixed $rawValue
+     * @param StrategyToHandleValidationErrors $strategy
      */
-    public function setValue(string $propertyName, $rawValue): void
+    public function setValue(string $propertyName, $rawValue, StrategyToHandleValidationErrors $strategy): void
     {
-        $this->values[$propertyName] = $this->schema->createValue($propertyName, $rawValue);
+        $this->values[$propertyName] = $this->schema->createValue($propertyName, $rawValue, $strategy);
     }
 
     /**

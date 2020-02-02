@@ -4,14 +4,11 @@ namespace Star\Component\Document\Tools;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
-use Star\Component\Document\DataEntry\Domain\Model\Transformation\StringToDate;
-use Star\Component\Document\Design\Domain\Exception\EmptyRequiredValue;
-use Star\Component\Document\Design\Domain\Exception\TooManyValues;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\ValidationFailedForProperty;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\ReadOnlyDocument;
 use Star\Component\Document\Design\Domain\Model\Types;
-use Star\Component\Document\Design\Domain\Model\ValueTransformer;
 
 final class DocumentBuilderTest extends TestCase
 {
@@ -82,8 +79,8 @@ final class DocumentBuilderTest extends TestCase
             ->createText('name')->required()->endProperty()
             ->startRecord('r');
 
-        $this->expectException(EmptyRequiredValue::class);
-        $this->expectExceptionMessage('Property named "name" is required, but empty value given.');
+        $this->expectException(ValidationFailedForProperty::class);
+        $this->expectExceptionMessage('Property named \"name\" is required, but empty value given.');
         $builder->setValue('name', '');
     }
 
@@ -93,8 +90,8 @@ final class DocumentBuilderTest extends TestCase
             ->createBoolean('name')->required()->endProperty()
             ->startRecord('r');
 
-        $this->expectException(EmptyRequiredValue::class);
-        $this->expectExceptionMessage('Property named "name" is required, but empty value given.');
+        $this->expectException(ValidationFailedForProperty::class);
+        $this->expectExceptionMessage('Property named \"name\" is required, but empty value given.');
         $builder->setValue('name', '');
     }
 
@@ -104,8 +101,8 @@ final class DocumentBuilderTest extends TestCase
             ->createDate('name')->required()->endProperty()
             ->startRecord('r');
 
-        $this->expectException(EmptyRequiredValue::class);
-        $this->expectExceptionMessage('Property named "name" is required, but empty value given.');
+        $this->expectException(ValidationFailedForProperty::class);
+        $this->expectExceptionMessage('Property named \"name\" is required, but empty value given.');
         $builder->setValue('name', '');
     }
 
@@ -115,8 +112,8 @@ final class DocumentBuilderTest extends TestCase
             ->createNumber('name')->required()->endProperty()
             ->startRecord('r');
 
-        $this->expectException(EmptyRequiredValue::class);
-        $this->expectExceptionMessage('Property named "name" is required, but empty value given.');
+        $this->expectException(ValidationFailedForProperty::class);
+        $this->expectExceptionMessage('Property named \"name\" is required, but empty value given.');
         $builder->setValue('name', '');
     }
 
@@ -126,7 +123,7 @@ final class DocumentBuilderTest extends TestCase
             ->createCustomList('name', 'option')->required()->endProperty()
             ->startRecord('r');
 
-        $this->expectException(EmptyRequiredValue::class);
+        $this->expectException(ValidationFailedForProperty::class);
         $builder->setValue('name', '');
     }
 
@@ -136,7 +133,7 @@ final class DocumentBuilderTest extends TestCase
             ->createCustomList('name', 'option 1', 'option 2', 'option 3')->singleOption()->endProperty()
             ->startRecord('r');
 
-        $this->expectException(TooManyValues::class);
+        $this->expectException(ValidationFailedForProperty::class);
         $builder->setValue('name', [0, "2"]);
     }
 

@@ -4,10 +4,10 @@ namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Exception\NotFoundTransformer;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\Transformation\AlwaysReturnTransformer;
 use Star\Component\Document\Design\Domain\Model\Transformation\NeverFindTransformer;
+use Star\Component\Document\Design\Domain\Model\Transformation\NotFoundTransformer;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 use Star\Component\Document\Design\Domain\Model\Transformation\ValueTransformer;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;

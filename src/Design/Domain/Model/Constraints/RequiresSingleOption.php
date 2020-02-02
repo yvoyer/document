@@ -2,20 +2,22 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
-use Star\Component\Document\Design\Domain\Exception\TooManyValues;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
-use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
+use Star\Component\Document\Design\Domain\Model\PropertyName;
 
 final class RequiresSingleOption implements PropertyConstraint
 {
-    public function validate(PropertyDefinition $definition, $value): void
+    public function validate(PropertyName $name, $value, ErrorList $errors): void
     {
-        if (count($value) > 1) {
-            throw new TooManyValues(
-                sprintf(
-                    'Property named "%s" requires maximum one option, "%s" given.',
-                    $definition->getName()->toString(),
-                    json_encode($value)
+        if (\count($value) > 1) {
+            $errors->addError(
+                $name->toString(),
+                'en',
+                \sprintf(
+                    'Property named "%s" allows only one option, "%s" given.',
+                    $name->toString(),
+                    \json_encode($value)
                 )
             );
         }
