@@ -37,7 +37,7 @@ final class DocumentDesignerToSchema implements SchemaFactory
      */
     public function createSchema(DocumentId $documentId): DocumentSchema
     {
-        return new DesignToDataEntry(
+        return new DocumentToSchema(
             $this->documents->getDocumentByIdentity($documentId),
             $this->factory
         );

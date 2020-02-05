@@ -1,13 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Tools;
+namespace Star\Component\Document\Design\Builder;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\DataEntry\Builder\RecordBuilder;
 use Star\Component\Document\DataEntry\Domain\Model\RecordAggregate;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\AlwaysThrowExceptionOnValidationErrors;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleValidationErrors;
-use Star\Component\Document\DataEntry\Infrastructure\Port\DesignToDataEntry;
+use Star\Component\Document\DataEntry\Infrastructure\Port\DocumentToSchema;
 use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
@@ -48,27 +49,27 @@ final class DocumentBuilder
         $this->strategy = new AlwaysThrowExceptionOnValidationErrors();
     }
 
-    public function createText(string $name): PropertyBuilder
+    public function createText(string $name): StringBuilder
     {
-        return $this->createProperty($name, new Types\StringType());
+        return $this->createProperty($name, new Types\StringType(), StringBuilder::class);
     }
 
-    public function createBoolean(string $name): PropertyBuilder
+    public function createBoolean(string $name): BooleanBuilder
     {
-        return $this->createProperty($name, new Types\BooleanType());
+        return $this->createProperty($name, new Types\BooleanType(), BooleanBuilder::class);
     }
 
-    public function createDate(string $name): PropertyBuilder
+    public function createDate(string $name): DateBuilder
     {
-        return $this->createProperty($name, new Types\DateType());
+        return $this->createProperty($name, new Types\DateType(), DateBuilder::class);
     }
 
-    public function createNumber(string $name): PropertyBuilder
+    public function createNumber(string $name): NumberBuilder
     {
-        return $this->createProperty($name, new Types\NumberType());
+        return $this->createProperty($name, new Types\NumberType(), NumberBuilder::class);
     }
 
-    public function createCustomList(string $name, string ...$options): PropertyBuilder
+    public function createCustomList(string $name, string ...$options): CustomListBuilder
     {
         return $this->createProperty(
             $name,
@@ -79,7 +80,8 @@ final class DocumentBuilder
                     },
                     \array_keys($options)
                 )
-            )
+            ),
+            CustomListBuilder::class
         );
     }
 
@@ -88,7 +90,7 @@ final class DocumentBuilder
         return new RecordBuilder(
             new RecordAggregate(
                 new RecordId($recordId),
-                new DesignToDataEntry($this->document, $this->factory)
+                new DocumentToSchema($this->document, $this->factory)
             ),
             $this
         );
@@ -111,12 +113,7 @@ final class DocumentBuilder
         return $this->document;
     }
 
-    private function loadProperty(PropertyName $name): PropertyBuilder
-    {
-        return new PropertyBuilder($name, $this->document, $this, $this->factory);
-    }
-
-    private function createProperty(string $name, PropertyType $type): PropertyBuilder
+    public function createProperty(string $name, PropertyType $type, string $builderClass): PropertyBuilder
     {
         $this->document->addProperty(
             $name = PropertyName::fromString($name),
@@ -124,7 +121,10 @@ final class DocumentBuilder
             new NoConstraint()
         );
 
-        return $this->loadProperty($name);
+        /**
+         * @var PropertyBuilder $builderClass
+         */
+        return new $builderClass($name, $this->document, $this, $this->factory);
     }
 
     public static function constraints(): ConstraintBuilder

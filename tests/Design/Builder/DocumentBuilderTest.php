@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Tools;
+namespace Star\Component\Document\Design\Builder;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;

@@ -3,7 +3,7 @@
 namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
 use PHPUnit\Framework\TestCase;
-use Star\Component\Document\Tools\DocumentBuilder;
+use Star\Component\Document\Design\Builder\DocumentBuilder;
 
 final class AtLeastNumberOfRequiredPropertyTest extends TestCase
 {

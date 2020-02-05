@@ -1,8 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Tools;
+namespace Star\Component\Document\DataEntry\Builder;
 
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
+use Star\Component\Document\Design\Builder\DocumentBuilder;
 
 final class RecordBuilder
 {
@@ -37,17 +38,11 @@ final class RecordBuilder
         return $this;
     }
 
-    /**
-     * @return DocumentRecord
-     */
     public function getRecord(): DocumentRecord
     {
         return $this->record;
     }
 
-    /**
-     * @return DocumentBuilder
-     */
     public function endRecord(): DocumentBuilder
     {
         return $this->builder;

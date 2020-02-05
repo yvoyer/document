@@ -74,6 +74,14 @@ final class PropertyDefinition
         return $this->constraints[$name];
     }
 
+    /**
+     * @return string[]
+     */
+    public function getConstraints(): array
+    {
+        return \array_keys($this->constraints);
+    }
+
     public function addTransformer(TransformerIdentifier $identifier): PropertyDefinition
     {
         $new = new self($this->getName(), $this->getType());

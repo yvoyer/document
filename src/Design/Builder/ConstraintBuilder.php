@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Tools;
+namespace Star\Component\Document\Design\Builder;
 
 use Assert\Assertion;
 use Star\Component\Document\Design\Domain\Model\Constraints;
@@ -8,6 +8,16 @@ use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 
 final class ConstraintBuilder
 {
+    public function beforeDate(string $date): PropertyConstraint
+    {
+        return new Constraints\BeforeDate($date);
+    }
+
+    public function afterDate(string $date): PropertyConstraint
+    {
+        return new Constraints\AfterDate($date);
+    }
+
     public function required(): PropertyConstraint
     {
         return new Constraints\RequiresValue();

@@ -4,12 +4,12 @@ namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Builder\DocumentBuilder;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\Types\StringType;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
-use Star\Component\Document\Tools\DocumentBuilder;
 use Star\Component\Identity\Exception\EntityNotFoundException;
 
 final class CreatePropertyHandlerTest extends TestCase

@@ -11,7 +11,7 @@ use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\ReadOnlyDocument;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerFactory;
 
-final class DesignToDataEntry implements DocumentSchema
+final class DocumentToSchema implements DocumentSchema
 {
     /**
      * @var ReadOnlyDocument
@@ -51,16 +51,15 @@ final class DesignToDataEntry implements DocumentSchema
     ): RecordValue {
         $name = PropertyName::fromString($propertyName);
         $definition = $this->document->getPropertyDefinition($name);
-        $definition->validateRawValue($rawValue, $errors = new ErrorList());
-        $type = $definition->getType();
+        $convertedValue = $definition->transformValue($rawValue, $this->factory);
+        $definition->validateRawValue($convertedValue, $errors = new ErrorList());
 
         if ($errors->hasErrors()) {
             $strategy->handleFailure($errors);
         }
 
-        return $type->createValue(
-            $propertyName,
-            $definition->transformValue($rawValue, $this->factory)
+        return $definition->getType()->createValue(
+            $name->toString(), $convertedValue
         );
     }
 }

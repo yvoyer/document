@@ -21,6 +21,7 @@ use Star\Component\Document\DataEntry\Domain\Model\RecordId;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ValidationFailedForProperty;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
 use Star\Component\Document\DataEntry\Infrastructure\Port\DocumentDesignerToSchema;
+use Star\Component\Document\Design\Builder\DocumentBuilder;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddValueTransformerOnProperty;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddValueTransformerOnPropertyHandler;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddPropertyConstraint;
@@ -40,7 +41,6 @@ use Star\Component\Document\Design\Domain\Model\Types;
 use Star\Component\Document\Design\Domain\Model\Values\ListOptionValue;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
-use Star\Component\Document\Tools\DocumentBuilder;
 use Star\Component\DomainEvent\Messaging\CommandBus;
 use Star\Component\DomainEvent\Messaging\MessageMapBus;
 
@@ -152,6 +152,24 @@ class FeatureContext implements Context
     private function getDocument(string $documentId): ReadOnlyDocument
     {
         return $this->documents->getDocumentByIdentity(DocumentId::fromString($documentId));
+    }
+
+    /**
+     * @Given The value transformer with id :arg1 is registered
+     */
+    public function theValueTransformerWithIdIsRegistered(string $transformerId)
+    {
+        $transformer = null;
+        switch ($transformerId) {
+            case 'string-to-date';
+                $transformer = new StringToDateTime();
+                break;
+
+            default:
+                throw new \InvalidArgumentException('Not supported trnasformer' . $transformerId);
+        }
+
+        $this->factory->registerTransformer($transformerId, $transformer);
     }
 
     /**
@@ -433,9 +451,9 @@ class FeatureContext implements Context
     }
 
     /**
-     * @Then The records list of document the :arg1 should looks like:
+     * @Then The records list of document :arg1 should looks like:
      */
-    public function theRecordsListOfDocumentTheShouldLooksLike(string $documentId, TableNode $table)
+    public function theRecordsListOfDocumentShouldLooksLike(string $documentId, TableNode $table)
     {
         $rows = [];
         $this->queries->handleQuery(

@@ -1,15 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Tools;
+namespace Star\Component\Document\Design\Builder;
 
-use Star\Component\Document\Design\Domain\Model\Constraints\RequiresValue;
-use Star\Component\Document\Design\Domain\Model\Constraints\RequiresSingleOption;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
+use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerRegistry;
 use Star\Component\Document\Design\Domain\Model\Transformation\ValueTransformer;
 
-final class PropertyBuilder
+abstract class PropertyBuilder
 {
     /**
      * @var PropertyName
@@ -31,7 +30,7 @@ final class PropertyBuilder
      */
     private $factory;
 
-    public function __construct(
+    final public function __construct(
         PropertyName $name,
         DocumentDesigner $document,
         DocumentBuilder $builder,
@@ -43,24 +42,9 @@ final class PropertyBuilder
         $this->factory = $factory;
     }
 
-    public function required(): self
+    public function withConstraint(string $name, PropertyConstraint $constraint): self
     {
-        $this->document->addPropertyConstraint(
-            $this->name,
-            'required',
-            new RequiresValue()
-        );
-
-        return $this;
-    }
-
-    public function singleOption(): self
-    {
-        $this->document->addPropertyConstraint(
-            $this->name,
-            'single-option',
-            new RequiresSingleOption()
-        );
+        $this->document->addPropertyConstraint($this->name, $name, $constraint);
 
         return $this;
     }

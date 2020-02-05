@@ -4,6 +4,7 @@ namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Builder\DocumentBuilder;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\Transformation\AlwaysReturnTransformer;
 use Star\Component\Document\Design\Domain\Model\Transformation\NeverFindTransformer;
@@ -11,7 +12,6 @@ use Star\Component\Document\Design\Domain\Model\Transformation\NotFoundTransform
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 use Star\Component\Document\Design\Domain\Model\Transformation\ValueTransformer;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
-use Star\Component\Document\Tools\DocumentBuilder;
 
 final class AddValueTransformerOnPropertyHandlerTest extends TestCase
 {
