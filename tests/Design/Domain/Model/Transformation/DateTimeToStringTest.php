@@ -15,7 +15,7 @@ final class DateTimeToStringTest extends TestCase
     public function test_it_should_convert_date_time_to_format(string $expected, $raw): void
     {
         $transformer = new DateTimeToString('Y-m-d');
-        $this->assertSame($expected, $transformer->transform($raw));
+        $this->assertSame($expected, $transformer->transform($raw)->toString());
     }
 
     public static function provideValidValues(): array
@@ -46,12 +46,12 @@ final class DateTimeToStringTest extends TestCase
     public function test_it_should_allow_empty_string(): void
     {
         $transformer = new DateTimeToString('invalid');
-        $this->assertSame('', $transformer->transform(''));
+        $this->assertSame('', $transformer->transform('')->toString());
     }
 
     public function test_it_should_allow_null(): void
     {
         $transformer = new DateTimeToString('invalid');
-        $this->assertSame('', $transformer->transform(null));
+        $this->assertSame('', $transformer->transform(null)->toString());
     }
 }

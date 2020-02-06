@@ -2,8 +2,8 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\PropertyValue;
 use Star\Component\Document\Design\Domain\Model\Values\ListOptionValue;
 use Star\Component\Document\Design\Domain\Model\Values\ListValue;
 
@@ -52,9 +52,9 @@ final class CustomListType implements PropertyType
     /**
      * @param string $propertyName
      * @param string|string[]|int[] $rawValue
-     * @return PropertyValue
+     * @return RecordValue
      */
-    public function createValue(string $propertyName, $rawValue): PropertyValue
+    public function createValue(string $propertyName, $rawValue): RecordValue
     {
         $convertedValue = $rawValue;
         if (\is_string($rawValue)) {
@@ -85,7 +85,6 @@ final class CustomListType implements PropertyType
         }
 
         return new ListValue(
-            $propertyName,
             ...\array_map(
                 function (int $key_value) {
                     return $this->allowed[$key_value];

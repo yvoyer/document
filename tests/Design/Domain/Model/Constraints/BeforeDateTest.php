@@ -4,7 +4,7 @@ namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\Values\DateValue;
 
 final class BeforeDateTest extends TestCase
 {
@@ -17,7 +17,7 @@ final class BeforeDateTest extends TestCase
     {
         $constraint = new BeforeDate('2000-04-05 00:00:00');
         $constraint->validate(
-            PropertyName::fixture(), new \DateTimeImmutable($value), $errors = new ErrorList()
+            'name', DateValue::fromString($value), $errors = new ErrorList()
         );
         $this->assertCount(0, $errors);
     }
@@ -28,6 +28,7 @@ final class BeforeDateTest extends TestCase
             'past year' => ['1999-04-05'],
             'past month' => ['2000-03-05'],
             'past day' => ['2000-04-04'],
+            'empty' => [''],
         ];
     }
 
@@ -40,13 +41,13 @@ final class BeforeDateTest extends TestCase
     {
         $constraint = new BeforeDate('2000-05-05 02:03:04');
         $constraint->validate(
-            $name = PropertyName::fromString('prop'), new \DateTimeImmutable($value), $errors = new ErrorList()
+            $name = 'prop', DateValue::fromString($value), $errors = new ErrorList()
         );
         $this->assertCount(1, $errors);
-        $this->assertCount(1, $errors->getErrorsForProperty($name->toString(), 'en'));
+        $this->assertCount(1, $errors->getErrorsForProperty($name, 'en'));
         $this->assertStringContainsString(
             'The property "prop" only accepts date before "2000-05-05"',
-            $errors->getErrorsForProperty($name->toString(), 'en')[0]
+            $errors->getErrorsForProperty($name, 'en')[0]
         );
     }
 

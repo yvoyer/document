@@ -3,9 +3,9 @@
 namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
 use Assert\Assertion;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
 
 final class MinimumLength implements PropertyConstraint
 {
@@ -19,18 +19,17 @@ final class MinimumLength implements PropertyConstraint
         $this->length = $length;
     }
 
-    public function validate(PropertyName $name, $value, ErrorList $errors): void
+    public function validate(string $name, RecordValue $value, ErrorList $errors): void
     {
-        Assertion::string($value);
-        if (\mb_strlen($value) < $this->length) {
+        if (\mb_strlen($value->toString()) < $this->length) {
             $errors->addError(
-                $name->toString(),
+                $name,
                 'en',
                 \sprintf(
                     'Property "%s" is too short, expected a minimum of %s characters, "%s" given.',
-                    $name->toString(),
+                    $name,
                     $this->length,
-                    $value
+                    $value->toString()
                 )
             );
         }

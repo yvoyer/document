@@ -3,7 +3,6 @@
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\Values\NullValue;
 
 final class NullTypeTest extends TypeTest
 {
@@ -48,9 +47,9 @@ final class NullTypeTest extends TypeTest
     public function test_it_should_set_the_null_value()
     {
         $this->assertInstanceOf(
-            NullValue::class,
+            EmptyValue::class,
             $value = $this->getType()->createValue('text', null)
         );
-        $this->assertSame('null', $value->toString());
+        $this->assertSame('', $value->toString());
     }
 }

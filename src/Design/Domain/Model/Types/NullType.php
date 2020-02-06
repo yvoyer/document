@@ -2,19 +2,18 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\PropertyValue;
-use Star\Component\Document\Design\Domain\Model\Values\NullValue;
 
 final class NullType implements PropertyType
 {
-    public function createValue(string $propertyName, $rawValue): PropertyValue
+    public function createValue(string $propertyName, $rawValue): RecordValue
     {
         if (! \is_null($rawValue)) {
             throw InvalidPropertyValue::invalidValueForType($propertyName, 'null', $rawValue);
         }
 
-        return new NullValue($propertyName);
+        return new EmptyValue();
     }
 
     public function toString(): string

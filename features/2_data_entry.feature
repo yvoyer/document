@@ -181,6 +181,7 @@ Feature: Enter values on document using property rules
 
   Scenario: Enter a record for a property with before-date constraint
     Given The document "document" is created with a date property named "field"
+    And The value for property "field" of document "document" is transformed using "string-to-date"
     When I mark the property "field" of document "document" with constraints:
       | name        | value      |
       | before-date | 2010-07-09 |

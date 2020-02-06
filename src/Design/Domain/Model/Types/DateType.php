@@ -2,52 +2,33 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
-use DateTimeImmutable;
 use DateTimeInterface;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\PropertyValue;
 use Star\Component\Document\Design\Domain\Model\Values\DateValue;
-use Star\Component\Document\Design\Domain\Model\Values\StringValue;
 
 final class DateType implements PropertyType
 {
     /**
-     * @param DateTimeInterface|string $value
-     * @return bool
+     * @param string $propertyName
+     * @param mixed $rawValue
+     * @return RecordValue
      */
-    private function isValid($value): bool
+    public function createValue(string $propertyName, $rawValue): RecordValue
     {
-        if ($value instanceof DateTimeInterface) {
-            return true;
-        }
-
-        if (is_numeric($value)) {
-            return false;
-        }
-
-        if (is_string($value)) {
-            try {
-                new DateTimeImmutable($value);
-                return true;
-            } catch (\Throwable $exception) {
-                // invalid format
-            }
-        }
-
-        return false;
-    }
-
-    public function createValue(string $propertyName, $rawValue): PropertyValue
-    {
-        if (! $this->isValid($rawValue)) {
-            throw InvalidPropertyValue::invalidValueForType($propertyName, 'date', $rawValue);
+        if ($rawValue instanceof DateTimeInterface) {
+            return DateValue::fromDateTime($rawValue);
         }
 
         if (\is_string($rawValue)) {
-            return StringValue::fromString($propertyName, $rawValue);
+            if (empty($rawValue)) {
+                return new EmptyValue();
+            }
+
+            return DateValue::fromString($rawValue);
         }
 
-        return new DateValue($propertyName, $rawValue);
+        throw InvalidPropertyValue::invalidValueForType($propertyName, 'date', $rawValue);
     }
 
     public function toString(): string

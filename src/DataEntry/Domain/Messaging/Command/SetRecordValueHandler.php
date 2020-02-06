@@ -33,7 +33,7 @@ final class SetRecordValueHandler
         } else {
             $record = new RecordAggregate($recordId, $this->factory->createSchema($command->documentId()));
         }
-var_dump($command->value());
+
         $record->setValue(
             $command->property(),
             $command->value(),

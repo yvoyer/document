@@ -3,6 +3,7 @@
 namespace Star\Component\Document\Design\Domain\Model\Transformation;
 
 use PHPUnit\Framework\TestCase;
+use Star\Component\Document\Design\Domain\Model\Values\StringValue;
 
 final class ArrayTransformerTest extends TestCase
 {
@@ -16,13 +17,13 @@ final class ArrayTransformerTest extends TestCase
         $t1->expects($this->once())
             ->method('transform')
             ->with('raw value')
-            ->willReturn('value of t1');
+            ->willReturn(StringValue::fromString('value of t1'));
 
         $t2->expects($this->once())
             ->method('transform')
             ->with('value of t1')
-            ->willReturn('value of t2');
+            ->willReturn(StringValue::fromString('value of t2'));
 
-        $this->assertSame('value of t2', $transformer->transform('raw value'));
+        $this->assertSame('value of t2', $transformer->transform('raw value')->toString());
     }
 }

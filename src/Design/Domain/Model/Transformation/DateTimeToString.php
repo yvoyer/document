@@ -2,6 +2,10 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Transformation;
 
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+use Star\Component\Document\Design\Domain\Model\Types\EmptyValue;
+use Star\Component\Document\Design\Domain\Model\Values\DateValue;
+
 final class DateTimeToString implements ValueTransformer
 {
     /**
@@ -14,19 +18,14 @@ final class DateTimeToString implements ValueTransformer
         $this->format = $format;
     }
 
-    /**
-     * @param mixed $rawValue
-     *
-     * @return string
-     */
-    public function transform($rawValue): string
+    public function transform($rawValue): RecordValue
     {
         if ($rawValue instanceof \DateTimeInterface) {
-            return $rawValue->format($this->format);
+            return DateValue::fromString($rawValue->format($this->format));
         }
 
         if ($rawValue === '' || $rawValue === null) {
-            return (string) $rawValue;
+            return new EmptyValue();
         }
 
         throw new \InvalidArgumentException(

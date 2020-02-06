@@ -4,7 +4,7 @@ namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\Values\ListValue;
 
 final class RequiresSingleOptionTest extends TestCase
 {
@@ -21,14 +21,14 @@ final class RequiresSingleOptionTest extends TestCase
     public function test_it_should_error_when_setting_multiple_values_on_single_value_property(): void
     {
         $this->constraint->validate(
-            $name = PropertyName::fromString('name'),
-            [1, 2],
+            $name = 'name',
+            ListValue::withElements(3),
             $errors = new ErrorList()
         );
         $this->assertCount(1, $errors);
         $this->assertSame(
-            'Property named "name" allows only one option, "[1,2]" given.',
-            $errors->getErrorsForProperty($name->toString(), 'en')[0]
+            'Property named "name" allows only one option, "Label 1;Label 2;Label 3" given.',
+            $errors->getErrorsForProperty($name, 'en')[0]
         );
     }
 }

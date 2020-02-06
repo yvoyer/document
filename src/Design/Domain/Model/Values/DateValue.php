@@ -2,47 +2,52 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Values;
 
-use Star\Component\Document\Design\Domain\Model\PropertyValue;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+use Star\Component\Document\Design\Domain\Model\Types\EmptyValue;
 
-final class DateValue implements PropertyValue
+final class DateValue implements RecordValue
 {
-    /**
-     * @var string
-     */
-    private $propertyName;
-
     /**
      * @var \DateTimeInterface
      */
     private $value;
 
-    /**
-     * @param string $propertyName
-     * @param \DateTimeInterface $value
-     */
-    public function __construct(string $propertyName, \DateTimeInterface $value)
+    private function __construct(\DateTimeInterface $value)
     {
-        $this->propertyName = $propertyName;
         $this->value = $value;
     }
 
-    /**
-     * Return the property name
-     *
-     * @return string
-     */
-    public function getName(): string
+    public function toDateTime(): \DateTimeInterface
     {
-        return $this->propertyName;
+        return $this->value;
     }
 
-    /**
-     * Returns the string representation of contained value.
-     *
-     * @return string
-     */
+    public function count(): int
+    {
+        return 1;
+    }
+
+    public function isEmpty(): bool
+    {
+        return false;
+    }
+
     public function toString(): string
     {
         return $this->value->format('Y-m-d');
+    }
+
+    public static function fromString(string $date): RecordValue
+    {
+        if (\mb_strlen($date) === 0) {
+            return new EmptyValue();
+        }
+
+        return self::fromDateTime(new \DateTimeImmutable(\date('Y-m-d', \strtotime($date))));
+    }
+
+    public static function fromDateTime(\DateTimeInterface $date): RecordValue
+    {
+        return new self($date);
     }
 }

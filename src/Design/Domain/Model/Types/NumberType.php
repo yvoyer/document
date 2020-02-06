@@ -2,33 +2,29 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\PropertyValue;
 use Star\Component\Document\Design\Domain\Model\Values\FloatValue;
 use Star\Component\Document\Design\Domain\Model\Values\NumberValue;
 
 final class NumberType implements PropertyType
 {
     /**
-     * @param mixed $value
-     * @return bool
+     * @param string $propertyName
+     * @param mixed $rawValue
+     * @return RecordValue
      */
-    private function isValid($value): bool
+    public function createValue(string $propertyName, $rawValue): RecordValue
     {
-        return \is_numeric($value);
-    }
-
-    public function createValue(string $propertyName, $rawValue): PropertyValue
-    {
-        if (! $this->isValid($rawValue)) {
+        if (! \is_numeric($rawValue)) {
             throw InvalidPropertyValue::invalidValueForType($propertyName, 'number', $rawValue);
         }
 
-        if (is_int($rawValue) || (int) $rawValue == $rawValue) {
-            return new NumberValue($propertyName, (int) $rawValue);
+        if (\is_int($rawValue) || (int) $rawValue == $rawValue) {
+            return NumberValue::fromInt((int) $rawValue);
         }
 
-        return FloatValue::fromString($propertyName, (string) $rawValue);
+        return FloatValue::fromString((string) $rawValue);
     }
 
     public function toString(): string

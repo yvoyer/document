@@ -2,21 +2,21 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
 
 final class RequiresValue implements PropertyConstraint
 {
-    public function validate(PropertyName $name, $value, ErrorList $errors): void
+    public function validate(string $name, RecordValue $value, ErrorList $errors): void
     {
-        if (empty($value)) {
+        if ($value->isEmpty()) {
             $errors->addError(
-                $name->toString(),
+                $name,
                 'en',
                 \sprintf(
                     'Property named "%s" is required, but empty value given.',
-                    $name->toString()
+                    $name
                 )
             );
         }

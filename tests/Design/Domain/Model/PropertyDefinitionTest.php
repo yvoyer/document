@@ -3,11 +3,14 @@
 namespace Star\Component\Document\Design\Domain\Model;
 
 use PHPUnit\Framework\TestCase;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerFactory;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 use Star\Component\Document\Design\Domain\Model\Transformation\ValueTransformer;
+use Star\Component\Document\Design\Domain\Model\Types\EmptyValue;
 use Star\Component\Document\Design\Domain\Model\Types\NullType;
+use Star\Component\Document\Design\Domain\Model\Values\StringValue;
 
 final class PropertyDefinitionTest extends TestCase
 {
@@ -31,7 +34,7 @@ final class PropertyDefinitionTest extends TestCase
             ->expects($this->once())
             ->method('validate');
 
-        $new->validateRawValue('', new ErrorList());
+        $new->validateValue(new EmptyValue(), new ErrorList());
     }
 
     public function test_it_should_use_the_name_of_the_callee_when_merging_definitions(): void
@@ -113,9 +116,9 @@ final class PropertyDefinitionTest extends TestCase
             public function createTransformer(TransformerIdentifier $transformer): ValueTransformer
             {
                 return new class () implements ValueTransformer {
-                    public function transform($rawValue)
+                    public function transform($rawValue): RecordValue
                     {
-                        return 'transformed value';
+                        return StringValue::fromString('transformed value');
                     }
                 };
             }
@@ -130,7 +133,7 @@ final class PropertyDefinitionTest extends TestCase
 
         $this->assertSame(
             'transformed value',
-            $new->transformValue('raw', $factory)
+            $new->transformValue('raw', $factory)->toString()
         );
     }
 }

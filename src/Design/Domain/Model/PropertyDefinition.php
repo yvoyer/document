@@ -2,9 +2,11 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerFactory;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
+use Star\Component\Document\Design\Domain\Model\Types\EmptyValue;
 
 final class PropertyDefinition
 {
@@ -99,25 +101,24 @@ final class PropertyDefinition
      * @param mixed $rawValue
      * @param TransformerFactory $factory
      *
-     * @return mixed
+     * @return RecordValue
      */
-    public function transformValue($rawValue, TransformerFactory $factory)
+    public function transformValue($rawValue, TransformerFactory $factory): RecordValue
     {
+        $transformedValue = new EmptyValue();
         foreach ($this->transformers as $id) {
-            $rawValue = $factory->createTransformer($id)->transform($rawValue);
+            $transformer = $factory->createTransformer($id);
+# todo           $transformer->handlesRaw($rawValue); continue;
+            $transformedValue = $transformer->transform($rawValue);
         }
 
-        return $rawValue;
+        return $transformedValue;
     }
 
-    /**
-     * @param mixed $rawValue
-     * @param ErrorList $errors
-     */
-    public function validateRawValue($rawValue, ErrorList $errors): void
+    public function validateValue(RecordValue $value, ErrorList $errors): void
     {
         foreach ($this->constraints as $constraint) {
-            $constraint->validate($this->name, $rawValue, $errors);
+            $constraint->validate($this->name->toString(), $value, $errors);
         }
     }
 

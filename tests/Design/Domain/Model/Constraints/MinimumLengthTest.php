@@ -4,7 +4,7 @@ namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\Values\StringValue;
 
 final class MinimumLengthTest extends TestCase
 {
@@ -15,7 +15,7 @@ final class MinimumLengthTest extends TestCase
     public function test_it_should_allow_value(string $value): void
     {
         $constraint = MinimumLength::fromInt(3);
-        $constraint->validate(PropertyName::fixture(), $value, $errors = new ErrorList());
+        $constraint->validate('name', StringValue::fromString($value), $errors = new ErrorList());
         $this->assertCount(0, $errors);
     }
 
@@ -36,10 +36,10 @@ final class MinimumLengthTest extends TestCase
      * @param string $message
      * @dataProvider provideInvalidValues
      */
-    public function test_it_should_not_allow_invalid_value($value, string $message): void
+    public function test_it_should_not_allow_invalid_value(string $value, string $message): void
     {
         $constraint = MinimumLength::fromInt(3);
-        $constraint->validate($name = PropertyName::fromString('prop'), $value, $errors = new ErrorList());
+        $constraint->validate($name = 'prop', StringValue::fromString($value), $errors = new ErrorList());
         $this->assertTrue($errors->hasErrors());
         $this->assertCount(1, $errors->getErrorsForProperty('prop', 'en'));
         $this->assertSame($message, $errors->getErrorsForProperty('prop', 'en')[0]);

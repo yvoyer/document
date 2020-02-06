@@ -2,6 +2,8 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Transformation;
 
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+
 final class ArrayTransformer implements ValueTransformer
 {
     /**
@@ -17,12 +19,7 @@ final class ArrayTransformer implements ValueTransformer
         $this->transformers = $transformers;
     }
 
-    /**
-     * @param mixed $rawValue
-     *
-     * @return mixed
-     */
-    public function transform($rawValue)
+    public function transform($rawValue): RecordValue
     {
         foreach ($this->transformers as $transformer) {
             $rawValue = $transformer->transform($rawValue);

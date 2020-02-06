@@ -5,8 +5,8 @@ namespace Star\Component\Document\Design\Builder;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerRegistry;
-use Star\Component\Document\Design\Domain\Model\Transformation\ValueTransformer;
 
 abstract class PropertyBuilder
 {
@@ -49,9 +49,9 @@ abstract class PropertyBuilder
         return $this;
     }
 
-    public function withTransformer(ValueTransformer $transformer): self
+    public function transformedWith(string $transformer): self
     {
-        $this->factory->registerTransformer(\get_class($transformer), $transformer);
+        $this->document->addPropertyTransformer($this->name, TransformerIdentifier::fromString($transformer));
 
         return $this;
     }

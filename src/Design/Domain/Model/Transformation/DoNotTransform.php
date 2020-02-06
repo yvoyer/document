@@ -2,14 +2,11 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Transformation;
 
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+
 final class DoNotTransform implements ValueTransformer
 {
-    /**
-     * @param mixed $rawValue
-     *
-     * @return mixed
-     */
-    public function transform($rawValue)
+    public function transform($rawValue): RecordValue
     {
         throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
     }

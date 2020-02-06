@@ -3,9 +3,10 @@
 namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
 use Assert\Assertion;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\Values\DateValue;
 
 final class BeforeDate implements PropertyConstraint
 {
@@ -20,22 +21,26 @@ final class BeforeDate implements PropertyConstraint
     }
 
     /**
-     * @param PropertyName $name
-     * @param \DateTimeInterface $value
+     * @param string $name
+     * @param RecordValue|DateValue $value
      * @param ErrorList $errors
      */
-    public function validate(PropertyName $name, $value, ErrorList $errors): void
+    public function validate(string $name, RecordValue $value, ErrorList $errors): void
     {
-        Assertion::isInstanceOf($value, \DateTimeInterface::class);
-        if ((int) $this->target->diff($value)->format('%r%a') >= 0) {
+        if ($value->isEmpty()) {
+            return;
+        }
+
+        Assertion::isInstanceOf($value, DateValue::class);
+        if ((int) $this->target->diff($value->toDateTime())->format('%r%a') >= 0) {
             $errors->addError(
-                $name->toString(),
+                $name,
                 'en',
                 \sprintf(
                     'The property "%s" only accepts date before "%s", "%s" given.',
-                    $name->toString(),
+                    $name,
                     $this->target->format('Y-m-d'),
-                    $value->format('Y-m-d')
+                    $value->toString()
                 )
             );
         }

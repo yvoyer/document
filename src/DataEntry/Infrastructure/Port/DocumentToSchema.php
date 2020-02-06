@@ -49,17 +49,14 @@ final class DocumentToSchema implements DocumentSchema
         $rawValue,
         StrategyToHandleValidationErrors $strategy
     ): RecordValue {
-        $name = PropertyName::fromString($propertyName);
-        $definition = $this->document->getPropertyDefinition($name);
+        $definition = $this->document->getPropertyDefinition(PropertyName::fromString($propertyName));
         $convertedValue = $definition->transformValue($rawValue, $this->factory);
-        $definition->validateRawValue($convertedValue, $errors = new ErrorList());
+        $definition->validateValue($convertedValue, $errors = new ErrorList());
 
         if ($errors->hasErrors()) {
             $strategy->handleFailure($errors);
         }
 
-        return $definition->getType()->createValue(
-            $name->toString(), $convertedValue
-        );
+        return $definition->getType()->createValue($propertyName, $rawValue);
     }
 }

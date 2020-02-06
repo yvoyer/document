@@ -256,6 +256,20 @@ class FeatureContext implements Context
     }
 
     /**
+     * @Given The value for property :arg1 of document :arg2 is transformed using :arg3
+     */
+    public function theValueForPropertyOfDocumentIsTransformedUsing(string $property, string $documentId, string $transformer)
+    {
+        $this->bus->dispatchCommand(
+            new AddValueTransformerOnProperty(
+                DocumentId::fromString($documentId),
+                PropertyName::fromString($property),
+                TransformerIdentifier::fromString($transformer)
+            )
+        );
+    }
+
+    /**
      * @When I create a document named :arg1
      */
     public function iCreateADocumentNamed(string $documentId)

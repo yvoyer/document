@@ -2,40 +2,22 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
-use Star\Component\Document\Design\Domain\Model\PropertyValue;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 
-final class EmptyValue implements PropertyValue
+final class EmptyValue implements RecordValue
 {
-    /**
-     * @var string
-     */
-    private $property;
-
-    /**
-     * @param string $property
-     */
-    public function __construct(string $property)
-    {
-        $this->property = $property;
-    }
-
-    /**
-     * Return the property name
-     *
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->property;
-    }
-
-    /**
-     * Returns the string representation of contained value.
-     *
-     * @return string
-     */
     public function toString(): string
     {
         return '';
+    }
+
+    public function isEmpty(): bool
+    {
+        return true;
+    }
+
+    public function count(): int
+    {
+        return 0;
     }
 }

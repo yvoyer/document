@@ -6,6 +6,7 @@ use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentSchema;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleValidationErrors;
+use Star\Component\Document\Design\Domain\Model\Values\StringValue;
 
 final class StubSchema implements DocumentSchema
 {
@@ -25,9 +26,6 @@ final class StubSchema implements DocumentSchema
         $this->multiple = $multiple;
     }
 
-    /**
-     * @return DocumentId
-     */
     public function getIdentity(): DocumentId
     {
         throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
@@ -45,47 +43,19 @@ final class StubSchema implements DocumentSchema
         $rawValue,
         StrategyToHandleValidationErrors $strategy
     ): RecordValue {
-        return new class($rawValue) implements RecordValue
-        {
-            /**
-             * @var mixed
-             */
-            private $value;
-
-            /**
-             * @param mixed $value
-             */
-            public function __construct($value)
-            {
-                $this->value = $value;
-            }
-
-            public function toString(): string
-            {
-                return strval($this->value);
-            }
-        };
+        return StringValue::fromString($rawValue);
     }
 
-    /**
-     * @return StubSchema
-     */
     public static function allRequired(): self
     {
         return new self(true);
     }
 
-    /**
-     * @return StubSchema
-     */
     public static function allOptional(): self
     {
         return new self();
     }
 
-    /**
-     * @return StubSchema
-     */
     public static function singleValue(): self
     {
         return new self(false, true);

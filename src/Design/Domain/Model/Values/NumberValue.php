@@ -2,47 +2,44 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Values;
 
-use Star\Component\Document\Design\Domain\Model\PropertyValue;
+use Assert\Assertion;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 
-final class NumberValue implements PropertyValue
+final class NumberValue implements RecordValue
 {
-    /**
-     * @var string
-     */
-    private $property;
-
     /**
      * @var int
      */
     private $value;
 
-    /**
-     * @param string $property
-     * @param int $value
-     */
-    public function __construct(string $property, int $value)
+    private function __construct(int $value)
     {
-        $this->property = $property;
         $this->value = $value;
     }
 
-    /**
-     * Return the property name
-     *
-     * @return string
-     */
-    public function getName(): string
+    public function count(): int
     {
-        return $this->property;
+        return 1;
     }
 
-    /**
-     * Returns the string representation of contained value.
-     *
-     * @return string
-     */
+    public function isEmpty(): bool
+    {
+        return false;
+    }
+
     public function toString(): string
     {
         return strval($this->value);
+    }
+
+    public static function fromString(string $value): RecordValue
+    {
+        Assertion::integerish($value);
+        return self::fromInt((int) $value);
+    }
+
+    public static function fromInt(int $value): RecordValue
+    {
+        return new self($value);
     }
 }
