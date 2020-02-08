@@ -4,6 +4,7 @@ namespace Star\Component\Document\Design\Builder;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
+use Star\Component\Document\DataEntry\Domain\Model\RecordId;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ValidationFailedForProperty;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
@@ -77,7 +78,7 @@ final class DocumentBuilderTest extends TestCase
     {
         $builder = DocumentBuilder::createDocument('id')
             ->createText('name')->required()->endProperty()
-            ->startRecord('r');
+            ->startRecord(RecordId::random());
 
         $this->expectException(ValidationFailedForProperty::class);
         $this->expectExceptionMessage('Property named \"name\" is required, but empty value given.');
@@ -88,7 +89,7 @@ final class DocumentBuilderTest extends TestCase
     {
         $builder = DocumentBuilder::createDocument('id')
             ->createBoolean('name')->required()->endProperty()
-            ->startRecord('r');
+            ->startRecord(RecordId::random());
 
         $this->expectException(ValidationFailedForProperty::class);
         $this->expectExceptionMessage('Property named \"name\" is required, but empty value given.');
@@ -99,7 +100,7 @@ final class DocumentBuilderTest extends TestCase
     {
         $builder = DocumentBuilder::createDocument('id')
             ->createDate('name')->required()->endProperty()
-            ->startRecord('r');
+            ->startRecord(RecordId::random());
 
         $this->expectException(ValidationFailedForProperty::class);
         $this->expectExceptionMessage('Property named \"name\" is required, but empty value given.');
@@ -110,7 +111,7 @@ final class DocumentBuilderTest extends TestCase
     {
         $builder = DocumentBuilder::createDocument('id')
             ->createNumber('name')->required()->endProperty()
-            ->startRecord('r');
+            ->startRecord(RecordId::random());
 
         $this->expectException(ValidationFailedForProperty::class);
         $this->expectExceptionMessage('Property named \"name\" is required, but empty value given.');
@@ -121,7 +122,7 @@ final class DocumentBuilderTest extends TestCase
     {
         $builder = DocumentBuilder::createDocument('id')
             ->createCustomList('name', 'option')->required()->endProperty()
-            ->startRecord('r');
+            ->startRecord(RecordId::random());
 
         $this->expectException(ValidationFailedForProperty::class);
         $builder->setValue('name', '');
@@ -131,7 +132,7 @@ final class DocumentBuilderTest extends TestCase
     {
         $builder = DocumentBuilder::createDocument('id')
             ->createCustomList('name', 'option 1', 'option 2', 'option 3')->singleOption()->endProperty()
-            ->startRecord('r');
+            ->startRecord(RecordId::random());
 
         $this->expectException(ValidationFailedForProperty::class);
         $builder->setValue('name', [0, "2"]);
@@ -147,7 +148,7 @@ final class DocumentBuilderTest extends TestCase
             ->createNumber('float')->endProperty()
             ->createCustomList('custom-list-single', 'option 1', 'option 2', 'option 3')->singleOption()->endProperty()
             ->createCustomList('custom-list-multi', 'option 4', 'option 5', 'option 6')->endProperty()
-            ->startRecord('record')
+            ->startRecord(RecordId::random())
             ->setValue('text', 'my text')
             ->setValue('bool', true)
             ->setValue('date', '2000-01-01')

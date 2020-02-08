@@ -5,7 +5,7 @@ namespace Star\Component\Document\Design\Domain\Model\Types;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Values\BooleanValue;
 
-final class BooleanTypeTest extends TypeTest
+final class BooleanTypeTest extends BaseTestType
 {
     protected function getType(): PropertyType
     {

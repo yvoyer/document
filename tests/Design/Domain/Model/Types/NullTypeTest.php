@@ -4,7 +4,7 @@ namespace Star\Component\Document\Design\Domain\Model\Types;
 
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 
-final class NullTypeTest extends TypeTest
+final class NullTypeTest extends BaseTestType
 {
     /**
      * @return PropertyType

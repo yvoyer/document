@@ -4,9 +4,13 @@ namespace Star\Component\Document\DataEntry\Domain\Model;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Exception\UndefinedProperty;
+use Star\Component\Document\DataEntry\Domain\Model\Events;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\AlwaysThrowExceptionOnValidationErrors;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleValidationErrors;
+use Star\Component\Document\Design\Domain\Model\DocumentSchema;
+use Star\Component\DomainEvent\AggregateRoot;
 
-final class RecordAggregate implements DocumentRecord
+final class RecordAggregate extends AggregateRoot implements DocumentRecord
 {
     /**
      * @var RecordId
@@ -14,7 +18,7 @@ final class RecordAggregate implements DocumentRecord
     private $id;
 
     /**
-     * @var DocumentSchema
+     * @var string
      */
     private $schema;
 
@@ -23,30 +27,34 @@ final class RecordAggregate implements DocumentRecord
      */
     private $values = [];
 
-    /**
-     * @param RecordId $id
-     * @param DocumentSchema $schema
-     */
-    public function __construct(RecordId $id, DocumentSchema $schema)
-    {
-        $this->id = $id;
-        $this->schema = $schema;
+    public static function withoutValues(
+        RecordId $id,
+        DocumentSchema $schema
+    ): self {
+        return self::fromStream([new Events\RecordCreated($id, $schema->toString())]);
     }
 
-    /**
-     * @return RecordId
-     */
+    public static function withValues(
+        RecordId $id,
+        DocumentSchema $schema,
+        array $values
+    ): self {
+        $record = self::withoutValues($id, $schema);
+        foreach ($values as $property => $rawValue) {
+            $record->setValue($property, $rawValue, new AlwaysThrowExceptionOnValidationErrors());
+        }
+
+        return $record;
+    }
+
     public function getIdentity(): RecordId
     {
         return $this->id;
     }
 
-    /**
-     * @return DocumentId
-     */
     public function getDocumentId(): DocumentId
     {
-        return $this->schema->getIdentity();
+        return $this->getSchema()->getIdentity();
     }
 
     /**
@@ -54,16 +62,21 @@ final class RecordAggregate implements DocumentRecord
      * @param mixed $rawValue
      * @param StrategyToHandleValidationErrors $strategy
      */
-    public function setValue(string $propertyName, $rawValue, StrategyToHandleValidationErrors $strategy): void
-    {
-        $this->values[$propertyName] = $this->schema->createValue($propertyName, $rawValue, $strategy);
+    public function setValue(
+        string $propertyName,
+        $rawValue,
+        StrategyToHandleValidationErrors $strategy
+    ): void {
+        $type = $this->getSchema()->getPropertyType($propertyName);
+        $errors = $type->validateRawValue($propertyName, $rawValue);
+
+        if ($errors->hasErrors()) {
+            $strategy->handleFailure($errors);
+        }
+
+        $this->values[$propertyName] = $type->createValue($propertyName, $rawValue);
     }
 
-    /**
-     * @param string $propertyName
-     *
-     * @return RecordValue
-     */
     public function getValue(string $propertyName): RecordValue
     {
         if (! $this->hasProperty($propertyName)) {
@@ -73,13 +86,19 @@ final class RecordAggregate implements DocumentRecord
         return $this->values[$propertyName];
     }
 
-    /**
-     * @param string $propertyName
-     *
-     * @return bool
-     */
+    protected function onRecordCreated(Events\RecordCreated $event): void
+    {
+        $this->id = $event->recordId();
+        $this->schema = $event->schema();
+    }
+
     private function hasProperty(string $propertyName): bool
     {
         return isset($this->values[$propertyName]);
+    }
+
+    private function getSchema(): DocumentSchema
+    {
+        return DocumentSchema::fromString($this->schema);
     }
 }

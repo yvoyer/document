@@ -11,9 +11,6 @@ final class ArrayTransformer implements ValueTransformer
      */
     private $transformers;
 
-    /**
-     * @param ValueTransformer[] ...$transformers
-     */
     public function __construct(ValueTransformer ...$transformers)
     {
         $this->transformers = $transformers;

@@ -85,13 +85,12 @@ final class DocumentBuilder
         );
     }
 
-    public function startRecord(string $recordId): RecordBuilder
+    public function startRecord(RecordId $recordId): RecordBuilder
     {
+        $this->document->acceptDocumentVisitor($visitor = new DocumentToSchema());
+
         return new RecordBuilder(
-            new RecordAggregate(
-                new RecordId($recordId),
-                new DocumentToSchema($this->document, $this->factory)
-            ),
+            RecordAggregate::withoutValues($recordId, $visitor->getSchema()),
             $this
         );
     }

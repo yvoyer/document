@@ -6,7 +6,8 @@ use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Values\ListOptionValue;
 use Star\Component\Document\Design\Domain\Model\Values\ListValue;
 
-final class CustomListTypeTest extends TypeTest
+final class CustomListTypeTest
+    extends BaseTestType
 {
     protected function getType(): PropertyType
     {

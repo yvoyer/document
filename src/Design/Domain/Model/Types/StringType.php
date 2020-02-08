@@ -3,23 +3,29 @@
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\Values\StringValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 
 final class StringType implements PropertyType
 {
-    /**
-     * @param mixed $value
-     * @return bool
-     */
-    private function isValid($value): bool
+    public function validateRawValue(string $propertyName, $rawValue): ErrorList
     {
-        return \is_string($value);
+        $errors = new ErrorList();
+        if (!\is_string($rawValue)) {
+            $errors->addError(
+                $propertyName,
+                'en',
+                \sprintf('Value "%s" of property "%s" must be a string.', \getType($rawValue), $propertyName)
+            );
+        }
+
+        return $errors;
     }
 
     public function createValue(string $propertyName, $rawValue): RecordValue
     {
-        if (! $this->isValid($rawValue)) {
+        if ($this->validateRawValue($propertyName, $rawValue)->hasErrors()) {
             throw InvalidPropertyValue::invalidValueForType($propertyName, 'string', $rawValue);
         }
 

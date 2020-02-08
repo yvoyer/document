@@ -3,9 +3,9 @@
 namespace Star\Component\Document\DataEntry\Infrastructure\Port;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\DataEntry\Domain\Model\DocumentSchema;
 use Star\Component\Document\DataEntry\Domain\Model\SchemaFactory;
 use Star\Component\Document\Design\Domain\Model\DocumentRepository;
+use Star\Component\Document\Design\Domain\Model\DocumentSchema;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerFactory;
 
 final class DocumentDesignerToSchema implements SchemaFactory
@@ -30,11 +30,6 @@ final class DocumentDesignerToSchema implements SchemaFactory
         $this->factory = $factory;
     }
 
-    /**
-     * @param DocumentId $documentId
-     *
-     * @return DocumentSchema
-     */
     public function createSchema(DocumentId $documentId): DocumentSchema
     {
         return new DocumentToSchema(

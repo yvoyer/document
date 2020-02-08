@@ -4,7 +4,7 @@ namespace Star\Component\Document\Design\Domain\Model\Types;
 
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 
-final class DateTypeTest extends TypeTest
+final class DateTypeTest extends BaseTestType
 {
     public function getType(): PropertyType
     {

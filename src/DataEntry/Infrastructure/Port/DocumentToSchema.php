@@ -3,60 +3,36 @@
 namespace Star\Component\Document\DataEntry\Infrastructure\Port;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\DataEntry\Domain\Model\DocumentSchema;
-use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
-use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
-use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleValidationErrors;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
-use Star\Component\Document\Design\Domain\Model\ReadOnlyDocument;
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerFactory;
+use Star\Component\Document\Design\Domain\Model\DocumentSchema;
+use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
+use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
 
-final class DocumentToSchema implements DocumentSchema
+final class DocumentToSchema implements DocumentVisitor
 {
     /**
-     * @var ReadOnlyDocument
+     * @var DocumentSchema
      */
-    private $document;
+    private $schema;
 
-    /**
-     * @var TransformerFactory
-     */
-    private $factory;
-
-    public function __construct(ReadOnlyDocument $document, TransformerFactory $factory)
+    public function visitDocument(DocumentId $id): void
     {
-        $this->document = $document;
-        $this->factory = $factory;
+        $this->schema = new DocumentSchema($id);
     }
 
-    /**
-     * @return DocumentId
-     */
-    public function getIdentity(): DocumentId
+    public function visitProperty(PropertyDefinition $definition): void
     {
-        return $this->document->getIdentity();
+        $this->schema->addProperty(
+            $definition->getName()->toString(),
+            $definition->getType()
+        );
     }
 
-    /**
-     * @param string $propertyName
-     * @param mixed $rawValue
-     * @param StrategyToHandleValidationErrors $strategy
-     *
-     * @return RecordValue
-     */
-    public function createValue(
-        string $propertyName,
-        $rawValue,
-        StrategyToHandleValidationErrors $strategy
-    ): RecordValue {
-        $definition = $this->document->getPropertyDefinition(PropertyName::fromString($propertyName));
-        $convertedValue = $definition->transformValue($rawValue, $this->factory);
-        $definition->validateValue($convertedValue, $errors = new ErrorList());
+    public function visitEnded(array $properties): void
+    {
+    }
 
-        if ($errors->hasErrors()) {
-            $strategy->handleFailure($errors);
-        }
-
-        return $definition->getType()->createValue($propertyName, $rawValue);
+    public function getSchema(): DocumentSchema
+    {
+        return $this->schema;
     }
 }

@@ -9,8 +9,8 @@ use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
 use Star\Component\Document\DataEntry\Domain\Model\RecordAggregate;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleValidationErrors;
-use Star\Component\Document\DataEntry\Domain\Stub\StubSchema;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
+use Star\Component\Document\Design\Domain\Model\Builders\SchemaBuilder;
 
 final class SetRecordValueHandlerTest extends TestCase
 {
@@ -28,7 +28,7 @@ final class SetRecordValueHandlerTest extends TestCase
     {
         $this->handler = new SetRecordValueHandler(
             $this->records = new RecordCollection(),
-            new AlwaysReturnSchema(StubSchema::allOptional())
+            new AlwaysReturnSchema(SchemaBuilder::create(RecordId::random())->getSchema())
         );
     }
 
@@ -76,7 +76,7 @@ final class SetRecordValueHandlerTest extends TestCase
     public function test_it_should_use_the_old_record_to_store_value(): void
     {
         $recordId = new RecordId('r1');
-        $record = new RecordAggregate($recordId, StubSchema::allOptional());
+        $record = RecordAggregate::withValues($recordId, SchemaBuilder::create($recordId)->getSchema(), []);
         $record->setValue(
             'name',
             'old-value',

@@ -2,6 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Values;
 
+use Assert\Assertion;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\Types\EmptyValue;
 
@@ -43,7 +44,9 @@ final class DateValue implements RecordValue
             return new EmptyValue();
         }
 
-        return self::fromDateTime(new \DateTimeImmutable(\date('Y-m-d', \strtotime($date))));
+        Assertion::integer($time = \strtotime($date));
+
+        return self::fromDateTime(new \DateTimeImmutable(\date('Y-m-d', $time)));
     }
 
     public static function fromDateTime(\DateTimeInterface $date): RecordValue

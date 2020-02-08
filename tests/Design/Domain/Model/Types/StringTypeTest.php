@@ -5,7 +5,7 @@ namespace Star\Component\Document\Design\Domain\Model\Types;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Values\StringValue;
 
-final class StringTypeTest extends TypeTest
+final class StringTypeTest extends BaseTestType
 {
     public function getType(): PropertyType
     {
@@ -39,7 +39,7 @@ final class StringTypeTest extends TypeTest
         ];
     }
 
-    public function test_it_should_set_the_text_value()
+    public function test_it_should_set_the_text_value(): void
     {
         $this->assertInstanceOf(
             StringValue::class,
@@ -48,12 +48,11 @@ final class StringTypeTest extends TypeTest
         $this->assertSame('Some value', $value->toString());
     }
 
-    public function test_it_should_empty_value()
+    public function test_it_should_empty_value(): void
     {
-        $this->assertInstanceOf(
-            StringValue::class,
-            $value = $this->getType()->createValue('text', '')
+        $this->assertSame(
+            '',
+            $this->getType()->createValue('text', '')->toString()
         );
-        $this->assertSame('', $value->toString());
     }
 }

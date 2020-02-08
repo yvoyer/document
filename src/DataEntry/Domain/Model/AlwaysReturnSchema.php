@@ -3,6 +3,7 @@
 namespace Star\Component\Document\DataEntry\Domain\Model;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentSchema;
 
 final class AlwaysReturnSchema implements SchemaFactory
 {
@@ -11,19 +12,11 @@ final class AlwaysReturnSchema implements SchemaFactory
      */
     private $schema;
 
-    /**
-     * @param DocumentSchema $schema
-     */
     public function __construct(DocumentSchema $schema)
     {
         $this->schema = $schema;
     }
 
-    /**
-     * @param DocumentId $documentId
-     *
-     * @return DocumentSchema
-     */
     public function createSchema(DocumentId $documentId): DocumentSchema
     {
         return $this->schema;

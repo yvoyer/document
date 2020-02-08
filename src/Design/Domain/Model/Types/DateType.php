@@ -4,11 +4,27 @@ namespace Star\Component\Document\Design\Domain\Model\Types;
 
 use DateTimeInterface;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Values\DateValue;
+use Star\Component\Document\Design\Domain\Model\Values\StringValue;
 
 final class DateType implements PropertyType
 {
+    public function validateRawValue(string $propertyName, $rawValue): ErrorList
+    {
+        $errors = new ErrorList();
+        if (\is_string($rawValue) && \strtotime($rawValue) === false) {
+            $errors->addError(
+                $propertyName,
+                'en',
+                \sprintf('Date value "%s" is expected to be a string of date format or empty.', $rawValue)
+            );
+        }
+
+        return $errors;
+    }
+
     /**
      * @param string $propertyName
      * @param mixed $rawValue
@@ -20,12 +36,14 @@ final class DateType implements PropertyType
             return DateValue::fromDateTime($rawValue);
         }
 
-        if (\is_string($rawValue)) {
+        if (\is_string($rawValue) && !\is_numeric($rawValue)) {
             if (empty($rawValue)) {
                 return new EmptyValue();
             }
 
-            return DateValue::fromString($rawValue);
+            if (\strtotime($rawValue) > 0) {
+                return StringValue::fromString($rawValue);
+            }
         }
 
         throw InvalidPropertyValue::invalidValueForType($propertyName, 'date', $rawValue);

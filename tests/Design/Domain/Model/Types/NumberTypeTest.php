@@ -6,7 +6,7 @@ use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Values\FloatValue;
 use Star\Component\Document\Design\Domain\Model\Values\NumberValue;
 
-final class NumberTypeTest extends TypeTest
+final class NumberTypeTest extends BaseTestType
 {
     public function getType(): PropertyType
     {

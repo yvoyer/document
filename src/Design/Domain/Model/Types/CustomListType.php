@@ -3,6 +3,7 @@
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Values\ListOptionValue;
 use Star\Component\Document\Design\Domain\Model\Values\ListValue;
@@ -10,6 +11,7 @@ use Star\Component\Document\Design\Domain\Model\Values\ListValue;
 final class CustomListType implements PropertyType
 {
     private const SEPARATOR = ';';
+
     /**
      * @var ListOptionValue[]
      */
@@ -24,6 +26,11 @@ final class CustomListType implements PropertyType
         foreach ($allowed as $option) {
             $this->allowed[$option->getId()] = $option;
         }
+    }
+
+    public function validateRawValue(string $propertyName, $rawValue): ErrorList
+    {
+        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
     }
 
     /**

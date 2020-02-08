@@ -3,11 +3,17 @@
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Values\BooleanValue;
 
 final class BooleanType implements PropertyType
 {
+    public function validateRawValue(string $propertyName, $rawValue): ErrorList
+    {
+        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+    }
+
     public function createValue(string $propertyName, $rawValue): RecordValue
     {
         if (! in_array($rawValue, [1, 0, true, false, 'true', 'false', '1', '0'], true)) {
