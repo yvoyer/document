@@ -1,9 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Design\Domain\Model\Builders;
+namespace Star\Component\Document\Design\Domain\Model\Schema;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\DocumentSchema;
 use Star\Component\Document\Design\Domain\Model\Types\StringType;
 
 final class SchemaBuilder

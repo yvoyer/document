@@ -33,8 +33,13 @@ final class NumberType implements PropertyType
         return FloatValue::fromString((string) $rawValue);
     }
 
-    public function toString(): string
+    public function toData(): TypeData
     {
-        return 'number';
+        return new TypeData(self::class);
+    }
+
+    public static function fromData(array $arguments): PropertyType
+    {
+        return new self();
     }
 }

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Design\Domain\Model\Types;
+namespace Star\Component\Document\Design\Domain\Model\Values;
 
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 

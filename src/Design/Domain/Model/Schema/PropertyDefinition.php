@@ -1,12 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Design\Domain\Model;
+namespace Star\Component\Document\Design\Domain\Model\Schema;
 
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
+use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
+use Star\Component\Document\Design\Domain\Model\PropertyConstrainNotFound;
+use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
+use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerFactory;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
-use Star\Component\Document\Design\Domain\Model\Types\EmptyValue;
+use Star\Component\Document\Design\Domain\Model\Values\EmptyValue;
 
 final class PropertyDefinition
 {
@@ -44,6 +49,18 @@ final class PropertyDefinition
     public function getType(): PropertyType
     {
         return $this->type;
+    }
+
+    public function acceptDocumentVisitor(DocumentVisitor $visitor): void
+    {
+        $visitor->visitProperty($this->name, $this->type);
+        foreach ($this->constraints as $name => $constraint) {
+            $visitor->visitPropertyConstraint($this->name, $name, $constraint);
+        }
+
+        foreach ($this->transformers as $name => $transformer) {
+            $visitor->visitValueTransformer($this->name, $name, $transformer);
+        }
     }
 
     public function addConstraint(string $name, PropertyConstraint $constraint): PropertyDefinition

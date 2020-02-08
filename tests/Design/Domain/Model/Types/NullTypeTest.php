@@ -3,6 +3,7 @@
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
 use Star\Component\Document\Design\Domain\Model\PropertyType;
+use Star\Component\Document\Design\Domain\Model\Values\EmptyValue;
 
 final class NullTypeTest extends BaseTestType
 {

@@ -41,6 +41,15 @@ final class ListOptionValue
         return $this->label;
     }
 
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'value' => $this->getValue(),
+            'label' => $this->getLabel(),
+        ];
+    }
+
     public static function withValueAsLabel(int $id, string $value): self
     {
         return new self($id, $value, $value);

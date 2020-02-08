@@ -11,15 +11,17 @@ use React\Promise\PromiseInterface;
 use Star\Component\Document\Common\Domain\Messaging\Query;
 use Star\Component\Document\Common\Domain\Messaging\QueryBus;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\DataEntry\Domain\Messaging\Command\CreateRecord;
+use Star\Component\Document\DataEntry\Domain\Messaging\Command\CreateRecordHandler;
 use Star\Component\Document\DataEntry\Domain\Messaging\Command\SetRecordValue;
 use Star\Component\Document\DataEntry\Domain\Messaging\Command\SetRecordValueHandler;
 use Star\Component\Document\DataEntry\Domain\Messaging\Query\GetAllRecordsOfDocument;
 use Star\Component\Document\DataEntry\Domain\Messaging\Query\GetAllRecordsOfDocumentHandler;
 use Star\Component\Document\DataEntry\Domain\Messaging\Query\RecordRow;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\Schema\CallbackSchemaFactory;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ValidationFailedForProperty;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
-use Star\Component\Document\DataEntry\Infrastructure\Port\DocumentDesignerToSchema;
 use Star\Component\Document\Design\Builder\DocumentBuilder;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddValueTransformerOnProperty;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddValueTransformerOnPropertyHandler;
@@ -31,6 +33,7 @@ use Star\Component\Document\Design\Domain\Messaging\Command\CreateProperty;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreatePropertyHandler;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\ReadOnlyDocument;
+use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 use Star\Component\Document\Design\Domain\Model\Transformation\ArrayTransformer;
 use Star\Component\Document\Design\Domain\Model\Transformation\DateTimeToString;
 use Star\Component\Document\Design\Domain\Model\Transformation\StringToDateTime;
@@ -74,6 +77,11 @@ class FeatureContext implements Context
     private $errors = [];
 
     /**
+     * @var DocumentSchema
+     */
+    private $schema;
+
+    /**
      * Initializes context.
      *
      * Every scenario gets its own context instance.
@@ -85,6 +93,11 @@ class FeatureContext implements Context
         $records = new RecordCollection();
         $this->documents = new DocumentCollection();
         $this->factory = new TransformerRegistry();
+        $closure = function () {
+            return $this->schema;
+        };
+
+        $schemaFactory = new CallbackSchemaFactory($closure);
 
         $this->bus = new MessageMapBus();
         $this->bus->registerHandler(CreateDocument::class, new CreateDocumentHandler($this->documents));
@@ -94,7 +107,11 @@ class FeatureContext implements Context
         );
         $this->bus->registerHandler(
             SetRecordValue::class,
-            new SetRecordValueHandler($records, new DocumentDesignerToSchema($this->documents, $this->factory))
+            new SetRecordValueHandler($records)
+        );
+        $this->bus->registerHandler(
+            CreateRecord::class,
+            new CreateRecordHandler($records, $this->documents, $schemaFactory)
         );
         $this->bus->registerHandler(
             AddValueTransformerOnProperty::class,
@@ -273,7 +290,8 @@ class FeatureContext implements Context
      */
     public function iCreateADocumentNamed(string $documentId)
     {
-        $this->bus->dispatchCommand(new CreateDocument(DocumentId::fromString($documentId)));
+        $this->bus->dispatchCommand(new CreateDocument($id = DocumentId::fromString($documentId)));
+        $this->schema = new DocumentSchema($id);
     }
 
     /**
@@ -443,7 +461,7 @@ class FeatureContext implements Context
     public function iEnterTheFollowingValuesToDocument(string $documentId, TableNode $table)
     {
         foreach ($table->getHash() as $data) {
-            $recordId = new RecordId($data['record-id']);
+            $recordId = RecordId::fromString($data['record-id']);
             $property = $data['property'];
 
             try {
@@ -502,7 +520,7 @@ class FeatureContext implements Context
     public function theDocumentShouldHaveNoProperties(string $documentId)
     {
         $this->getDocument($documentId)->acceptDocumentVisitor($visitor = new PropertyExtractor());
-        Assert::assertCount(0, $visitor->properties());
+        Assert::assertCount(0, $visitor);
     }
 
     /**
@@ -536,7 +554,7 @@ class FeatureContext implements Context
                 $options['type'],
                 $this->getDocument($documentId)
                     ->getPropertyDefinition(PropertyName::fromString($property))
-                    ->getType()->toString()
+                    ->getType()->toData()
             );
             Assert::assertTrue(
                 $this->getDocument($documentId)

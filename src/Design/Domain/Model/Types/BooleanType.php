@@ -27,8 +27,13 @@ final class BooleanType implements PropertyType
         return new BooleanValue((bool) $rawValue);
     }
 
-    public function toString(): string
+    public function toData(): TypeData
     {
-        return 'boolean';
+        return new TypeData(self::class);
+    }
+
+    public static function fromData(array $arguments): PropertyType
+    {
+        return new self();
     }
 }

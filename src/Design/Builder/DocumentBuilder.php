@@ -8,11 +8,10 @@ use Star\Component\Document\DataEntry\Domain\Model\RecordAggregate;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\AlwaysThrowExceptionOnValidationErrors;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleValidationErrors;
-use Star\Component\Document\DataEntry\Infrastructure\Port\DocumentToSchema;
 use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
-use Star\Component\Document\Design\Domain\Model\DocumentDesignerAggregate;
+use Star\Component\Document\Design\Domain\Model\DocumentAggregate;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerRegistry;
@@ -27,7 +26,7 @@ final class DocumentBuilder
     private $id;
 
     /**
-     * @var DocumentDesignerAggregate
+     * @var DocumentAggregate
      */
     private $document;
 
@@ -44,7 +43,7 @@ final class DocumentBuilder
     private function __construct(DocumentId $id)
     {
         $this->id = $id;
-        $this->document = DocumentDesignerAggregate::draft($id);
+        $this->document = DocumentAggregate::draft($id);
         $this->factory = new TransformerRegistry();
         $this->strategy = new AlwaysThrowExceptionOnValidationErrors();
     }
@@ -85,12 +84,14 @@ final class DocumentBuilder
         );
     }
 
-    public function startRecord(RecordId $recordId): RecordBuilder
+    public function startRecord(RecordId $recordId = null): RecordBuilder
     {
-        $this->document->acceptDocumentVisitor($visitor = new DocumentToSchema());
+        if (!$recordId) {
+            $recordId= RecordId::random();
+        }
 
         return new RecordBuilder(
-            RecordAggregate::withoutValues($recordId, $visitor->getSchema()),
+            RecordAggregate::withoutValues($recordId, $this->document->getSchema()),
             $this
         );
     }

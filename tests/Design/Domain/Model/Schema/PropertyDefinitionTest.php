@@ -1,15 +1,18 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Design\Domain\Model;
+namespace Star\Component\Document\Design\Domain\Model\Schema;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
+use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
+use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerFactory;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 use Star\Component\Document\Design\Domain\Model\Transformation\ValueTransformer;
-use Star\Component\Document\Design\Domain\Model\Types\EmptyValue;
 use Star\Component\Document\Design\Domain\Model\Types\NullType;
+use Star\Component\Document\Design\Domain\Model\Values\EmptyValue;
 use Star\Component\Document\Design\Domain\Model\Values\StringValue;
 
 final class PropertyDefinitionTest extends TestCase
@@ -60,7 +63,7 @@ final class PropertyDefinitionTest extends TestCase
         $new = $callee->merge($argument);
 
         $this->assertInstanceOf(PropertyDefinition::class, $new);
-        $this->assertSame('null', $new->getType()->toString());
+        $this->assertInstanceOf(NullType::class, $new->getType()->toData()->createType());
     }
 
     public function test_it_should_merge_constraints_when_merging_definitions(): void

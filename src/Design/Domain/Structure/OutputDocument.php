@@ -3,9 +3,11 @@
 namespace Star\Component\Document\Design\Domain\Structure;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\DocumentProperty;
 use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
-use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
+use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
+use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\PropertyType;
+use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 
 final class OutputDocument implements DocumentVisitor
 {
@@ -14,23 +16,31 @@ final class OutputDocument implements DocumentVisitor
         $this->writeLine(\sprintf('Document: "%s"', $id->toString()));
     }
 
-    public function visitProperty(PropertyDefinition $definition): void
+    public function visitProperty(PropertyName $name, PropertyType $type): void
     {
         $this->writeLine(
             \sprintf(
-                'Property: %s (%s): %s',
-                $definition->getName()->toString(),
-                $definition->getType()->toString(),
-                \implode(', ', $definition->getConstraints())
+                'Property: %s (%s)',
+                $name->toString(),
+                $type->toData()
             )
         );
     }
 
-    /**
-     * @param DocumentProperty[] $properties
-     */
-    public function visitEnded(array $properties): void
-    {
+    public function visitPropertyConstraint(
+        PropertyName $propertyName,
+        string $constraintName,
+        PropertyConstraint $constraint
+    ): void {
+        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+    }
+
+    public function visitValueTransformer(
+        PropertyName $propertyName,
+        string $constraintName,
+        TransformerIdentifier $identifier
+    ): void {
+        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
     }
 
     protected function writeLine(string $text): void

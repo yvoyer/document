@@ -32,8 +32,13 @@ final class StringType implements PropertyType
         return StringValue::fromString($rawValue);
     }
 
-    public function toString(): string
+    public function toData(): TypeData
     {
-        return 'string';
+        return new TypeData(self::class);
+    }
+
+    public static function fromData(array $arguments): PropertyType
+    {
+        return new self();
     }
 }

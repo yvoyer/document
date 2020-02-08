@@ -4,13 +4,12 @@ namespace Star\Component\Document\DataEntry\Domain\Messaging\Command;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\DataEntry\Domain\Model\AlwaysReturnSchema;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
 use Star\Component\Document\DataEntry\Domain\Model\RecordAggregate;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
-use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleValidationErrors;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
-use Star\Component\Document\Design\Domain\Model\Builders\SchemaBuilder;
+use Star\Component\Document\Design\Domain\Model\Schema\SchemaBuilder;
+use Star\Component\Identity\Exception\EntityNotFoundException;
 
 final class SetRecordValueHandlerTest extends TestCase
 {
@@ -27,32 +26,42 @@ final class SetRecordValueHandlerTest extends TestCase
     public function setUp(): void
     {
         $this->handler = new SetRecordValueHandler(
-            $this->records = new RecordCollection(),
-            new AlwaysReturnSchema(SchemaBuilder::create(RecordId::random())->getSchema())
+            $this->records = new RecordCollection()
         );
     }
 
-    public function test_it_should_return_not_data_when_no_value_entered(): void
+    public function test_it_should_throw_exception_when_record_do_not_exists(): void
     {
         $this->assertCount(0, $this->records);
 
-        $recordId = new RecordId('id');
+        $this->expectException(EntityNotFoundException::class);
+        $this->expectExceptionMessage(
+            \sprintf(
+                "Object of class '%s' with identity 'id' could not be found.",
+                DocumentRecord::class
+            )
+        );
         $this->handler->__invoke(
-            new SetRecordValue(DocumentId::random(), $recordId, 'name', 'value')
+            new SetRecordValue(DocumentId::random(), RecordId::fromString('id'), 'name', 'value')
         );
-
-        $this->assertCount(1, $this->records);
-        $this->assertInstanceOf(
-            DocumentRecord::class,
-            $record = $this->records->getRecordWithIdentity($recordId)
-        );
-        $this->assertSame('value', $record->getValue('name')->toString());
     }
 
     public function test_it_should_return_all_records_when_values_entered(): void
     {
         $documentId = DocumentId::fromString('id');
-        $recordId = new RecordId('id');
+        $recordId = RecordId::fromString('id');
+
+        $this->records->saveRecord(
+            $recordId,
+            RecordAggregate::withoutValues(
+                $recordId,
+                SchemaBuilder::create($documentId)
+                    ->addText('p1')->endProperty()
+                    ->addText('p2')->endProperty()
+                    ->addText('p3')->endProperty()
+                    ->getSchema()
+            )
+        );
         $this->handler->__invoke(
             new SetRecordValue($documentId, $recordId, 'p1', 'v1')
         );
@@ -75,12 +84,13 @@ final class SetRecordValueHandlerTest extends TestCase
 
     public function test_it_should_use_the_old_record_to_store_value(): void
     {
-        $recordId = new RecordId('r1');
-        $record = RecordAggregate::withValues($recordId, SchemaBuilder::create($recordId)->getSchema(), []);
-        $record->setValue(
-            'name',
-            'old-value',
-            $this->createMock(StrategyToHandleValidationErrors::class)
+        $recordId = RecordId::fromString('r1');
+        $record = RecordAggregate::withValues(
+            $recordId,
+            SchemaBuilder::create()->addText('name')->endProperty()->getSchema(),
+            [
+                'name' => 'old-value',
+            ]
         );
         $this->records->saveRecord($recordId, $record);
         $this->assertCount(1, $this->records);

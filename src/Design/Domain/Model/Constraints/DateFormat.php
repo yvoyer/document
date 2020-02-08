@@ -20,7 +20,6 @@ final class DateFormat implements PropertyConstraint
 
     public function validate(string $name, RecordValue $value, ErrorList $errors): void
     {
-        var_dump($value);
         throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
     }
 }

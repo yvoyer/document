@@ -5,14 +5,14 @@ namespace Star\Component\Document\DataEntry\Domain\Model;
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Exception\UndefinedProperty;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleValidationErrors;
-use Star\Component\Document\Design\Domain\Model\Builders\SchemaBuilder;
+use Star\Component\Document\Design\Domain\Model\Schema\SchemaBuilder;
 
 final class RecordAggregateTest extends TestCase
 {
     public function test_it_should_set_a_property_value(): void
     {
         $record = RecordAggregate::withoutValues(
-            new RecordId('id'),
+            RecordId::fromString('id'),
             SchemaBuilder::create()
                 ->addText($property = 'name')->endProperty()
                 ->getSchema()
@@ -28,7 +28,7 @@ final class RecordAggregateTest extends TestCase
     public function test_it_should_throw_exception_when_property_never_set(): void
     {
         $record = RecordAggregate::withoutValues(
-            new RecordId('id'),
+            RecordId::fromString('id'),
             SchemaBuilder::create()->getSchema()
         );
 

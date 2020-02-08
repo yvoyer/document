@@ -7,6 +7,7 @@ use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Values\DateValue;
+use Star\Component\Document\Design\Domain\Model\Values\EmptyValue;
 use Star\Component\Document\Design\Domain\Model\Values\StringValue;
 
 final class DateType implements PropertyType
@@ -49,8 +50,13 @@ final class DateType implements PropertyType
         throw InvalidPropertyValue::invalidValueForType($propertyName, 'date', $rawValue);
     }
 
-    public function toString(): string
+    public function toData(): TypeData
     {
-        return 'date';
+        return new TypeData(self::class);
+    }
+
+    public static function fromData(array $arguments): PropertyType
+    {
+        return new self();
     }
 }

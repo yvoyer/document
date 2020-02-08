@@ -5,20 +5,21 @@ namespace Star\Component\Document\Design\Domain\Model;
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\Constraints;
+use Star\Component\Document\Design\Domain\Model\Schema\ReferencePropertyNotFound;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 use Star\Component\Document\Design\Domain\Model\Types\NullType;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
 
-final class DocumentDesignerAggregateTest extends TestCase
+final class DocumentAggregateTest extends TestCase
 {
     /**
-     * @var DocumentDesignerAggregate
+     * @var DocumentAggregate
      */
     private $document;
 
     public function setUp(): void
     {
-        $this->document = DocumentDesignerAggregate::draft(DocumentId::fromString('id'));
+        $this->document = DocumentAggregate::draft(DocumentId::fromString('id'));
     }
 
     public function test_it_should_publish_document(): void
@@ -37,14 +38,14 @@ final class DocumentDesignerAggregateTest extends TestCase
 
     public function test_it_should_create_property(): void
     {
-        $this->document->acceptDocumentVisitor($visitor = new PropertyExtractor());
-        $this->assertCount(0, $visitor->properties());
-
         $name = PropertyName::fromString('name');
+        $this->document->acceptDocumentVisitor($visitor = new PropertyExtractor());
+        $this->assertFalse($visitor->hasProperty($name->toString()));
+
         $this->document->addProperty($name, new NullType(), new Constraints\NoConstraint());
 
         $this->document->acceptDocumentVisitor($visitor = new PropertyExtractor());
-        $this->assertCount(1, $visitor->properties());
+        $this->assertTrue($visitor->hasProperty($name->toString()));
         $definition = $this->document->getPropertyDefinition($name);
         $this->assertSame('name', $definition->getName()->toString());
     }

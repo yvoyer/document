@@ -12,7 +12,7 @@ final class RecordId implements Identity
      */
     private $value;
 
-    public function __construct(string $value)
+    private function __construct(string $value)
     {
         Assertion::notBlank($value);
         $this->value = $value;
@@ -28,8 +28,13 @@ final class RecordId implements Identity
         return $this->value;
     }
 
+    public static function fromString(string $id): self
+    {
+        return new self($id);
+    }
+
     public static function random(): self
     {
-        return new static(\uniqid('record-'));
+        return self::fromString(\uniqid('record-'));
     }
 }

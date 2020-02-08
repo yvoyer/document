@@ -2,6 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
+use Star\Component\Document\Design\Domain\Model\Schema\PropertyDefinition;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 
 final class DocumentProperty implements ReadOnlyProperty
@@ -39,7 +40,7 @@ final class DocumentProperty implements ReadOnlyProperty
 
     public function acceptDocumentVisitor(DocumentVisitor $visitor): void
     {
-        $visitor->visitProperty($this->getDefinition());
+        $this->definition->acceptDocumentVisitor($visitor);
     }
 
     public function matchName(PropertyName $name): bool

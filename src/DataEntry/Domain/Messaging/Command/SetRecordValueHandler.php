@@ -2,9 +2,7 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Messaging\Command;
 
-use Star\Component\Document\DataEntry\Domain\Model\RecordAggregate;
 use Star\Component\Document\DataEntry\Domain\Model\RecordRepository;
-use Star\Component\Document\DataEntry\Domain\Model\SchemaFactory;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\AlwaysThrowExceptionOnValidationErrors;
 
 final class SetRecordValueHandler
@@ -14,32 +12,20 @@ final class SetRecordValueHandler
      */
     private $records;
 
-    /**
-     * @var SchemaFactory
-     */
-    private $factory;
-
-    public function __construct(RecordRepository $records, SchemaFactory $factory)
+    public function __construct(RecordRepository $records)
     {
         $this->records = $records;
-        $this->factory = $factory;
     }
 
     public function __invoke(SetRecordValue $command): void
     {
-        $recordId = $command->recordId();
-        if ($this->records->recordExists($recordId)) {
-            $record = $this->records->getRecordWithIdentity($recordId);
-        } else {
-            $record = new RecordAggregate($recordId, $this->factory->createSchema($command->documentId()));
-        }
-
+        $record = $this->records->getRecordWithIdentity($command->recordId());
         $record->setValue(
             $command->property(),
             $command->value(),
             new AlwaysThrowExceptionOnValidationErrors()
         );
 
-        $this->records->saveRecord($recordId, $record);
+        $this->records->saveRecord($record->getIdentity(), $record);
     }
 }

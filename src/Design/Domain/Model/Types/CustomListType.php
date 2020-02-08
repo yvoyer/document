@@ -101,8 +101,28 @@ final class CustomListType implements PropertyType
         );
     }
 
-    public function toString(): string
+    public function toData(): TypeData
     {
-        return 'custom-list';
+        return new TypeData(
+            self::class,
+            \array_map(
+                function (ListOptionValue $option): array {
+                    return $option->toArray();
+                },
+                $this->allowed
+            )
+        );
+    }
+
+    public static function fromData(array $arguments): PropertyType
+    {
+        return new self(
+            ...\array_map(
+                function (array $row) {
+                    return new ListOptionValue($row['id'], $row['value'], $row['label']);
+                },
+                $arguments
+            )
+        );
     }
 }

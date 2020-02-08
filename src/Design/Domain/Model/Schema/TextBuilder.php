@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Design\Domain\Model\Builders;
-
-use Star\Component\Document\Design\Domain\Model\DocumentSchema;
+namespace Star\Component\Document\Design\Domain\Model\Schema;
 
 final class TextBuilder
 {

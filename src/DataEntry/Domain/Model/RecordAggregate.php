@@ -7,7 +7,7 @@ use Star\Component\Document\DataEntry\Domain\Exception\UndefinedProperty;
 use Star\Component\Document\DataEntry\Domain\Model\Events;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\AlwaysThrowExceptionOnValidationErrors;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleValidationErrors;
-use Star\Component\Document\Design\Domain\Model\DocumentSchema;
+use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 use Star\Component\DomainEvent\AggregateRoot;
 
 final class RecordAggregate extends AggregateRoot implements DocumentRecord
@@ -18,7 +18,7 @@ final class RecordAggregate extends AggregateRoot implements DocumentRecord
     private $id;
 
     /**
-     * @var string
+     * @var DocumentSchema
      */
     private $schema;
 
@@ -54,7 +54,7 @@ final class RecordAggregate extends AggregateRoot implements DocumentRecord
 
     public function getDocumentId(): DocumentId
     {
-        return $this->getSchema()->getIdentity();
+        return $this->schema->getIdentity();
     }
 
     /**
@@ -67,7 +67,7 @@ final class RecordAggregate extends AggregateRoot implements DocumentRecord
         $rawValue,
         StrategyToHandleValidationErrors $strategy
     ): void {
-        $type = $this->getSchema()->getPropertyType($propertyName);
+        $type = $this->schema->getDefinition($propertyName)->getType();
         $errors = $type->validateRawValue($propertyName, $rawValue);
 
         if ($errors->hasErrors()) {
@@ -89,16 +89,11 @@ final class RecordAggregate extends AggregateRoot implements DocumentRecord
     protected function onRecordCreated(Events\RecordCreated $event): void
     {
         $this->id = $event->recordId();
-        $this->schema = $event->schema();
+        $this->schema = DocumentSchema::fromString($event->schema());
     }
 
     private function hasProperty(string $propertyName): bool
     {
         return isset($this->values[$propertyName]);
-    }
-
-    private function getSchema(): DocumentSchema
-    {
-        return DocumentSchema::fromString($this->schema);
     }
 }

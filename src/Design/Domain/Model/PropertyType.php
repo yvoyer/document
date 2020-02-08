@@ -4,6 +4,7 @@ namespace Star\Component\Document\Design\Domain\Model;
 
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
+use Star\Component\Document\Design\Domain\Model\Types\TypeData;
 
 interface PropertyType
 {
@@ -17,8 +18,7 @@ interface PropertyType
      */
     public function createValue(string $propertyName, $rawValue): RecordValue;
 
-    /**
-     * @return string
-     */
-    public function toString(): string;
+    public function toData(): TypeData;
+
+    public static function fromData(array $arguments): PropertyType;
 }

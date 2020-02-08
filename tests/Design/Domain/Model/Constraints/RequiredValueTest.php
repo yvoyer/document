@@ -4,7 +4,7 @@ namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
-use Star\Component\Document\Design\Domain\Model\Types\EmptyValue;
+use Star\Component\Document\Design\Domain\Model\Values\EmptyValue;
 use Star\Component\Document\Design\Domain\Model\Values\ListValue;
 
 final class RequiredValueTest extends TestCase

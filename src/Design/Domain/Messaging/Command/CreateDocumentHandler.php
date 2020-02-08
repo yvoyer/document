@@ -2,7 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
-use Star\Component\Document\Design\Domain\Model\DocumentDesignerAggregate;
+use Star\Component\Document\Design\Domain\Model\DocumentAggregate;
 use Star\Component\Document\Design\Domain\Model\DocumentRepository;
 
 final class CreateDocumentHandler
@@ -22,7 +22,7 @@ final class CreateDocumentHandler
 
     public function __invoke(CreateDocument $command): void
     {
-        $document = DocumentDesignerAggregate::draft($id = $command->documentId());
+        $document = DocumentAggregate::draft($id = $command->documentId());
 
         $this->documents->saveDocument($id, $document);
     }

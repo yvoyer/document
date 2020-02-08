@@ -4,7 +4,6 @@ namespace Star\Component\Document\Design\Domain\Model\Values;
 
 use Assert\Assertion;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
-use Star\Component\Document\Design\Domain\Model\Types\EmptyValue;
 
 final class StringValue implements RecordValue
 {

@@ -27,7 +27,7 @@ final class PropertyAdded implements DomainEvent
     public function __construct(
         PropertyName $name,
         PropertyType $type,
-        PropertyConstraint $constraint
+        PropertyConstraint $constraint // todo remove ??
     ) {
         $this->name = $name;
         $this->type = $type;
