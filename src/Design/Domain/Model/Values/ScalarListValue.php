@@ -36,15 +36,16 @@ final class ScalarListValue implements RecordValue
 
     public function getType(): string
     {
-        return \sprintf('list([%s])', $this->toString());
+        return \sprintf('list(%s)', \json_encode($this->values));
     }
 
     /**
      * @param string[]|int[] $values
-     * @return RecordValue
+     * @return ScalarListValue
      */
-    public static function fromArray(array $values): RecordValue
+    public static function fromArray(array $values): self
     {
+        Assertion::notEmpty($values, 'List of scalars is empty, but "int[] | string[]" was expected.');
         $intValues = \array_map(
             function ($value) {
                 Assertion::integerish($value);
@@ -56,12 +57,9 @@ final class ScalarListValue implements RecordValue
         return new self(...$intValues);
     }
 
-    public static function withElements(int $elements): RecordValue
+    public static function withElements(int $elements): self
     {
-        if ($elements === 0) {
-            return new EmptyValue();
-        }
-
+        Assertion::greaterThan($elements, 0, 'Number of options "%s" is not greater than "%s".');
         return self::fromArray(\range(1, $elements));
     }
 }

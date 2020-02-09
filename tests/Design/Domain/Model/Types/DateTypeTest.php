@@ -2,6 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
+use Star\Component\Document\DataEntry\Domain\Model\RawValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 
 final class DateTypeTest extends BaseTestType
@@ -15,31 +16,28 @@ final class DateTypeTest extends BaseTestType
     {
         return [
             "Boolean true should be invalid" => [
-                true, 'The property "name" expected a "date" value, "true" given.'
+                true, 'The property "name" expected a "date" value, "boolean(true)" given.'
             ],
             "Boolean false should be invalid" => [
-                false, 'The property "name" expected a "date" value, "false" given.'
+                false, 'The property "name" expected a "date" value, "boolean(false)" given.'
             ],
-            "String value should be invalid" => [
-                'invalid', 'The property "name" expected a "date" value, "invalid" given.'
+            "String format is not valid" => [
+                'invalid', 'The property "name" expected a "date" value, "string(invalid)" given.'
             ],
             "String numeric should be invalid" => [
-                '12.34', 'The property "name" expected a "date" value, "12.34" given.'
+                '12.34', 'The property "name" expected a "date" value, "float(12.34)" given.'
             ],
             "Float should be invalid" => [
-                12.34, 'The property "name" expected a "date" value, "12.34" given.'
+                12.34, 'The property "name" expected a "date" value, "float(12.34)" given.'
             ],
             "Integer should be invalid" => [
-                34, 'The property "name" expected a "date" value, "34" given.'
+                34, 'The property "name" expected a "date" value, "int(34)" given.'
             ],
             "Array should be invalid" => [
-                [], 'The property "name" expected a "date" value, "[]" given.'
+                [1], 'The property "name" expected a "date" value, "list([1])" given.'
             ],
             "Object should be invalid" => [
-                (object) [], 'The property "name" expected a "date" value, "stdClass" given.'
-            ],
-            "null should be invalid" => [
-                null, 'The property "name" expected a "date" value, "NULL" given.'
+                (object) [], 'The property "name" expected a "date" value, "object(stdClass)" given.'
             ],
         ];
     }
@@ -48,7 +46,7 @@ final class DateTypeTest extends BaseTestType
     {
         $this->assertSame(
             '2001-01-01',
-            $this->getType()->createValue('date', '2001-01-01')->toString()
+            $this->getType()->createValue('date', RawValue::fromMixed('2001-01-01'))->toString()
         );
     }
 
@@ -57,28 +55,43 @@ final class DateTypeTest extends BaseTestType
         $this->assertSame(
             '2002-02-05',
             $this->getType()
-                ->createValue('date', new \DateTimeImmutable('2002-02-05 12:34:56'))
+                ->createValue(
+                    'date',
+                    RawValue::fromMixed(new \DateTimeImmutable('2002-02-05 12:34:56'))
+                )
                 ->toString()
         );
     }
 
-    public function test_it_should_throw_exception_when_invalid_date_format()
+    public function test_it_should_allow_empty_string(): void
     {
-        $this->expectException(InvalidPropertyValue::class);
-        $this->expectExceptionMessage('The property "name" expected a "date" value, "sadsafjksbsadjn" given.');
-        $this->getType()->createValue('name', 'sadsafjksbsadjn');
+        $this->assertSame(
+            '',
+            $this->getType()->createValue('date', RawValue::fromMixed(''))->toString()
+        );
     }
 
-    public function test_it_should_create_empty_value_when_null(): void
+    public function test_it_should_allow_empty_array(): void
     {
-        $this->assertSame('', $this->getType()->createValue('date', '')->toString());
+        $this->assertSame(
+            '',
+            $this->getType()->createValue('date', RawValue::fromMixed([]))->toString()
+        );
     }
 
-    public function test_it_should_create_string_value_when_string(): void
+    public function test_it_should_allow_null(): void
+    {
+        $this->assertSame(
+            '',
+            $this->getType()->createValue('date', RawValue::fromMixed(null))->toString()
+        );
+    }
+
+    public function test_it_should_allow_partial_string_date(): void
     {
         $this->assertSame(
             'Feb',
-            $this->getType()->createValue('date', 'Feb')->toString()
+            $this->getType()->createValue('date', RawValue::fromMixed('Feb'))->toString()
         );
     }
 }

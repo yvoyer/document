@@ -2,7 +2,6 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
-use Assert\Assertion;
 use Star\Component\Document\DataEntry\Domain\Model\RawValue;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
@@ -28,16 +27,19 @@ final class CustomListType implements PropertyType
             return new EmptyValue();
         }
 
+        if (! $rawValue->isString() && ! $rawValue->isInt() && ! $rawValue->isArray()) {
+            throw InvalidPropertyValue::invalidValueForType($propertyName, 'list', $rawValue);
+        }
+
         $values = \explode(RecordValue::LIST_SEPARATOR, $rawValue->toString());
         foreach ($values as $id) {
-            Assertion::integerish($id);
             if (! $this->allowed->isAllowed((int) $id)) {
                 throw new InvalidPropertyValue(
                     \sprintf(
                         'The property "%s" only accepts an array made of the following values: "%s", "%s" given.',
                         $propertyName,
                         $this->allowed->getType(),
-                        $rawValue->getType()
+                        $rawValue->toString()
                     )
                 );
             }

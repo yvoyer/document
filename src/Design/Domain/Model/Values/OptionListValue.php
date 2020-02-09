@@ -73,12 +73,14 @@ final class OptionListValue implements RecordValue
 
     public static function fromArray(array $value): self
     {
+        Assertion::notEmpty($value, 'List of options is empty, but "ListOptionValue[]" was expected.');
+
         return new self(...$value);
     }
 
     public static function withElements(int $elements): self
     {
-        Assertion::greaterThan($elements, 0);
+        Assertion::greaterThan($elements, 0, 'Number of options "%s" is not greater than "%s".');
 
         return self::fromArray(
             \array_map(

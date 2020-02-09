@@ -11,7 +11,7 @@ final class NullType implements PropertyType
 {
     public function createValue(string $propertyName, RawValue $rawValue): RecordValue
     {
-        if (! \is_null($rawValue)) {
+        if (! $rawValue->isEmpty()) {
             throw InvalidPropertyValue::invalidValueForType($propertyName, 'null', $rawValue);
         }
 

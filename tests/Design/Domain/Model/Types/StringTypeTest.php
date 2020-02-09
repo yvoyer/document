@@ -26,7 +26,7 @@ final class StringTypeTest extends BaseTestType
                 12.34, 'The property "name" expected a "string" value, "float(12.34)" given.'
             ],
             "Integer should be invalid" => [
-                34, 'The property "name" expected a "string" value, "number(34)" given.'
+                34, 'The property "name" expected a "string" value, "int(34)" given.'
             ],
             "Array should be invalid" => [
                 [12], 'The property "name" expected a "string" value, "list([12])" given.'
