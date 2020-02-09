@@ -2,29 +2,44 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
+use Star\Component\Document\DataEntry\Domain\Model\RawValue;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Values\BooleanValue;
+use Star\Component\Document\Design\Domain\Model\Values\EmptyValue;
 
 final class BooleanType implements PropertyType
 {
-    public function validateRawValue(string $propertyName, $rawValue): ErrorList
+    private function validateRawValue(string $propertyName, RawValue $rawValue): ErrorList
     {
-        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+        $errors = new ErrorList();
+        if (! $rawValue->isBool()) {
+            $errors->addError(
+                $propertyName,
+                'en',
+                \sprintf(
+                    'Boolean property "%s" only accept boolish values (true, false, "true", "false") values, "%s" given.',
+                    $propertyName,
+                    \gettype($rawValue)
+                )
+            );
+        }
+
+        return $errors;
     }
 
-    public function createValue(string $propertyName, $rawValue): RecordValue
+    public function createValue(string $propertyName, RawValue $rawValue): RecordValue
     {
-        if (! in_array($rawValue, [1, 0, true, false, 'true', 'false', '1', '0'], true)) {
+        if ($rawValue->isEmpty()) {
+            return new EmptyValue();
+        }
+
+        if ($this->validateRawValue($propertyName, $rawValue)->hasErrors()) {
             throw InvalidPropertyValue::invalidValueForType($propertyName, 'boolean', $rawValue);
         }
 
-        if ($rawValue === 'false') {
-            $rawValue = false;
-        }
-
-        return new BooleanValue((bool) $rawValue);
+        return BooleanValue::fromString($rawValue->toString());
     }
 
     public function toData(): TypeData

@@ -22,4 +22,9 @@ final class RequiresSingleOption implements PropertyConstraint
             );
         }
     }
+
+    public function toData(): ConstraintData
+    {
+        return new ConstraintData(self::class);
+    }
 }

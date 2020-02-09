@@ -2,6 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
+use Star\Component\Document\DataEntry\Domain\Model\RawValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Values\BooleanValue;
 
@@ -16,34 +17,48 @@ final class BooleanTypeTest extends BaseTestType
     {
         return [
             "String value should be invalid" => [
-                'invalid', 'The property "name" expected a "boolean" value, "invalid" given.'
+                'invalid', 'The property "name" expected a "boolean" value, "string(invalid)" given.'
             ],
             "String numeric should be invalid" => [
-                '12.34', 'The property "name" expected a "boolean" value, "12.34" given.'
+                '12.34', 'The property "name" expected a "boolean" value, "float(12.34)" given.'
             ],
             "Float should be invalid" => [
-                12.34, 'The property "name" expected a "boolean" value, "12.34" given.'
+                12.34, 'The property "name" expected a "boolean" value, "float(12.34)" given.'
             ],
             "Integer should be invalid" => [
-                34, 'The property "name" expected a "boolean" value, "34" given.'
+                34, 'The property "name" expected a "boolean" value, "int(34)" given.'
             ],
             "Array should be invalid" => [
-                [], 'The property "name" expected a "boolean" value, "[]" given.'
+                [1], 'The property "name" expected a "boolean" value, "list([1])" given.'
             ],
             "Object should be invalid" => [
-                (object) [], 'The property "name" expected a "boolean" value, "stdClass" given.'
+                (object) [], 'The property "name" expected a "boolean" value, "object(stdClass)" given.'
             ],
-            "null should be invalid" => [
-                null, 'The property "name" expected a "boolean" value, "NULL" given.'
+            "string 1 should be invalid" => [
+                '1', 'The property "name" expected a "boolean" value, "int(1)" given.'
+            ],
+            "string 0 should be invalid" => [
+                '0', 'The property "name" expected a "boolean" value, "int(0)" given.'
+            ],
+            "int 1 should be invalid" => [
+                1, 'The property "name" expected a "boolean" value, "int(1)" given.'
+            ],
+            "int 0 should be invalid" => [
+                0, 'The property "name" expected a "boolean" value, "int(0)" given.'
             ],
         ];
+    }
+
+    public function test_it_should_accept_empty_value(): void
+    {
+        $this->assertTrue($this->getType()->createValue('name', RawValue::fromEmpty())->isEmpty());
     }
 
     public function test_it_should_accept_true()
     {
         $this->assertInstanceOf(
             BooleanValue::class,
-            $value = $this->getType()->createValue('text', true)
+            $value = $this->getType()->createValue('name', RawValue::fromBoolean(true))
         );
         $this->assertSame('true', $value->toString());
     }
@@ -52,7 +67,7 @@ final class BooleanTypeTest extends BaseTestType
     {
         $this->assertInstanceOf(
             BooleanValue::class,
-            $value = $this->getType()->createValue('text', false)
+            $value = $this->getType()->createValue('name', RawValue::fromBoolean(false))
         );
         $this->assertSame('false', $value->toString());
     }
@@ -61,7 +76,7 @@ final class BooleanTypeTest extends BaseTestType
     {
         $this->assertInstanceOf(
             BooleanValue::class,
-            $value = $this->getType()->createValue('text', 'true')
+            $value = $this->getType()->createValue('name', RawValue::fromString('true'))
         );
         $this->assertSame('true', $value->toString());
     }
@@ -70,43 +85,7 @@ final class BooleanTypeTest extends BaseTestType
     {
         $this->assertInstanceOf(
             BooleanValue::class,
-            $value = $this->getType()->createValue('text', 'false')
-        );
-        $this->assertSame('false', $value->toString());
-    }
-
-    public function test_it_should_accept_int_one()
-    {
-        $this->assertInstanceOf(
-            BooleanValue::class,
-            $value = $this->getType()->createValue('text', 1)
-        );
-        $this->assertSame('true', $value->toString());
-    }
-
-    public function test_it_should_accept_int_zero()
-    {
-        $this->assertInstanceOf(
-            BooleanValue::class,
-            $value = $this->getType()->createValue('text', 0)
-        );
-        $this->assertSame('false', $value->toString());
-    }
-
-    public function test_it_should_accept_string_one()
-    {
-        $this->assertInstanceOf(
-            BooleanValue::class,
-            $value = $this->getType()->createValue('text', '1')
-        );
-        $this->assertSame('true', $value->toString());
-    }
-
-    public function test_it_should_accept_string_zero()
-    {
-        $this->assertInstanceOf(
-            BooleanValue::class,
-            $value = $this->getType()->createValue('text', '0')
+            $value = $this->getType()->createValue('name', RawValue::fromString('false'))
         );
         $this->assertSame('false', $value->toString());
     }

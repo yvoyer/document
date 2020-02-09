@@ -2,6 +2,8 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Values;
 
+use Assert\Assertion;
+
 final class ListOptionValue
 {
     /**
@@ -21,6 +23,9 @@ final class ListOptionValue
 
     public function __construct(int $id, string $value, string $label)
     {
+        Assertion::notEmpty($value);
+        Assertion::notEmpty($label);
+
         $this->id = $id;
         $this->value = $value;
         $this->label = $label;

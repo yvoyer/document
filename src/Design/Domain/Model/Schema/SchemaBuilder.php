@@ -21,7 +21,7 @@ final class SchemaBuilder
     {
         $this->schema->addProperty($name, new StringType());
 
-        return new TextBuilder($this->schema, $this);
+        return new TextBuilder($name, $this->schema, $this);
     }
 
     public function getSchema(): DocumentSchema

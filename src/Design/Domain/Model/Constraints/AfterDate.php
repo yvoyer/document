@@ -45,4 +45,9 @@ final class AfterDate implements PropertyConstraint
             );
         }
     }
+
+    public function toData(): ConstraintData
+    {
+        return new ConstraintData(self::class, [$this->target]);
+    }
 }

@@ -61,7 +61,7 @@ final class DocumentAggregate extends AggregateRoot implements DocumentDesigner
 
     public function removeConstraint(PropertyName $name, string $constraintName): void
     {
-        $this->schema->getDefinition($name->toString())->removeConstraint($constraintName);
+        $this->schema->removeConstraint($name->toString(), $constraintName);
     }
 
     public function isPublished(): bool
@@ -98,7 +98,7 @@ final class DocumentAggregate extends AggregateRoot implements DocumentDesigner
 
     protected function onTransformerAddedOnProperty(Events\TransformerAddedOnProperty $event): void
     {
-        $this->schema->getDefinition($event->property()->toString())->addTransformer($event->identifier());
+        $this->schema->addTransformer($event->property()->toString(), $event->identifier());
     }
 
     protected function onDocumentConstraintRegistered(Events\DocumentConstraintRegistered $event): void

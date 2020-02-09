@@ -24,4 +24,9 @@ final class All implements PropertyConstraint
             $constraint->validate($name, $value, $errors);
         }
     }
+
+    public function toData(): ConstraintData
+    {
+        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+    }
 }

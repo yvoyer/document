@@ -4,7 +4,7 @@ namespace Star\Component\Document\Design\Domain\Model\Schema;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\Constraints\RequiresValue;
+use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
 use Star\Component\Document\Design\Domain\Model\Types;
 
 final class DocumentSchemaTest extends TestCase
@@ -65,23 +65,61 @@ final class DocumentSchemaTest extends TestCase
 
     public function test_it_should_serialize_constraints(): void
     {
-        $this->schema->addProperty('name', new Types\NullType());
-        $this->schema->addConstraint('name', 'const', new RequiresValue());
+        $property = 'prop';
+        $constraint = 'const';
+
+        $this->schema->addProperty($property, new Types\NullType());
+        $this->schema->addConstraint($property, $constraint, new NoConstraint());
         $this->assertArrayIsJson(
             [
                 'id' => 'd-id',
-                'properties' => [],
-                'constraints' => [
-                    'const' => 'required',
+                'properties' => [
+                    $property => [
+                        'constraints' => [
+                            $constraint => [
+                                'class' => Types\NullType::class,
+                                'arguments' => [],
+                            ],
+                        ],
+                    ],
                 ],
             ],
             $string = $this->schema->toString()
         );
 
         $schema = DocumentSchema::fromString($string);
-        $this->assertFalse(
-            $schema->getDefinition('name')->hasConstraint('const')
+        $definition = $schema->getDefinition($property);
+        $this->assertTrue($definition->hasConstraint($constraint));
+        $this->assertCount(1, $definition->getConstraints());
+        $this->assertSame($string, $schema->toString());
+    }
+
+    public function test_it_should_serialize_transformers(): void
+    {
+        $property = 'prop';
+        $constraint = 'const';
+
+        $this->schema->addProperty($property, new Types\NullType());
+        $this->schema->addConstraint($property, $constraint, new NoConstraint());
+        $this->assertArrayIsJson(
+            [
+                'id' => 'd-id',
+                'properties' => [
+                    $property => [
+                        'constraints' => [],
+                        'transformers' => [
+                            ''
+                        ],
+                    ],
+                ],
+            ],
+            $string = $this->schema->toString()
         );
+
+        $schema = DocumentSchema::fromString($string);
+        $definition = $schema->getDefinition($property);
+        $this->assertTrue($definition->hasConstraint($constraint));
+        $this->assertCount(1, $definition->getConstraints());
         $this->assertSame($string, $schema->toString());
     }
 
@@ -95,12 +133,10 @@ final class DocumentSchemaTest extends TestCase
                     'id' => 'dId',
                     'properties' => [
                         'name' => [
-                            'type' => \json_encode(
-                                [
-                                    'class' => 'Some\Path',
-                                    'arguments' => [],
-                                ]
-                            ),
+                            'type' => [
+                                'class' => 'Some\Path',
+                                'arguments' => [],
+                            ],
                         ],
                     ],
                 ]

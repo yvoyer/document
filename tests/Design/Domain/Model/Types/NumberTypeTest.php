@@ -4,7 +4,7 @@ namespace Star\Component\Document\Design\Domain\Model\Types;
 
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Values\FloatValue;
-use Star\Component\Document\Design\Domain\Model\Values\NumberValue;
+use Star\Component\Document\Design\Domain\Model\Values\IntegerValue;
 
 final class NumberTypeTest extends BaseTestType
 {
@@ -40,7 +40,7 @@ final class NumberTypeTest extends BaseTestType
     public function test_it_should_allow_int_value()
     {
         $this->assertInstanceOf(
-            NumberValue::class,
+            IntegerValue::class,
             $value = $this->getType()->createValue('prop', 123)
         );
         $this->assertSame('123', $value->toString());
@@ -49,7 +49,7 @@ final class NumberTypeTest extends BaseTestType
     public function test_it_should_allow_int_as_string_value()
     {
         $this->assertInstanceOf(
-            NumberValue::class,
+            IntegerValue::class,
             $value = $this->getType()->createValue('prop', '123')
         );
         $this->assertSame('123', $value->toString());

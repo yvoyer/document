@@ -4,7 +4,7 @@ namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
-use Star\Component\Document\Design\Domain\Model\Values\ListValue;
+use Star\Component\Document\Design\Domain\Model\Values\OptionListValue;
 
 final class RequiresSingleOptionTest extends TestCase
 {
@@ -22,7 +22,7 @@ final class RequiresSingleOptionTest extends TestCase
     {
         $this->constraint->validate(
             $name = 'name',
-            ListValue::withElements(3),
+            OptionListValue::withElements(3),
             $errors = new ErrorList()
         );
         $this->assertCount(1, $errors);

@@ -35,6 +35,11 @@ final class MaximumLength implements PropertyConstraint
         }
     }
 
+    public function toData(): ConstraintData
+    {
+        return new ConstraintData(self::class, [$this->length]);
+    }
+
     public static function fromInt(int $length): self
     {
         return new self($length);

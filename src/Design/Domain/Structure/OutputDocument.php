@@ -16,7 +16,7 @@ final class OutputDocument implements DocumentVisitor
         $this->writeLine(\sprintf('Document: "%s"', $id->toString()));
     }
 
-    public function visitProperty(PropertyName $name, PropertyType $type): void
+    public function visitProperty(PropertyName $name, PropertyType $type): bool
     {
         $this->writeLine(
             \sprintf(
@@ -25,6 +25,8 @@ final class OutputDocument implements DocumentVisitor
                 $type->toData()
             )
         );
+
+        return false;
     }
 
     public function visitPropertyConstraint(

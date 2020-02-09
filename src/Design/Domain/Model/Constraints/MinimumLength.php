@@ -35,6 +35,11 @@ final class MinimumLength implements PropertyConstraint
         }
     }
 
+    public function toData(): ConstraintData
+    {
+        return new ConstraintData(self::class, [$this->length]);
+    }
+
     /**
      * @param int|string $length
      * @return MinimumLength

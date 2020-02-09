@@ -40,14 +40,12 @@ final class TypeData
         return $class::fromData($this->arguments);
     }
 
-    public function toJson(): string
+    public function toArray(): array
     {
-        return \json_encode(
-            [
-                'class' => $this->class,
-                'arguments' => $this->arguments,
-            ]
-        );
+        return [
+            'class' => $this->class,
+            'arguments' => $this->arguments,
+        ];
     }
 
     public static function fromString(string $string): self

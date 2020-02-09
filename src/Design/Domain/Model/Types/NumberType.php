@@ -2,32 +2,41 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
+use Star\Component\Document\DataEntry\Domain\Model\RawValue;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Values\FloatValue;
-use Star\Component\Document\Design\Domain\Model\Values\NumberValue;
+use Star\Component\Document\Design\Domain\Model\Values\IntegerValue;
 
 final class NumberType implements PropertyType
 {
-    public function validateRawValue(string $propertyName, $rawValue): ErrorList
+    private function validateRawValue(string $propertyName, RawValue $rawValue): ErrorList
     {
-        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+        $errors = new ErrorList();
+        if (!\is_numeric($rawValue)) {
+            $errors->addError(
+                $propertyName,
+                'en',
+                \sprintf(
+                    'Number property "%s" only accepts numeric values, "%s" given.',
+                    $propertyName,
+                    \gettype($rawValue)
+                )
+            );
+        }
+
+        return $errors;
     }
 
-    /**
-     * @param string $propertyName
-     * @param mixed $rawValue
-     * @return RecordValue
-     */
-    public function createValue(string $propertyName, $rawValue): RecordValue
+    public function createValue(string $propertyName, RawValue $rawValue): RecordValue
     {
-        if (! \is_numeric($rawValue)) {
+        if ($this->validateRawValue($propertyName, $rawValue)->hasErrors()) {
             throw InvalidPropertyValue::invalidValueForType($propertyName, 'number', $rawValue);
         }
 
         if (\is_int($rawValue) || (int) $rawValue == $rawValue) {
-            return NumberValue::fromInt((int) $rawValue);
+            return IntegerValue::fromInt((int) $rawValue);
         }
 
         return FloatValue::fromString((string) $rawValue);

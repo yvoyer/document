@@ -53,7 +53,10 @@ final class PropertyDefinition
 
     public function acceptDocumentVisitor(DocumentVisitor $visitor): void
     {
-        $visitor->visitProperty($this->name, $this->type);
+        if ($visitor->visitProperty($this->name, $this->type)) {
+            return;
+        }
+
         foreach ($this->constraints as $name => $constraint) {
             $visitor->visitPropertyConstraint($this->name, $name, $constraint);
         }

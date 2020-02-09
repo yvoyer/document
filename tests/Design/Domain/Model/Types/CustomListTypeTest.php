@@ -2,20 +2,16 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
+use Star\Component\Document\DataEntry\Domain\Model\RawValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\Values\ListOptionValue;
-use Star\Component\Document\Design\Domain\Model\Values\ListValue;
+use Star\Component\Document\Design\Domain\Model\Values\OptionListValue;
 
 final class CustomListTypeTest
     extends BaseTestType
 {
     protected function getType(): PropertyType
     {
-        return new CustomListType(
-            ListOptionValue::withValueAsLabel(1, 'value 1'),
-            ListOptionValue::withValueAsLabel(2, 'value 2'),
-            ListOptionValue::withValueAsLabel(3, 'value 3')
-        );
+        return new CustomListType(OptionListValue::withElements(3));
     }
 
     public static function provideInvalidValuesExceptions(): array
@@ -72,67 +68,71 @@ final class CustomListTypeTest
 
     public function test_it_should_accept_empty_array()
     {
-        $this->assertInstanceOf(
-            ListValue::class,
-            $value = $this->getType()->createValue('prop', [])
+        $this->assertSame(
+            '',
+            $value = $this->getType()->createValue('prop', RawValue::fromMixed([]))->toString()
         );
-        $this->assertSame('', $value->toString());
     }
 
     public function test_it_should_accept_single_value_array()
     {
         $this->assertInstanceOf(
-            ListValue::class,
-            $value = $this->getType()->createValue('prop', [1])
+            OptionListValue::class,
+            $value = $this->getType()->createValue('prop', RawValue::fromMixed([1]))
         );
-        $this->assertSame('value 1', $value->toString());
+        $this->assertSame('1', $value->toString());
+        $this->assertSame('[Label 1]', $value->getType());
     }
 
     public function test_it_should_accept_multi_value_array()
     {
         $this->assertInstanceOf(
-            ListValue::class,
-            $value = $this->getType()->createValue('prop', [1, 3])
+            OptionListValue::class,
+            $value = $this->getType()->createValue('prop', RawValue::fromMixed([1, 3]))
         );
-        $this->assertSame('value 1;value 3', $value->toString());
+        $this->assertSame('1;3', $value->toString());
+        $this->assertSame('[Label 1;Label 3]', $value->getType());
     }
 
     public function test_it_should_return_in_same_order_as_given()
     {
         $this->assertInstanceOf(
-            ListValue::class,
-            $value = $this->getType()->createValue('prop', [2, 1, 3])
+            OptionListValue::class,
+            $value = $this->getType()->createValue('prop', RawValue::fromMixed([2, 1, 3]))
         );
-        $this->assertSame('value 2;value 1;value 3', $value->toString());
+        $this->assertSame('2;1;3', $value->toString());
+        $this->assertSame('[Label 2;Label 1;Label 3]', $value->getType());
     }
 
     public function test_it_should_accept_string_value_for_key()
     {
         $this->assertInstanceOf(
-            ListValue::class,
-            $value = $this->getType()->createValue('prop', ["1", "2", "3"])
+            OptionListValue::class,
+            $value = $this->getType()->createValue('prop', RawValue::fromMixed(["1", "2", "3"]))
         );
-        $this->assertSame('value 1;value 2;value 3', $value->toString());
+        $this->assertSame('1;2;3', $value->toString());
+        $this->assertSame('[Label 1;Label 2;Label 3]', $value->getType());
     }
 
     public function test_it_should_accept_imploded_string()
     {
-        $this->assertInstanceOf(
-            ListValue::class,
-            $value = $this->getType()->createValue('prop', "")
+        $this->assertSame(
+            '',
+            $this->getType()->createValue('prop', RawValue::fromMixed(""))->toString()
         );
-        $this->assertSame('', $value->toString());
 
         $this->assertInstanceOf(
-            ListValue::class,
-            $value = $this->getType()->createValue('prop', "2")
+            OptionListValue::class,
+            $value = $this->getType()->createValue('prop', RawValue::fromMixed("2"))
         );
-        $this->assertSame('value 2', $value->toString());
+        $this->assertSame('2', $value->toString());
+        $this->assertSame('[Label 2]', $value->getType());
 
         $this->assertInstanceOf(
-            ListValue::class,
-            $value = $this->getType()->createValue('prop', "1;2;3")
+            OptionListValue::class,
+            $value = $this->getType()->createValue('prop', RawValue::fromMixed("1;2;3"))
         );
-        $this->assertSame('value 1;value 2;value 3', $value->toString());
+        $this->assertSame('1;2;3', $value->toString());
+        $this->assertSame('[Label 1;Label 2;Label 3]', $value->getType());
     }
 }

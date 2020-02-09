@@ -3,6 +3,7 @@
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
 use DateTimeInterface;
+use Star\Component\Document\DataEntry\Domain\Model\RawValue;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
@@ -12,7 +13,7 @@ use Star\Component\Document\Design\Domain\Model\Values\StringValue;
 
 final class DateType implements PropertyType
 {
-    public function validateRawValue(string $propertyName, $rawValue): ErrorList
+    private function validateRawValue(string $propertyName, RawValue $rawValue): ErrorList
     {
         $errors = new ErrorList();
         if (\is_string($rawValue) && \strtotime($rawValue) === false) {
@@ -26,26 +27,20 @@ final class DateType implements PropertyType
         return $errors;
     }
 
-    /**
-     * @param string $propertyName
-     * @param mixed $rawValue
-     * @return RecordValue
-     */
-    public function createValue(string $propertyName, $rawValue): RecordValue
+    public function createValue(string $propertyName, RawValue $rawValue): RecordValue
     {
-        if ($rawValue instanceof DateTimeInterface) {
-            return DateValue::fromDateTime($rawValue);
+        if ($rawValue->isEmpty()) {
+            return new EmptyValue();
         }
 
-        if (\is_string($rawValue) && !\is_numeric($rawValue)) {
-            if (empty($rawValue)) {
-                return new EmptyValue();
-            }
-
-            if (\strtotime($rawValue) > 0) {
-                return StringValue::fromString($rawValue);
-            }
+        if ($rawValue->isDate()) {
+            return DateValue::fromString($rawValue->toString());
         }
+
+        if (\strtotime($rawValue->toString()) > 0) {
+            return StringValue::fromString($rawValue);
+        }
+
 
         throw InvalidPropertyValue::invalidValueForType($propertyName, 'date', $rawValue);
     }

@@ -34,9 +34,11 @@ final class AtLeastNumberOfRequiredProperty implements DocumentVisitor, Document
     {
     }
 
-    public function visitProperty(PropertyName $name, PropertyType $type): void
+    public function visitProperty(PropertyName $name, PropertyType $type): bool
     {
         $this->count ++;
+
+        return false;
     }
 
     public function visitPropertyConstraint(

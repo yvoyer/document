@@ -5,7 +5,7 @@ namespace Star\Component\Document\Design\Domain\Model\Values;
 use Assert\Assertion;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 
-final class NumberValue implements RecordValue
+final class IntegerValue implements RecordValue
 {
     /**
      * @var int
@@ -30,6 +30,11 @@ final class NumberValue implements RecordValue
     public function toString(): string
     {
         return strval($this->value);
+    }
+
+    public function getType(): string
+    {
+        return \sprintf('int(%s)', $this->value);
     }
 
     public static function fromString(string $value): RecordValue

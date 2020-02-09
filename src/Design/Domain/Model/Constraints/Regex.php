@@ -36,4 +36,9 @@ final class Regex implements PropertyConstraint
             );
         }
     }
+
+    public function toData(): ConstraintData
+    {
+        return new ConstraintData(self::class, [$this->pattern]);
+    }
 }

@@ -11,6 +11,11 @@ final class EmptyValue implements RecordValue
         return '';
     }
 
+    public function getType(): string
+    {
+        return 'empty()';
+    }
+
     public function isEmpty(): bool
     {
         return true;

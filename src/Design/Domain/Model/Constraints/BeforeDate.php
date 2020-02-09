@@ -45,4 +45,9 @@ final class BeforeDate implements PropertyConstraint
             );
         }
     }
+
+    public function toData(): ConstraintData
+    {
+        return new ConstraintData(self::class, [$this->target]);
+    }
 }

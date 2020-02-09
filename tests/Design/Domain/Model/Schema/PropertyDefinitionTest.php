@@ -5,6 +5,8 @@ namespace Star\Component\Document\Design\Domain\Model\Schema;
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
+use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
+use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
@@ -138,5 +140,30 @@ final class PropertyDefinitionTest extends TestCase
             'transformed value',
             $new->transformValue('raw', $factory)->toString()
         );
+    }
+
+    public function test_it_should_stop_visiting_on_visit_property(): void
+    {
+        $definition = new PropertyDefinition(PropertyName::fromString('name'), new NullType());
+        /**
+         * @var PropertyDefinition $definition
+         */
+        $definition = $definition
+            ->addConstraint('const', new NoConstraint())
+            ->addTransformer(TransformerIdentifier::random());
+
+        $visitor = $this->createMock(DocumentVisitor::class);
+        $visitor
+            ->expects($this->once())
+            ->method('visitProperty')
+            ->willReturn(true);
+        $visitor
+            ->expects($this->never())
+            ->method('visitPropertyConstraint');
+        $visitor
+            ->expects($this->never())
+            ->method('visitValueTransformer');
+
+        $definition->acceptDocumentVisitor($visitor);
     }
 }

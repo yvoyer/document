@@ -2,11 +2,14 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Model;
 
+use Assert\Assertion;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Exception\UndefinedProperty;
 use Star\Component\Document\DataEntry\Domain\Model\Events;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\AlwaysThrowExceptionOnValidationErrors;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleValidationErrors;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\ValidateConstraints;
 use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 use Star\Component\DomainEvent\AggregateRoot;
 
@@ -40,6 +43,11 @@ final class RecordAggregate extends AggregateRoot implements DocumentRecord
         array $values
     ): self {
         $record = self::withoutValues($id, $schema);
+        Assertion::notEmpty(
+            $values,
+            'Record cannot have an empty array of values, at least one item should be given.'
+        );
+
         foreach ($values as $property => $rawValue) {
             $record->setValue($property, $rawValue, new AlwaysThrowExceptionOnValidationErrors());
         }
@@ -67,14 +75,16 @@ final class RecordAggregate extends AggregateRoot implements DocumentRecord
         $rawValue,
         StrategyToHandleValidationErrors $strategy
     ): void {
+        $rawValue = RawValue::fromMixed($rawValue);
         $type = $this->schema->getDefinition($propertyName)->getType();
-        $errors = $type->validateRawValue($propertyName, $rawValue);
-
-        if ($errors->hasErrors()) {
-            $strategy->handleFailure($errors);
+        $constraintErrors = new ErrorList();
+        $value = $type->createValue($propertyName, $rawValue);
+        $this->schema->acceptDocumentVisitor(new ValidateConstraints($propertyName, $value, $constraintErrors));
+        if ($constraintErrors->hasErrors()) {
+            $strategy->handleFailure($constraintErrors);
         }
 
-        $this->values[$propertyName] = $type->createValue($propertyName, $rawValue);
+        $this->values[$propertyName] = $value;
     }
 
     public function getValue(string $propertyName): RecordValue

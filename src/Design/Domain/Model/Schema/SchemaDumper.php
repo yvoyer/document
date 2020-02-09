@@ -1,39 +1,34 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Design\Domain\Structure;
+namespace Star\Component\Document\Design\Domain\Model\Schema;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\Schema\PropertyDefinition;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 
-final class PropertyExtractor implements DocumentVisitor, \Countable
+final class SchemaDumper implements DocumentVisitor
 {
-    /**
-     * @var PropertyDefinition[]
-     */
-    private $properties = [];
+    private $data = [];
 
-    public function count(): int
+    public function toArray(): array
     {
-        return \count($this->properties);
-    }
-
-    public function hasProperty(string $name): bool
-    {
-        return isset($this->properties[$name]);
+        return $this->data;
     }
 
     public function visitDocument(DocumentId $id): void
     {
+        $this->data['id'] = $id->toString();
+        $this->data['properties'] = [];
     }
 
     public function visitProperty(PropertyName $name, PropertyType $type): bool
     {
-        $this->properties[$name->toString()] = $type;
+        $this->data['properties'][$name->toString()]['type'] = $type->toData()->toArray();
+        $this->data['properties'][$name->toString()]['constraints'] = [];
+        $this->data['properties'][$name->toString()]['transformers'] = [];
 
         return false;
     }
@@ -43,6 +38,7 @@ final class PropertyExtractor implements DocumentVisitor, \Countable
         string $constraintName,
         PropertyConstraint $constraint
     ): void {
+        $this->data['properties'][$propertyName->toString()]['constraints'][$constraintName] = $constraint->toData()->toArray();
     }
 
     public function visitValueTransformer(
@@ -50,5 +46,6 @@ final class PropertyExtractor implements DocumentVisitor, \Countable
         string $constraintName,
         TransformerIdentifier $identifier
     ): void {
+        $this->data['properties'][$propertyName->toString()]['transformers'][] = $identifier->toString();
     }
 }

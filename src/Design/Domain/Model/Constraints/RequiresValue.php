@@ -4,7 +4,6 @@ namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
-use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 
 final class RequiresValue implements PropertyConstraint
@@ -23,8 +22,8 @@ final class RequiresValue implements PropertyConstraint
         }
     }
 
-    public function acceptDocumentVisitor(DocumentVisitor $visitor): void
+    public function toData(): ConstraintData
     {
-        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+        return new ConstraintData(self::class);
     }
 }

@@ -1,30 +1,40 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Design\Domain\Structure;
+namespace Star\Component\Document\DataEntry\Domain\Model\Validation;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\Schema\PropertyDefinition;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 
-final class PropertyExtractor implements DocumentVisitor, \Countable
+final class ValidateConstraints implements DocumentVisitor
 {
     /**
-     * @var PropertyDefinition[]
+     * @var PropertyName
      */
-    private $properties = [];
+    private $property;
 
-    public function count(): int
-    {
-        return \count($this->properties);
-    }
+    /**
+     * @var RecordValue
+     */
+    private $value;
 
-    public function hasProperty(string $name): bool
-    {
-        return isset($this->properties[$name]);
+    /**
+     * @var ErrorList
+     */
+    private $errors;
+
+    public function __construct(
+        string $property,
+        RecordValue $value,
+        ErrorList $errors
+    ) {
+        $this->property = PropertyName::fromString($property);
+        $this->value = $value;
+        $this->errors = $errors;
     }
 
     public function visitDocument(DocumentId $id): void
@@ -33,9 +43,7 @@ final class PropertyExtractor implements DocumentVisitor, \Countable
 
     public function visitProperty(PropertyName $name, PropertyType $type): bool
     {
-        $this->properties[$name->toString()] = $type;
-
-        return false;
+        return ! $name->matchName($this->property);
     }
 
     public function visitPropertyConstraint(
@@ -43,6 +51,7 @@ final class PropertyExtractor implements DocumentVisitor, \Countable
         string $constraintName,
         PropertyConstraint $constraint
     ): void {
+        $constraint->validate($propertyName->toString(), $this->value, $this->errors);
     }
 
     public function visitValueTransformer(
@@ -50,5 +59,6 @@ final class PropertyExtractor implements DocumentVisitor, \Countable
         string $constraintName,
         TransformerIdentifier $identifier
     ): void {
+        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
     }
 }

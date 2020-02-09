@@ -37,6 +37,11 @@ final class DateValue implements RecordValue
         return $this->value->format('Y-m-d');
     }
 
+    public function getType(): string
+    {
+        return \sprintf('date(%s)', $this->toString());
+    }
+
     public static function fromString(string $date): RecordValue
     {
         if (\mb_strlen($date) === 0) {

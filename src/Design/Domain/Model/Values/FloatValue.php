@@ -37,6 +37,11 @@ final class FloatValue implements RecordValue
         return (string) \substr_replace((string) $this->value, '.', - $this->decimal, 0);
     }
 
+    public function getType(): string
+    {
+        return \sprintf('float(%s)', $this->toString());
+    }
+
     /**
      * @param string $value A float value ie. "12.34"
      *
@@ -47,5 +52,10 @@ final class FloatValue implements RecordValue
         $parts = \explode('.', $value);
 
         return new self((int) \str_replace('.', '', $value), \mb_strlen($parts[1]));
+    }
+
+    public static function fromFloat(float $value): RecordValue
+    {
+        return self::fromString(\strval($value));
     }
 }

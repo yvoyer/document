@@ -138,17 +138,6 @@ final class DocumentBuilderTest extends TestCase
         $builder->setValue('name', [0, "2"]);
     }
 
-    public function test_it_should_create_a_property(): void
-    {
-        var_dump(
-        DocumentBuilder::createDocument()
-            ->createBoolean('name')->endProperty()
-            ->startRecord()
-            ->setValue('name', true)
-            ->getRecord()->uncommitedEvents()
-    );
-    }
-
     public function test_it_should_build_a_record_with_all_types_of_properties()
     {
         $builder = DocumentBuilder::createDocument('doc')

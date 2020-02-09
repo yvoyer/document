@@ -22,4 +22,9 @@ final class DateFormat implements PropertyConstraint
     {
         throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
     }
+
+    public function toData(): ConstraintData
+    {
+        return new ConstraintData(self::class, [$this->format]);
+    }
 }

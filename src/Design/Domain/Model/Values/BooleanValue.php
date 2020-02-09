@@ -2,6 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Values;
 
+use Assert\Assertion;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 
 final class BooleanValue implements RecordValue
@@ -31,6 +32,11 @@ final class BooleanValue implements RecordValue
         return ($this->value) ? 'true' : 'false';
     }
 
+    public function getType(): string
+    {
+        return \sprintf('boolean(%s)', $this->toString());
+    }
+
     public static function trueValue(): RecordValue
     {
         return new self(true);
@@ -39,5 +45,12 @@ final class BooleanValue implements RecordValue
     public static function falseValue(): RecordValue
     {
         return new self(false);
+    }
+
+    public static function fromString(string $value): RecordValue
+    {
+        Assertion::inArray($value, ['true', 'false']);
+
+        return new self(($value === 'true'));
     }
 }

@@ -33,6 +33,11 @@ final class StringValue implements RecordValue
         return $this->value;
     }
 
+    public function getType(): string
+    {
+        return \sprintf('string(%s)', $this->toString());
+    }
+
     public static function fromString(string $value): RecordValue
     {
         if(\mb_strlen($value) === 0) {
