@@ -17,6 +17,7 @@ use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerRegistry;
 use Star\Component\Document\Design\Domain\Model\Types;
 use Star\Component\Document\Design\Domain\Model\Values\ListOptionValue;
+use Star\Component\Document\Design\Domain\Model\Values\OptionListValue;
 
 final class DocumentBuilder
 {
@@ -73,11 +74,13 @@ final class DocumentBuilder
         return $this->createProperty(
             $name,
             new Types\CustomListType(
-                ...\array_map(
-                    function (int $key) use ($options) {
-                        return ListOptionValue::withValueAsLabel($key + 1, $options[$key]);
-                    },
-                    \array_keys($options)
+                OptionListValue::fromArray(
+                    \array_map(
+                        function (int $key) use ($options) {
+                            return ListOptionValue::withValueAsLabel($key + 1, $options[$key]);
+                        },
+                        \array_keys($options)
+                    )
                 )
             ),
             CustomListBuilder::class

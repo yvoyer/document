@@ -26,7 +26,7 @@ final class CustomListTypeTest extends BaseTestType
                 false, $typeMessage . '"boolean(false)" given.'
             ],
             "String value should be invalid" => [
-                'invalid', $typeMessage . '"string(invalid)" given.'
+                'invalid', $arrayItemMessage . '"string(invalid)" given.'
             ],
             "String numeric should be invalid" => [
                 '12.34', $typeMessage . '"float(12.34)" given.'
@@ -35,34 +35,28 @@ final class CustomListTypeTest extends BaseTestType
                 12.34, $typeMessage . '"float(12.34)" given.'
             ],
             "Integer should be invalid" => [
-                34, $typeMessage . '"int(34)" given.'
+                34, $arrayItemMessage . '"int(34)" given.'
             ],
             "Option string do not exists in available options" => [
-                ['invalid'], $arrayItemMessage . '"list(["invalid"])" given.'
+                ['invalid'], 'List of scalar expected "int[] | string[]", got "["invalid"]".',
             ],
             "Option int do not exists in available options" => [
                 [123], $arrayItemMessage . '"list([123])" given.'
             ],
             "Array of invalid option boolean" => [
-                [true, false], $arrayItemMessage . '"list([true,false])" given.'
+                [true, false], 'List of scalar expected "int[] | string[]", got "[true,false]".',
             ],
             "Array of invalid option array" => [
-                [[]], $arrayItemMessage . '"list([[]])" given.'
+                [[]], 'List of scalar expected "int[] | string[]", got "[[]]".',
             ],
             "Array of invalid option object" => [
-                [(object) []], $arrayItemMessage . '"list([{}])" given.'
+                [(object) []], 'List of scalar expected "int[] | string[]", got "[{}]".',
             ],
             "Array of invalid option null" => [
-                [null], $arrayItemMessage . '"list([])" given.'
-            ],
-            "Object should be invalid" => [
-                (object) [], $arrayItemMessage . '"object(stdClass)" given.'
-            ],
-            "null should be invalid" => [
-                null, $typeMessage . '"empty()" given.'
+                [null], 'List of scalar expected "int[] | string[]", got "[null]".',
             ],
             "invalid second id should be invalid" => [
-                [1, 999], $arrayItemMessage . '"[1,999]" given.'
+                [1, 999], $arrayItemMessage . '"list([1,999])" given.'
             ],
         ];
     }
@@ -82,7 +76,7 @@ final class CustomListTypeTest extends BaseTestType
             $value = $this->getType()->createValue('prop', RawValue::fromMixed([1]))
         );
         $this->assertSame('1', $value->toString());
-        $this->assertSame('[Label 1]', $value->getType());
+        $this->assertSame('list([Label 1])', $value->getType());
     }
 
     public function test_it_should_accept_multi_value_array()
@@ -92,7 +86,7 @@ final class CustomListTypeTest extends BaseTestType
             $value = $this->getType()->createValue('prop', RawValue::fromMixed([1, 3]))
         );
         $this->assertSame('1;3', $value->toString());
-        $this->assertSame('[Label 1;Label 3]', $value->getType());
+        $this->assertSame('list([Label 1;Label 3])', $value->getType());
     }
 
     public function test_it_should_return_in_same_order_as_given()
@@ -102,7 +96,7 @@ final class CustomListTypeTest extends BaseTestType
             $value = $this->getType()->createValue('prop', RawValue::fromMixed([2, 1, 3]))
         );
         $this->assertSame('2;1;3', $value->toString());
-        $this->assertSame('[Label 2;Label 1;Label 3]', $value->getType());
+        $this->assertSame('list([Label 2;Label 1;Label 3])', $value->getType());
     }
 
     public function test_it_should_accept_string_value_for_key()
@@ -112,7 +106,7 @@ final class CustomListTypeTest extends BaseTestType
             $value = $this->getType()->createValue('prop', RawValue::fromMixed(["1", "2", "3"]))
         );
         $this->assertSame('1;2;3', $value->toString());
-        $this->assertSame('[Label 1;Label 2;Label 3]', $value->getType());
+        $this->assertSame('list([Label 1;Label 2;Label 3])', $value->getType());
     }
 
     public function test_it_should_accept_imploded_string()
@@ -127,13 +121,13 @@ final class CustomListTypeTest extends BaseTestType
             $value = $this->getType()->createValue('prop', RawValue::fromMixed("2"))
         );
         $this->assertSame('2', $value->toString());
-        $this->assertSame('[Label 2]', $value->getType());
+        $this->assertSame('list([Label 2])', $value->getType());
 
         $this->assertInstanceOf(
             OptionListValue::class,
             $value = $this->getType()->createValue('prop', RawValue::fromMixed("1;2;3"))
         );
         $this->assertSame('1;2;3', $value->toString());
-        $this->assertSame('[Label 1;Label 2;Label 3]', $value->getType());
+        $this->assertSame('list([Label 1;Label 2;Label 3])', $value->getType());
     }
 }

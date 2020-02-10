@@ -36,7 +36,7 @@ final class BooleanType implements PropertyType
         }
 
         if ($this->validateRawValue($propertyName, $rawValue)->hasErrors()) {
-            throw InvalidPropertyValue::invalidValueForType($propertyName, 'boolean', $rawValue);
+            throw InvalidPropertyValue::invalidValueForType($propertyName, $this->toString(), $rawValue);
         }
 
         return BooleanValue::fromString($rawValue->toString());
@@ -45,6 +45,11 @@ final class BooleanType implements PropertyType
     public function toData(): TypeData
     {
         return new TypeData(self::class);
+    }
+
+    public function toString(): string
+    {
+        return 'boolean';
     }
 
     public static function fromData(array $arguments): PropertyType

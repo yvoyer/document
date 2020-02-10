@@ -27,7 +27,7 @@ final class RequiresSingleOptionTest extends TestCase
         );
         $this->assertCount(1, $errors);
         $this->assertSame(
-            'Property named "name" allows only one option, "Label 1;Label 2;Label 3" given.',
+            'Property named "name" allows only one option, "list([Label 1;Label 2;Label 3])" given.',
             $errors->getErrorsForProperty($name, 'en')[0]
         );
     }

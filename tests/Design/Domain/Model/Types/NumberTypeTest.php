@@ -29,16 +29,18 @@ final class NumberTypeTest extends BaseTestType
             "Array should be invalid" => [
                 [1], 'The property "name" expected a "number" value, "list([1])" given.'
             ],
-            "Empty array should be invalid" => [
-                [], 'The property "name" expected a "number" value, "empty()" given.'
-            ],
             "Object should be invalid" => [
                 (object) [], 'The property "name" expected a "number" value, "object(stdClass)" given.'
             ],
-            "null should be invalid" => [
-                null, 'The property "name" expected a "number" value, "empty()" given.'
-            ],
         ];
+    }
+
+    public function test_it_should_allow_empty_value(): void
+    {
+        $this->assertSame(
+            '',
+            $this->getType()->createValue('prop', RawValue::fromMixed(''))->toString()
+        );
     }
 
     public function test_it_should_allow_int_value()

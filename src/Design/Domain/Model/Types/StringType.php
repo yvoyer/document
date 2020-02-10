@@ -17,7 +17,7 @@ final class StringType implements PropertyType
         }
 
         if (!$rawValue->isString()) {
-            throw InvalidPropertyValue::invalidValueForType($propertyName, 'string', $rawValue);
+            throw InvalidPropertyValue::invalidValueForType($propertyName, $this->toString(), $rawValue);
         }
 
         return StringValue::fromString($rawValue->toString());
@@ -26,6 +26,11 @@ final class StringType implements PropertyType
     public function toData(): TypeData
     {
         return new TypeData(self::class);
+    }
+
+    public function toString(): string
+    {
+        return 'string';
     }
 
     public static function fromData(array $arguments): PropertyType

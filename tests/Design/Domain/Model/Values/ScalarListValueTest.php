@@ -34,7 +34,7 @@ final class ScalarListValueTest extends TestCase
     public function test_it_should_not_allow_zero_elements(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Number of options "0" is not greater than "0".');
+        $this->expectExceptionMessage('Number of scalar "0" is not greater than "0".');
         ScalarListValue::withElements(0);
     }
 }

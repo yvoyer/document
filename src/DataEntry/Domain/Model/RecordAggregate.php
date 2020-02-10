@@ -77,11 +77,12 @@ final class RecordAggregate extends AggregateRoot implements DocumentRecord
     ): void {
         $rawValue = RawValue::fromMixed($rawValue);
         $type = $this->schema->getDefinition($propertyName)->getType();
-        $constraintErrors = new ErrorList();
+        $errors = new ErrorList();
         $value = $type->createValue($propertyName, $rawValue);
-        $this->schema->acceptDocumentVisitor(new ValidateConstraints($propertyName, $value, $constraintErrors));
-        if ($constraintErrors->hasErrors()) {
-            $strategy->handleFailure($constraintErrors);
+        $this->schema->acceptDocumentVisitor(new ValidateConstraints($propertyName, $value, $errors));
+
+        if ($errors->hasErrors()) {
+            $strategy->handleFailure($errors);
         }
 
         $this->values[$propertyName] = $value;

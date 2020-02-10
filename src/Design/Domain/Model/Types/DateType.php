@@ -25,12 +25,17 @@ final class DateType implements PropertyType
             return StringValue::fromString($rawValue->toString());
         }
 
-        throw InvalidPropertyValue::invalidValueForType($propertyName, 'date', $rawValue);
+        throw InvalidPropertyValue::invalidValueForType($propertyName, $this->toString(), $rawValue);
     }
 
     public function toData(): TypeData
     {
         return new TypeData(self::class);
+    }
+
+    public function toString(): string
+    {
+        return 'date';
     }
 
     public static function fromData(array $arguments): PropertyType

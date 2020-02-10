@@ -12,5 +12,4 @@ final class NumberBuilder extends PropertyBuilder
 
         return $this;
     }
-
 }

@@ -15,8 +15,9 @@ final class RequiresValue implements PropertyConstraint
                 $name,
                 'en',
                 \sprintf(
-                    'Property named "%s" is required, but empty value given.',
-                    $name
+                    'Property named "%s" is required, but "%s" given.',
+                    $name,
+                    $value->getType()
                 )
             );
         }

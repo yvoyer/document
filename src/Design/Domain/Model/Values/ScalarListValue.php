@@ -4,6 +4,7 @@ namespace Star\Component\Document\Design\Domain\Model\Values;
 
 use Assert\Assertion;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+use Star\Component\Document\Design\Domain\Model\Types\InvalidPropertyValue;
 
 final class ScalarListValue implements RecordValue
 {
@@ -47,7 +48,15 @@ final class ScalarListValue implements RecordValue
     {
         Assertion::notEmpty($values, 'List of scalars is empty, but "int[] | string[]" was expected.');
         $intValues = \array_map(
-            function ($value) {
+            function ($value) use ($values) {
+                if (! \is_numeric($value) && ! \is_float($value)) {
+                    throw new InvalidPropertyValue(
+                        \sprintf(
+                            'List of scalar expected "int[] | string[]", got "%s".',
+                            \json_encode($values)
+                        )
+                    );
+                }
                 Assertion::integerish($value);
                 return (int) $value;
             },
@@ -59,7 +68,7 @@ final class ScalarListValue implements RecordValue
 
     public static function withElements(int $elements): self
     {
-        Assertion::greaterThan($elements, 0, 'Number of options "%s" is not greater than "%s".');
+        Assertion::greaterThan($elements, 0, 'Number of scalar "%s" is not greater than "%s".');
         return self::fromArray(\range(1, $elements));
     }
 }

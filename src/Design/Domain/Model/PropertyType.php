@@ -18,5 +18,7 @@ interface PropertyType
 
     public function toData(): TypeData;
 
+    public function toString(): string;
+
     public static function fromData(array $arguments): PropertyType;
 }

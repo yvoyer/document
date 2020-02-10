@@ -12,7 +12,7 @@ final class NullType implements PropertyType
     public function createValue(string $propertyName, RawValue $rawValue): RecordValue
     {
         if (! $rawValue->isEmpty()) {
-            throw InvalidPropertyValue::invalidValueForType($propertyName, 'null', $rawValue);
+            throw InvalidPropertyValue::invalidValueForType($propertyName, $this->toString(), $rawValue);
         }
 
         return new EmptyValue();
@@ -21,6 +21,11 @@ final class NullType implements PropertyType
     public function toData(): TypeData
     {
         return new TypeData(self::class);
+    }
+
+    public function toString(): string
+    {
+        return 'null';
     }
 
     public static function fromData(array $arguments): PropertyType

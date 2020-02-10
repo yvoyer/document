@@ -27,8 +27,8 @@ final class OptionListValueTest extends TestCase
 
     public function test_it_should_be_converted_to_labels(): void
     {
-        $this->assertSame('[Label 1]', OptionListValue::withElements(1)->getType());
-        $this->assertSame('[Label 1;Label 2;Label 3]', OptionListValue::withElements(3)->getType());
+        $this->assertSame('list([Label 1])', OptionListValue::withElements(1)->getType());
+        $this->assertSame('list([Label 1;Label 2;Label 3])', OptionListValue::withElements(3)->getType());
     }
 
     public function test_it_should_not_allow_zero_elements(): void

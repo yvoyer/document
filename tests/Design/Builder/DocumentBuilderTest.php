@@ -81,7 +81,7 @@ final class DocumentBuilderTest extends TestCase
             ->startRecord(RecordId::random());
 
         $this->expectException(ValidationFailedForProperty::class);
-        $this->expectExceptionMessage('Property named \"name\" is required, but empty value given.');
+        $this->expectExceptionMessage('Validation error: [Property named "name" is required, but "empty()" given.]');
         $builder->setValue('name', '');
     }
 
@@ -92,7 +92,7 @@ final class DocumentBuilderTest extends TestCase
             ->startRecord(RecordId::random());
 
         $this->expectException(ValidationFailedForProperty::class);
-        $this->expectExceptionMessage('Property named \"name\" is required, but empty value given.');
+        $this->expectExceptionMessage('Validation error: [Property named "name" is required, but "empty()" given.]');
         $builder->setValue('name', '');
     }
 
@@ -103,7 +103,7 @@ final class DocumentBuilderTest extends TestCase
             ->startRecord(RecordId::random());
 
         $this->expectException(ValidationFailedForProperty::class);
-        $this->expectExceptionMessage('Property named \"name\" is required, but empty value given.');
+        $this->expectExceptionMessage('Validation error: [Property named "name" is required, but "empty()" given.]');
         $builder->setValue('name', '');
     }
 
@@ -114,7 +114,7 @@ final class DocumentBuilderTest extends TestCase
             ->startRecord(RecordId::random());
 
         $this->expectException(ValidationFailedForProperty::class);
-        $this->expectExceptionMessage('Property named \"name\" is required, but empty value given.');
+        $this->expectExceptionMessage('Validation error: [Property named "name" is required, but "empty()" given.]');
         $builder->setValue('name', '');
     }
 
@@ -125,6 +125,7 @@ final class DocumentBuilderTest extends TestCase
             ->startRecord(RecordId::random());
 
         $this->expectException(ValidationFailedForProperty::class);
+        $this->expectExceptionMessage('Validation error: [Property named "name" is required, but "empty()" given.]');
         $builder->setValue('name', '');
     }
 
@@ -135,7 +136,10 @@ final class DocumentBuilderTest extends TestCase
             ->startRecord(RecordId::random());
 
         $this->expectException(ValidationFailedForProperty::class);
-        $builder->setValue('name', [0, "2"]);
+        $this->expectExceptionMessage(
+            'Validation error: [Property named "name" allows only one option, "list([option 1;option 2])" given.]'
+        );
+        $builder->setValue('name', [1, "2"]);
     }
 
     public function test_it_should_build_a_record_with_all_types_of_properties()
@@ -199,12 +203,15 @@ final class DocumentBuilderTest extends TestCase
             Types\CustomListType::class,
             $document->getPropertyDefinition(PropertyName::fromString('custom-list-single'))->getType()
         );
-        $this->assertSame('option 2', $record->getValue('custom-list-single')->toString());
+        $this->assertSame('list([option 2])', $record->getValue('custom-list-single')->getType());
 
         $this->assertInstanceOf(
             Types\CustomListType::class,
             $document->getPropertyDefinition(PropertyName::fromString('custom-list-multi'))->getType()
         );
-        $this->assertSame('option 4;option 6', $record->getValue('custom-list-multi')->toString());
+        $this->assertSame(
+            'list([option 4;option 6])',
+            $record->getValue('custom-list-multi')->getType()
+        );
     }
 }

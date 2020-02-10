@@ -12,7 +12,12 @@ final class ValidationFailedForProperty extends \LogicException
     public function __construct(ErrorList $errors)
     {
         $this->errors = $errors;
-        parent::__construct(\sprintf('Validation error: %s', $errors->toJson()));
+        parent::__construct(
+            \sprintf(
+                'Validation error: [%s]',
+                \implode(',', $errors->getLocalizedMessages('en'))
+            )
+        );
     }
 
     public function getErrors(): ErrorList

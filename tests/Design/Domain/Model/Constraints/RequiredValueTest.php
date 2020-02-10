@@ -23,7 +23,7 @@ final class RequiredValueTest extends TestCase
         $this->constraint->validate($name = 'name', new EmptyValue(), $errors = new ErrorList());
         $this->assertTrue($errors->hasErrors());
         $this->assertSame(
-            'Property named "name" is required, but empty value given.',
+            'Property named "name" is required, but "empty()" given.',
             $errors->getErrorsForProperty($name, 'en')[0]
         );
     }

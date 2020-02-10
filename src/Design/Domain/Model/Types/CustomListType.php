@@ -28,7 +28,7 @@ final class CustomListType implements PropertyType
         }
 
         if (! $rawValue->isString() && ! $rawValue->isInt() && ! $rawValue->isArray()) {
-            throw InvalidPropertyValue::invalidValueForType($propertyName, 'list', $rawValue);
+            throw InvalidPropertyValue::invalidValueForType($propertyName, $this->toString(), $rawValue);
         }
 
         $values = \explode(RecordValue::LIST_SEPARATOR, $rawValue->toString());
@@ -38,8 +38,8 @@ final class CustomListType implements PropertyType
                     \sprintf(
                         'The property "%s" only accepts an array made of the following values: "%s", "%s" given.',
                         $propertyName,
-                        $this->allowed->getType(),
-                        $rawValue->toString()
+                        $this->allowed->toString(),
+                        $rawValue->getType()
                     )
                 );
             }
@@ -53,6 +53,11 @@ final class CustomListType implements PropertyType
                 (array) \explode(RecordValue::LIST_SEPARATOR, $rawValue->toString())
             )
         );
+    }
+
+    public function toString(): string
+    {
+        return 'list';
     }
 
     public function toData(): TypeData

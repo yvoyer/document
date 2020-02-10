@@ -29,9 +29,35 @@ final class ErrorList implements \Countable
         return $this->errors[$propertyName][$locale];
     }
 
-    public function toJson(): string
+    private function supportedProperties(): array
     {
-        return (string) \json_encode($this->errors);
+        return \array_keys($this->errors);
+    }
+
+    private function supportedLocales(): array
+    {
+        $locales = [];
+        foreach ($this->errors as $property => $locales) {
+            foreach ($locales as $locale => $messages) {
+                $locales[] = $locale;
+            }
+        }
+
+        return \array_unique($locales);
+    }
+
+    public function getLocalizedMessages(string $locale): array
+    {
+        $messages = [];
+        foreach ($this->errors as $property => $localizedMessages) {
+            foreach ($localizedMessages as $_locale => $message) {
+                if ($_locale === $locale) {
+                    $messages = \array_merge($messages, $message);
+                }
+            }
+        }
+
+        return $messages;
     }
 
     public function count(): int

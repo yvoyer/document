@@ -58,14 +58,14 @@ final class OptionListValue implements RecordValue
     public function getType(): string
     {
         return \sprintf(
-            '[%s]',
-            \implode(
-                RecordValue::LIST_SEPARATOR,
-                \array_map(
-                    function (ListOptionValue $value) {
-                        return $value->getLabel();
-                    },
-                    $this->values
+            'list([%s])',
+                \implode(
+                    self::LIST_SEPARATOR,
+                    \array_map(
+                        function (ListOptionValue $value) {
+                            return $value->getLabel();
+                        },
+                        $this->values
                 )
             )
         );

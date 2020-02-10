@@ -46,7 +46,7 @@ final class RecordAggregateTest extends TestCase
 
         $this->expectException(ValidationFailedForProperty::class);
         $this->expectExceptionMessage(
-            'Validation error: {"text":{"en":["Property named \"text\" is required, but empty value given."]}}'
+            'Validation error: [Property named "text" is required, but "empty()" given.]'
         );
         RecordAggregate::withValues(
             RecordId::random(),

@@ -52,6 +52,7 @@ final class RawValueTest extends TestCase
     {
         $this->assertArrayValue('1', [1]);
         $this->assertArrayValue('1;2;3', [1, 2, 3]);
+        $this->assertArrayValue('1;2;3', ['1', '2', '3']);
     }
 
     private function assertBooleanValue(string $stringValue, $value): void

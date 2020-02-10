@@ -17,7 +17,7 @@ final class RequiresSingleOption implements PropertyConstraint
                 \sprintf(
                     'Property named "%s" allows only one option, "%s" given.',
                     $name,
-                    $value->toString()
+                    $value->getType()
                 )
             );
         }

@@ -22,9 +22,10 @@ final class OutputDocument implements DocumentVisitor
             \sprintf(
                 'Property: %s (%s)',
                 $name->toString(),
-                $type->toData()
+                $type->toString()
             )
         );
+        $this->writeLine('  Constraints:');
 
         return false;
     }
@@ -34,7 +35,13 @@ final class OutputDocument implements DocumentVisitor
         string $constraintName,
         PropertyConstraint $constraint
     ): void {
-        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+        $this->writeLine(
+            \sprintf(
+                '    - %s(%s)',
+                $constraintName,
+                \json_encode($constraint->toData()->toArray()['arguments'])
+            )
+        );
     }
 
     public function visitValueTransformer(
