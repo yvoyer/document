@@ -46,7 +46,6 @@ final class OutputDocument implements DocumentVisitor
 
     public function visitValueTransformer(
         PropertyName $propertyName,
-        string $constraintName,
         TransformerIdentifier $identifier
     ): void {
         throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');

@@ -48,4 +48,10 @@ final class MaximumLengthTest extends TestCase
             'arabic' => ['قققق', 'Property "field" is too long, expected a maximum of 3 characters, "قققق" given.'],
         ];
     }
+
+    public function test_it_should_be_build_from_constraint_data(): void
+    {
+        $source = MaximumLength::fromInt(5);
+        $this->assertEquals($source, MaximumLength::fromData($source->toData()));
+    }
 }

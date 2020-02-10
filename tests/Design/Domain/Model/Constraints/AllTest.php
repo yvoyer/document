@@ -28,4 +28,10 @@ final class AllTest extends TestCase
 
         $constraint->validate('name', StringValue::fromString('test'), new ErrorList());
     }
+
+    public function test_it_should_be_build_from_constraint_data(): void
+    {
+        $source = new All(new NoConstraint(), new NoConstraint());
+        $this->assertEquals($source, All::fromData($source->toData()));
+    }
 }

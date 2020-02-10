@@ -10,6 +10,8 @@ use Star\Component\Document\Design\Domain\Model\Values\DateValue;
 
 final class BeforeDate implements PropertyConstraint
 {
+    private const FORMAT = 'Y-m-d';
+
     /**
      * @var \DateTimeInterface
      */
@@ -39,7 +41,7 @@ final class BeforeDate implements PropertyConstraint
                 \sprintf(
                     'The property "%s" only accepts date before "%s", "%s" given.',
                     $name,
-                    $this->target->format('Y-m-d'),
+                    $this->target->format(self::FORMAT),
                     $value->toString()
                 )
             );
@@ -48,6 +50,11 @@ final class BeforeDate implements PropertyConstraint
 
     public function toData(): ConstraintData
     {
-        return new ConstraintData(self::class, [$this->target]);
+        return new ConstraintData(self::class, ['target' => $this->target->format(self::FORMAT)]);
+    }
+
+    public static function fromData(ConstraintData $data): PropertyConstraint
+    {
+        return new self($data->getArgument('target'));
     }
 }

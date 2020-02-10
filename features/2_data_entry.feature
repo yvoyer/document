@@ -25,8 +25,8 @@ Feature: Enter values on document using property rules
       | record-id | property    | value    |
       | 1         | My boolean  | true     |
       | 2         | My boolean  | false    |
-      | 3         | My boolean  | 0        |
-      | 4         | My boolean  | 1        |
+      | 3         | My boolean  | false    |
+      | 4         | My boolean  | true     |
     Then The records list of document "My document" should looks like:
       | record-id | property    | value    |
       | 1         | My boolean  | true     |

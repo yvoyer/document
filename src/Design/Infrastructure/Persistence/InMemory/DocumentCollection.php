@@ -3,11 +3,14 @@
 namespace Star\Component\Document\Design\Infrastructure\Persistence\InMemory;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\DataEntry\Domain\Model\SchemaFactory;
+use Star\Component\Document\Design\Domain\Model\DocumentAggregate;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\DocumentRepository;
+use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 use Star\Component\Identity\Exception\EntityNotFoundException;
 
-final class DocumentCollection implements DocumentRepository, \Countable
+final class DocumentCollection implements DocumentRepository, \Countable, SchemaFactory
 {
     /**
      * @var DocumentDesigner[]
@@ -41,5 +44,15 @@ final class DocumentCollection implements DocumentRepository, \Countable
     public function count(): int
     {
         return count($this->documents);
+    }
+
+    public function createSchema(DocumentId $documentId): DocumentSchema
+    {
+        $document = $this->getDocumentByIdentity($documentId);
+        if ($document instanceof DocumentAggregate) {
+            return $document->getSchema();
+        }
+
+        throw EntityNotFoundException::objectWithIdentity($documentId);
     }
 }

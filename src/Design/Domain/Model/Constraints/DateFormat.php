@@ -25,6 +25,11 @@ final class DateFormat implements PropertyConstraint
 
     public function toData(): ConstraintData
     {
-        return new ConstraintData(self::class, [$this->format]);
+        return new ConstraintData(self::class, ['format' => $this->format]);
+    }
+
+    public static function fromData(ConstraintData $data): PropertyConstraint
+    {
+        return new self($data->getArgument('format'));
     }
 }

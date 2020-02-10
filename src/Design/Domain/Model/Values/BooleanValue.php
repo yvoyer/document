@@ -32,9 +32,14 @@ final class BooleanValue implements RecordValue
         return ($this->value) ? 'true' : 'false';
     }
 
-    public function getType(): string
+    public function toTypedString(): string
     {
         return \sprintf('boolean(%s)', $this->toString());
+    }
+
+    public function toReadableString(): string
+    {
+        return $this->toString();
     }
 
     public static function trueValue(): RecordValue

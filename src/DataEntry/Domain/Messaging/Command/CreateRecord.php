@@ -3,10 +3,11 @@
 namespace Star\Component\Document\DataEntry\Domain\Messaging\Command;
 
 use Assert\Assertion;
+use Star\Component\Document\Common\Domain\Messaging\Command;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
 
-final class CreateRecord
+final class CreateRecord implements Command
 {
     /**
      * @var DocumentId

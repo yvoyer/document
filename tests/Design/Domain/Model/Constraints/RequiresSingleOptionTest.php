@@ -31,4 +31,10 @@ final class RequiresSingleOptionTest extends TestCase
             $errors->getErrorsForProperty($name, 'en')[0]
         );
     }
+
+    public function test_it_should_be_build_from_constraint_data(): void
+    {
+        $source = new RequiresSingleOption();
+        $this->assertEquals($source, RequiresSingleOption::fromData($source->toData()));
+    }
 }

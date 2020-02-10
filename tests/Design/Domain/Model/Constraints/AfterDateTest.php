@@ -58,4 +58,10 @@ final class AfterDateTest extends TestCase
             'past day' => [DateValue::fromString('2000-05-04')],
         ];
     }
+
+    public function test_it_should_be_build_from_constraint_data(): void
+    {
+        $source = new AfterDate('2000-10-20');
+        $this->assertEquals($source, AfterDate::fromData($source->toData()));
+    }
 }

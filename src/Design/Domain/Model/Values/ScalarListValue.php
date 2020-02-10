@@ -35,9 +35,14 @@ final class ScalarListValue implements RecordValue
         return \implode(self::SEPARATOR, $this->values);
     }
 
-    public function getType(): string
+    public function toTypedString(): string
     {
-        return \sprintf('list(%s)', \json_encode($this->values));
+        return \sprintf('list(%s)', $this->toReadableString());
+    }
+
+    public function toReadableString(): string
+    {
+        return \json_encode($this->values);
     }
 
     /**

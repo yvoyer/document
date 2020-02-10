@@ -38,4 +38,10 @@ final class RegexTest extends TestCase
         $this->expectExceptionMessage('Pattern "asd" is not a valid regex.');
         new Regex('asd');
     }
+
+    public function test_it_should_be_build_from_constraint_data(): void
+    {
+        $source = new Regex('/\d+/');
+        $this->assertEquals($source, Regex::fromData($source->toData()));
+    }
 }

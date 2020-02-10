@@ -17,7 +17,7 @@ final class RequiresValue implements PropertyConstraint
                 \sprintf(
                     'Property named "%s" is required, but "%s" given.',
                     $name,
-                    $value->getType()
+                    $value->toTypedString()
                 )
             );
         }
@@ -26,5 +26,10 @@ final class RequiresValue implements PropertyConstraint
     public function toData(): ConstraintData
     {
         return new ConstraintData(self::class);
+    }
+
+    public static function fromData(ConstraintData $data): PropertyConstraint
+    {
+        return new self();
     }
 }

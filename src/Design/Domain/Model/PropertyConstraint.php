@@ -16,4 +16,6 @@ interface PropertyConstraint
     public function validate(string $name, RecordValue $value, ErrorList $errors): void;
 
     public function toData(): ConstraintData;
+
+    public static function fromData(ConstraintData $data): PropertyConstraint;
 }

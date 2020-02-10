@@ -31,8 +31,13 @@ final class ObjectValue implements RecordValue
         return 1;
     }
 
-    public function getType(): string
+    public function toTypedString(): string
     {
         return \sprintf('object(%s)', $this->toString());
+    }
+
+    public function toReadableString(): string
+    {
+        return $this->toString();
     }
 }

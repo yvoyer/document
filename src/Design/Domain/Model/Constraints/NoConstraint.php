@@ -22,4 +22,9 @@ final class NoConstraint implements PropertyConstraint, DocumentConstraint
     {
         return new ConstraintData(self::class);
     }
+
+    public static function fromData(ConstraintData $data): PropertyConstraint
+    {
+        return new self();
+    }
 }

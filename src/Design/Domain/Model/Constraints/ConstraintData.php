@@ -24,9 +24,23 @@ final class ConstraintData
         $this->arguments = $arguments;
     }
 
+    /**
+     * @param string $argument
+     * @return mixed
+     */
+    public function getArgument(string $argument)
+    {
+        return $this->arguments[$argument];
+    }
+
     public function createConstraint(): PropertyConstraint
     {
-        return new $this->class(...$this->arguments);
+        /**
+         * @var $class PropertyConstraint
+         */
+        $class = $this->class;
+
+        return $class::fromData($this);
     }
 
     public function toArray(): array

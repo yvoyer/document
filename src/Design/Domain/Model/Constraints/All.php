@@ -27,6 +27,30 @@ final class All implements PropertyConstraint
 
     public function toData(): ConstraintData
     {
-        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+        return new ConstraintData(
+            self::class,
+            \array_map(
+                function (PropertyConstraint $constraint) {
+                    return $constraint->toData()->toArray();
+                },
+                $this->constraints
+            )
+        );
+    }
+
+    public static function fromData(ConstraintData $data): PropertyConstraint
+    {
+        return new self(
+            ...\array_map(
+                function (array $constraint) {
+                    /**
+                     * @var PropertyConstraint $class
+                     */
+                    $class = $constraint['class'];
+                    return $class::fromData(new ConstraintData($constraint['class'], $constraint['arguments']));
+                },
+                $data->toArray()['arguments']
+            )
+        );
     }
 }

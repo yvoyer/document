@@ -20,13 +20,13 @@ $document->acceptDocumentVisitor(new OutputDocument())
 Document: "All dates"
 Property: Format (date)
   Constraints:
-    - date-format(["y-m-d"])
+    - date-format({"format":"y-m-d"})
 Property: Required (date)
   Constraints:
     - required([])
 Property: Past (date)
   Constraints:
-    - past-date([{"date":"2000-12-31 00:00:00.000000","timezone_type":3,"timezone":"America\/New_York"}])
+    - past-date({"target":"2000-12-31"})
 Property: Future (date)
   Constraints:
-    - future-date([{"date":"1999-01-01 00:00:00.000000","timezone_type":3,"timezone":"America\/New_York"}])
+    - future-date({"target":"1999-01-01"})

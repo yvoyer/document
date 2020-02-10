@@ -37,7 +37,7 @@ final class MinimumLength implements PropertyConstraint
 
     public function toData(): ConstraintData
     {
-        return new ConstraintData(self::class, [$this->length]);
+        return new ConstraintData(self::class, ['length' => $this->length]);
     }
 
     /**
@@ -62,5 +62,10 @@ final class MinimumLength implements PropertyConstraint
     public static function fromInt(int $length): self
     {
         return new self($length);
+    }
+
+    public static function fromData(ConstraintData $data): PropertyConstraint
+    {
+        return new self($data->getArgument('length'));
     }
 }

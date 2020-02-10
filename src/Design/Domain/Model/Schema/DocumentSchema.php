@@ -70,6 +70,13 @@ final class DocumentSchema
         }
     }
 
+    public function clone(DocumentId $id): DocumentSchema
+    {
+        $this->acceptDocumentVisitor($cloner = new SchemaCloner($id));
+
+        return $cloner->getClone();
+    }
+
     public function toString(): string
     {
         $this->acceptDocumentVisitor($dumper = new SchemaDumper());

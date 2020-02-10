@@ -74,6 +74,7 @@ final class DocumentBuilder
         return $this->createProperty(
             $name,
             new Types\CustomListType(
+                'list',
                 OptionListValue::fromArray(
                     \array_map(
                         function (int $key) use ($options) {

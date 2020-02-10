@@ -62,7 +62,7 @@ final class PropertyDefinition
         }
 
         foreach ($this->transformers as $name => $transformer) {
-            $visitor->visitValueTransformer($this->name, $name, $transformer);
+            $visitor->visitValueTransformer($this->name, $transformer);
         }
     }
 

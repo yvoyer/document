@@ -10,7 +10,7 @@ final class CustomListTypeTest extends BaseTestType
 {
     protected function getType(): PropertyType
     {
-        return new CustomListType(OptionListValue::withElements(3));
+        return new CustomListType('list', OptionListValue::withElements(3));
     }
 
     public static function provideInvalidValuesExceptions(): array
@@ -76,7 +76,7 @@ final class CustomListTypeTest extends BaseTestType
             $value = $this->getType()->createValue('prop', RawValue::fromMixed([1]))
         );
         $this->assertSame('1', $value->toString());
-        $this->assertSame('list([Label 1])', $value->getType());
+        $this->assertSame('list([Label 1])', $value->toTypedString());
     }
 
     public function test_it_should_accept_multi_value_array()
@@ -86,7 +86,7 @@ final class CustomListTypeTest extends BaseTestType
             $value = $this->getType()->createValue('prop', RawValue::fromMixed([1, 3]))
         );
         $this->assertSame('1;3', $value->toString());
-        $this->assertSame('list([Label 1;Label 3])', $value->getType());
+        $this->assertSame('list([Label 1;Label 3])', $value->toTypedString());
     }
 
     public function test_it_should_return_in_same_order_as_given()
@@ -96,7 +96,7 @@ final class CustomListTypeTest extends BaseTestType
             $value = $this->getType()->createValue('prop', RawValue::fromMixed([2, 1, 3]))
         );
         $this->assertSame('2;1;3', $value->toString());
-        $this->assertSame('list([Label 2;Label 1;Label 3])', $value->getType());
+        $this->assertSame('list([Label 2;Label 1;Label 3])', $value->toTypedString());
     }
 
     public function test_it_should_accept_string_value_for_key()
@@ -106,7 +106,7 @@ final class CustomListTypeTest extends BaseTestType
             $value = $this->getType()->createValue('prop', RawValue::fromMixed(["1", "2", "3"]))
         );
         $this->assertSame('1;2;3', $value->toString());
-        $this->assertSame('list([Label 1;Label 2;Label 3])', $value->getType());
+        $this->assertSame('list([Label 1;Label 2;Label 3])', $value->toTypedString());
     }
 
     public function test_it_should_accept_imploded_string()
@@ -121,13 +121,13 @@ final class CustomListTypeTest extends BaseTestType
             $value = $this->getType()->createValue('prop', RawValue::fromMixed("2"))
         );
         $this->assertSame('2', $value->toString());
-        $this->assertSame('list([Label 2])', $value->getType());
+        $this->assertSame('list([Label 2])', $value->toTypedString());
 
         $this->assertInstanceOf(
             OptionListValue::class,
             $value = $this->getType()->createValue('prop', RawValue::fromMixed("1;2;3"))
         );
         $this->assertSame('1;2;3', $value->toString());
-        $this->assertSame('list([Label 1;Label 2;Label 3])', $value->getType());
+        $this->assertSame('list([Label 1;Label 2;Label 3])', $value->toTypedString());
     }
 }

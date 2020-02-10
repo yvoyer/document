@@ -32,9 +32,14 @@ final class IntegerValue implements RecordValue
         return strval($this->value);
     }
 
-    public function getType(): string
+    public function toTypedString(): string
     {
         return \sprintf('int(%s)', $this->value);
+    }
+
+    public function toReadableString(): string
+    {
+        return $this->toString();
     }
 
     public static function fromString(string $value): RecordValue

@@ -11,9 +11,14 @@ final class EmptyValue implements RecordValue
         return '';
     }
 
-    public function getType(): string
+    public function toTypedString(): string
     {
         return 'empty()';
+    }
+
+    public function toReadableString(): string
+    {
+        return $this->toString();
     }
 
     public function isEmpty(): bool

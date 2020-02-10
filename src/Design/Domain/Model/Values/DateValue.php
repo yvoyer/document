@@ -37,9 +37,14 @@ final class DateValue implements RecordValue
         return $this->value->format('Y-m-d');
     }
 
-    public function getType(): string
+    public function toTypedString(): string
     {
         return \sprintf('date(%s)', $this->toString());
+    }
+
+    public function toReadableString(): string
+    {
+        return $this->toString();
     }
 
     public static function fromString(string $date): RecordValue

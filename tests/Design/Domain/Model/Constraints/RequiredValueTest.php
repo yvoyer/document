@@ -27,4 +27,10 @@ final class RequiredValueTest extends TestCase
             $errors->getErrorsForProperty($name, 'en')[0]
         );
     }
+
+    public function test_it_should_be_build_from_constraint_data(): void
+    {
+        $source = new RequiresValue();
+        $this->assertEquals($source, RequiresValue::fromData($source->toData()));
+    }
 }

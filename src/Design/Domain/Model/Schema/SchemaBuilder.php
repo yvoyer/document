@@ -3,9 +3,10 @@
 namespace Star\Component\Document\Design\Domain\Model\Schema;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\DataEntry\Domain\Model\SchemaFactory;
 use Star\Component\Document\Design\Domain\Model\Types\StringType;
 
-final class SchemaBuilder
+final class SchemaBuilder implements SchemaFactory
 {
     /**
      * @var DocumentSchema
@@ -27,6 +28,11 @@ final class SchemaBuilder
     public function getSchema(): DocumentSchema
     {
         return $this->schema;
+    }
+
+    public function createSchema(DocumentId $documentId): DocumentSchema
+    {
+        return $this->schema->clone($documentId);
     }
 
     public static function create(DocumentId $documentId = null): self

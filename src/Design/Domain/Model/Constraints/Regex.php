@@ -39,6 +39,11 @@ final class Regex implements PropertyConstraint
 
     public function toData(): ConstraintData
     {
-        return new ConstraintData(self::class, [$this->pattern]);
+        return new ConstraintData(self::class, ['pattern' => $this->pattern]);
+    }
+
+    public static function fromData(ConstraintData $data): PropertyConstraint
+    {
+        return new self($data->getArgument('pattern'));
     }
 }

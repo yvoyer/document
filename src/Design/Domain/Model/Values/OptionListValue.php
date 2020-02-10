@@ -55,18 +55,20 @@ final class OptionListValue implements RecordValue
         );
     }
 
-    public function getType(): string
+    public function toTypedString(): string
     {
-        return \sprintf(
-            'list([%s])',
-                \implode(
-                    self::LIST_SEPARATOR,
-                    \array_map(
-                        function (ListOptionValue $value) {
-                            return $value->getLabel();
-                        },
-                        $this->values
-                )
+        return \sprintf('list([%s])', $this->toReadableString());
+    }
+
+    public function toReadableString(): string
+    {
+        return \implode(
+            RecordValue::LIST_SEPARATOR,
+            \array_map(
+                function (ListOptionValue $value) {
+                    return $value->getLabel();
+                },
+                $this->values
             )
         );
     }

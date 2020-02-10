@@ -50,7 +50,6 @@ final class AtLeastNumberOfRequiredProperty implements DocumentVisitor, Document
 
     public function visitValueTransformer(
         PropertyName $propertyName,
-        string $constraintName,
         TransformerIdentifier $identifier
     ): void {
     }

@@ -24,7 +24,6 @@ interface DocumentVisitor
 
     public function visitValueTransformer(
         PropertyName $propertyName,
-        string $constraintName,
         TransformerIdentifier $identifier
     ): void;
 }

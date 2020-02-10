@@ -27,8 +27,8 @@ final class ScalarListValueTest extends TestCase
 
     public function test_it_should_be_converted_to_label_string(): void
     {
-        $this->assertSame('list([1])', ScalarListValue::withElements(1)->getType());
-        $this->assertSame('list([1,2,3])', ScalarListValue::withElements(3)->getType());
+        $this->assertSame('list([1])', ScalarListValue::withElements(1)->toTypedString());
+        $this->assertSame('list([1,2,3])', ScalarListValue::withElements(3)->toTypedString());
     }
 
     public function test_it_should_not_allow_zero_elements(): void

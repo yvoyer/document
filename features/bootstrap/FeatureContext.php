@@ -19,7 +19,6 @@ use Star\Component\Document\DataEntry\Domain\Messaging\Query\GetAllRecordsOfDocu
 use Star\Component\Document\DataEntry\Domain\Messaging\Query\GetAllRecordsOfDocumentHandler;
 use Star\Component\Document\DataEntry\Domain\Messaging\Query\RecordRow;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
-use Star\Component\Document\DataEntry\Domain\Model\Schema\CallbackSchemaFactory;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ValidationFailedForProperty;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
 use Star\Component\Document\Design\Builder\DocumentBuilder;
@@ -33,7 +32,6 @@ use Star\Component\Document\Design\Domain\Messaging\Command\CreateProperty;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreatePropertyHandler;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\ReadOnlyDocument;
-use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 use Star\Component\Document\Design\Domain\Model\Transformation\ArrayTransformer;
 use Star\Component\Document\Design\Domain\Model\Transformation\DateTimeToString;
 use Star\Component\Document\Design\Domain\Model\Transformation\StringToDateTime;
@@ -41,6 +39,7 @@ use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdenti
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerRegistry;
 use Star\Component\Document\Design\Domain\Model\Types;
 use Star\Component\Document\Design\Domain\Model\Values\ListOptionValue;
+use Star\Component\Document\Design\Domain\Model\Values\OptionListValue;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
 use Star\Component\DomainEvent\Messaging\CommandBus;
@@ -76,28 +75,11 @@ class FeatureContext implements Context
      */
     private $errors = [];
 
-    /**
-     * @var DocumentSchema
-     */
-    private $schema;
-
-    /**
-     * Initializes context.
-     *
-     * Every scenario gets its own context instance.
-     * You can also pass arbitrary arguments to the
-     * context constructor through behat.yml.
-     */
     public function __construct()
     {
         $records = new RecordCollection();
         $this->documents = new DocumentCollection();
         $this->factory = new TransformerRegistry();
-        $closure = function () {
-            return $this->schema;
-        };
-
-        $schemaFactory = new CallbackSchemaFactory($closure);
 
         $this->bus = new MessageMapBus();
         $this->bus->registerHandler(CreateDocument::class, new CreateDocumentHandler($this->documents));
@@ -111,7 +93,7 @@ class FeatureContext implements Context
         );
         $this->bus->registerHandler(
             CreateRecord::class,
-            new CreateRecordHandler($records, $this->documents, $schemaFactory)
+            new CreateRecordHandler($records, $this->documents, $this->documents)
         );
         $this->bus->registerHandler(
             AddValueTransformerOnProperty::class,
@@ -291,7 +273,6 @@ class FeatureContext implements Context
     public function iCreateADocumentNamed(string $documentId)
     {
         $this->bus->dispatchCommand(new CreateDocument($id = DocumentId::fromString($documentId)));
-        $this->schema = new DocumentSchema($id);
     }
 
     /**
@@ -378,11 +359,14 @@ class FeatureContext implements Context
                 DocumentId::fromString($documentId),
                 PropertyName::fromString($property),
                 new Types\CustomListType(
-                    ...\array_map(
-                        function (int $key) use ($allowed) {
-                            return ListOptionValue::withValueAsLabel($key, $allowed[$key]);
-                        },
-                        \array_keys($allowed)
+                    'custom-list',
+                    OptionListValue::fromArray(
+                        \array_map(
+                            function (int $key) use ($allowed) {
+                                return ListOptionValue::withValueAsLabel($key, $allowed[$key]);
+                            },
+                            \array_keys($allowed)
+                        )
                     )
                 )
             )
@@ -463,14 +447,14 @@ class FeatureContext implements Context
         foreach ($table->getHash() as $data) {
             $recordId = RecordId::fromString($data['record-id']);
             $property = $data['property'];
+            $value = $data['value'];
 
             try {
                 $this->bus->dispatchCommand(
-                    new SetRecordValue(
+                    new CreateRecord(
                         DocumentId::fromString($documentId),
                         $recordId,
-                        $property,
-                        $data['value']
+                        [$property => $value]
                     )
                 );
             } catch (ValidationFailedForProperty $exception) {
@@ -501,15 +485,15 @@ class FeatureContext implements Context
         Assert::assertCount(count($expected), $rows);
 
         foreach ($rows as $key => $row) {
+            $property = $expected[$key]['property'];
+            $recordId = $expected[$key]['record-id'];
+            $expectedValue = $expected[$key]['value'];
+
+            Assert::assertSame($recordId, $row->getRecordId()->toString(), 'Record id not as expected');
             Assert::assertSame(
-                $expected[$key]['record-id'],
-                $row->getRecordId()->toString(),
-                'Record id not as expected'
-            );
-            Assert::assertSame(
-                $expected[$key]['value'],
-                $row->getValue($expected[$key]['property']),
-                \sprintf('Value of property "%s" is not as expected', $expected[$key]['property'])
+                $expectedValue,
+                $row->getValue($property),
+                \sprintf('Value of property "%s" is not as expected', $property)
             );
         }
     }
@@ -554,7 +538,7 @@ class FeatureContext implements Context
                 $options['type'],
                 $this->getDocument($documentId)
                     ->getPropertyDefinition(PropertyName::fromString($property))
-                    ->getType()->toData()
+                    ->getType()->toString()
             );
             Assert::assertTrue(
                 $this->getDocument($documentId)

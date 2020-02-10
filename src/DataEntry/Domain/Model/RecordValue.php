@@ -13,7 +13,15 @@ interface RecordValue extends \Countable
      */
     public function toString(): string;
 
-    public function getType(): string;
+    /**
+     * @return string
+     */
+    public function toReadableString(): string;
+
+    /**
+     * @return string The type of the value with readable format. ie "int(34)"
+     */
+    public function toTypedString(): string;
 
     public function isEmpty(): bool;
 }

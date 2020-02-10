@@ -56,4 +56,10 @@ final class MinimumLengthTest extends TestCase
             'arabic' => ['قق', 'Property "prop" is too short, expected a minimum of 3 characters, "قق" given.'],
         ];
     }
+
+    public function test_it_should_be_build_from_constraint_data(): void
+    {
+        $source = MinimumLength::fromInt(1);
+        $this->assertEquals($source, MinimumLength::fromData($source->toData()));
+    }
 }

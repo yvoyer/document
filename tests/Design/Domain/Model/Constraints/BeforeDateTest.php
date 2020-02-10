@@ -60,4 +60,10 @@ final class BeforeDateTest extends TestCase
             'greater day' => ['2000-05-06'],
         ];
     }
+
+    public function test_it_should_be_build_from_constraint_data(): void
+    {
+        $source = new BeforeDate('2000-10-20');
+        $this->assertEquals($source, BeforeDate::fromData($source->toData()));
+    }
 }

@@ -203,7 +203,7 @@ final class DocumentBuilderTest extends TestCase
             Types\CustomListType::class,
             $document->getPropertyDefinition(PropertyName::fromString('custom-list-single'))->getType()
         );
-        $this->assertSame('list([option 2])', $record->getValue('custom-list-single')->getType());
+        $this->assertSame('list([option 2])', $record->getValue('custom-list-single')->toTypedString());
 
         $this->assertInstanceOf(
             Types\CustomListType::class,
@@ -211,7 +211,7 @@ final class DocumentBuilderTest extends TestCase
         );
         $this->assertSame(
             'list([option 4;option 6])',
-            $record->getValue('custom-list-multi')->getType()
+            $record->getValue('custom-list-multi')->toTypedString()
         );
     }
 }

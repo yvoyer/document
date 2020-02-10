@@ -47,7 +47,6 @@ final class PropertyExtractor implements DocumentVisitor, \Countable
 
     public function visitValueTransformer(
         PropertyName $propertyName,
-        string $constraintName,
         TransformerIdentifier $identifier
     ): void {
     }

@@ -12,12 +12,18 @@ use Star\Component\Document\Design\Domain\Model\Values\OptionListValue;
 final class CustomListType implements PropertyType
 {
     /**
+     * @var string
+     */
+    private $typeName;
+
+    /**
      * @var OptionListValue
      */
     private $allowed;
 
-    public function __construct(OptionListValue $allowedOptions)
+    public function __construct(string $typeName, OptionListValue $allowedOptions)
     {
+        $this->typeName = $typeName;
         $this->allowed = $allowedOptions;
     }
 
@@ -57,25 +63,32 @@ final class CustomListType implements PropertyType
 
     public function toString(): string
     {
-        return 'list';
+        return $this->typeName;
     }
 
     public function toData(): TypeData
     {
         return new TypeData(
             self::class,
-            \array_map(
-                function (int $id): array {
-                    return $this->allowed->getOption($id)->toArray();
-                },
-                \explode(RecordValue::LIST_SEPARATOR, $this->allowed->toString())
+            \array_merge(
+                ['type-name' => $this->typeName],
+                \array_map(
+                    function (int $id): array {
+                        return $this->allowed->getOption($id)->toArray();
+                    },
+                    \explode(RecordValue::LIST_SEPARATOR, $this->allowed->toString())
+                )
             )
         );
     }
 
     public static function fromData(array $arguments): PropertyType
     {
+        $typeName = $arguments['type-name'];
+        unset($arguments['type-name']);
+
         return new self(
+            $typeName,
             OptionListValue::fromArray(
                 \array_map(
                     function (array $row) {

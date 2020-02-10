@@ -9,26 +9,25 @@ use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 
-final class SchemaDumper implements DocumentVisitor
+final class SchemaCloner implements DocumentVisitor
 {
-    private $data = [];
+    /**
+     * @var DocumentSchema
+     */
+    private $schema;
 
-    public function toArray(): array
+    public function __construct(DocumentId $id)
     {
-        return $this->data;
+        $this->schema = new DocumentSchema($id);
     }
 
     public function visitDocument(DocumentId $id): void
     {
-        $this->data['id'] = $id->toString();
-        $this->data['properties'] = [];
     }
 
     public function visitProperty(PropertyName $name, PropertyType $type): bool
     {
-        $this->data['properties'][$name->toString()]['type'] = $type->toData()->toArray();
-        $this->data['properties'][$name->toString()]['constraints'] = [];
-        $this->data['properties'][$name->toString()]['transformers'] = [];
+        $this->schema->addProperty($name->toString(), $type);
 
         return false;
     }
@@ -38,13 +37,18 @@ final class SchemaDumper implements DocumentVisitor
         string $constraintName,
         PropertyConstraint $constraint
     ): void {
-        $this->data['properties'][$propertyName->toString()]['constraints'][$constraintName] = $constraint->toData()->toArray();
+        $this->schema->addConstraint($propertyName->toString(), $constraintName, $constraint);
     }
 
     public function visitValueTransformer(
         PropertyName $propertyName,
         TransformerIdentifier $identifier
     ): void {
-        $this->data['properties'][$propertyName->toString()]['transformers'][] = $identifier->toString();
+        $this->schema->addTransformer($propertyName->toString(), $identifier);
+    }
+
+    public function getClone(): DocumentSchema
+    {
+        return $this->schema;
     }
 }

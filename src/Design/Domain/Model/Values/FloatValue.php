@@ -37,9 +37,14 @@ final class FloatValue implements RecordValue
         return (string) \substr_replace((string) $this->value, '.', - $this->decimal, 0);
     }
 
-    public function getType(): string
+    public function toTypedString(): string
     {
         return \sprintf('float(%s)', $this->toString());
+    }
+
+    public function toReadableString(): string
+    {
+        return $this->toString();
     }
 
     /**

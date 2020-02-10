@@ -76,7 +76,7 @@ final class RawValue
 
     public function getType(): string
     {
-        return $this->value->getType();
+        return $this->value->toTypedString();
     }
 
     public static function fromBoolean(bool $value): self
