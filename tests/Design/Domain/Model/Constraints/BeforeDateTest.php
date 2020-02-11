@@ -19,6 +19,7 @@ final class BeforeDateTest extends TestCase
         $constraint->validate(
             'name', DateValue::fromString($value), $errors = new ErrorList()
         );
+        $this->assertFalse($errors->hasErrors());
         $this->assertCount(0, $errors);
     }
 

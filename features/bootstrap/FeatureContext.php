@@ -22,8 +22,6 @@ use Star\Component\Document\DataEntry\Domain\Model\RecordId;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ValidationFailedForProperty;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
 use Star\Component\Document\Design\Builder\DocumentBuilder;
-use Star\Component\Document\Design\Domain\Messaging\Command\AddValueTransformerOnProperty;
-use Star\Component\Document\Design\Domain\Messaging\Command\AddValueTransformerOnPropertyHandler;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddPropertyConstraint;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddPropertyConstraintHandler;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocument;
@@ -32,11 +30,6 @@ use Star\Component\Document\Design\Domain\Messaging\Command\CreateProperty;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreatePropertyHandler;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\ReadOnlyDocument;
-use Star\Component\Document\Design\Domain\Model\Transformation\ArrayTransformer;
-use Star\Component\Document\Design\Domain\Model\Transformation\DateTimeToString;
-use Star\Component\Document\Design\Domain\Model\Transformation\StringToDateTime;
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerRegistry;
 use Star\Component\Document\Design\Domain\Model\Types;
 use Star\Component\Document\Design\Domain\Model\Values\ListOptionValue;
 use Star\Component\Document\Design\Domain\Model\Values\OptionListValue;
@@ -66,11 +59,6 @@ class FeatureContext implements Context
     private $queries;
 
     /**
-     * @var TransformerRegistry
-     */
-    private $factory;
-
-    /**
      * @var string[][]
      */
     private $errors = [];
@@ -79,7 +67,6 @@ class FeatureContext implements Context
     {
         $records = new RecordCollection();
         $this->documents = new DocumentCollection();
-        $this->factory = new TransformerRegistry();
 
         $this->bus = new MessageMapBus();
         $this->bus->registerHandler(CreateDocument::class, new CreateDocumentHandler($this->documents));
@@ -94,10 +81,6 @@ class FeatureContext implements Context
         $this->bus->registerHandler(
             CreateRecord::class,
             new CreateRecordHandler($records, $this->documents, $this->documents)
-        );
-        $this->bus->registerHandler(
-            AddValueTransformerOnProperty::class,
-            new AddValueTransformerOnPropertyHandler($this->factory, $this->documents)
         );
 
         $queries = [
@@ -153,24 +136,6 @@ class FeatureContext implements Context
     }
 
     /**
-     * @Given The value transformer with id :arg1 is registered
-     */
-    public function theValueTransformerWithIdIsRegistered(string $transformerId)
-    {
-        $transformer = null;
-        switch ($transformerId) {
-            case 'string-to-date';
-                $transformer = new StringToDateTime();
-                break;
-
-            default:
-                throw new \InvalidArgumentException('Not supported trnasformer' . $transformerId);
-        }
-
-        $this->factory->registerTransformer($transformerId, $transformer);
-    }
-
-    /**
      * @Given The document :arg1 is created without any properties
      */
     public function theDocumentIsCreatedWithoutAnyProperties(string $documentId)
@@ -206,31 +171,13 @@ class FeatureContext implements Context
     }
 
     /**
-     * @Given The date transformer with id :arg1 is registered with format :arg2
-     */
-    public function theDateTransformerWithIdIsRegisteredWithFormat($identifier, $format)
-    {
-        $this->factory->registerTransformer(
-            $identifier,
-            new ArrayTransformer(new StringToDateTime(), new DateTimeToString($format))
-        );
-    }
-
-    /**
      * @Given The property :arg1 in document :arg2 is configured with format :arg3
      */
-    public function thePropertyInDocumentIsConfiguredWithFormat($property, $documentId, $format)
-    {
-        $this->iCreateADocumentNamed($documentId);
-        $this->iCreateADateFieldNamedInDocument($property, $documentId);
-        $this->bus->dispatchCommand(
-            new AddValueTransformerOnProperty(
-                DocumentId::fromString($documentId),
-                PropertyName::fromString($property),
-                TransformerIdentifier::fromString($format)
-            )
-        );
-    }
+#    public function thePropertyInDocumentIsConfiguredWithFormat($property, $documentId, $format)
+ #   {
+  #      $this->iCreateADocumentNamed($documentId);
+   #     $this->iCreateADateFieldNamedInDocument($property, $documentId);
+    #}
 
     /**
      * @Given The document :arg1 is created with a number property named :arg2
@@ -251,20 +198,6 @@ class FeatureContext implements Context
     ) {
         $this->iCreateADocumentNamed($documentId);
         $this->iCreateACustomListFieldNamedInDocumentWithTheFollowingOptions($property, $documentId, $table);
-    }
-
-    /**
-     * @Given The value for property :arg1 of document :arg2 is transformed using :arg3
-     */
-    public function theValueForPropertyOfDocumentIsTransformedUsing(string $property, string $documentId, string $transformer)
-    {
-        $this->bus->dispatchCommand(
-            new AddValueTransformerOnProperty(
-                DocumentId::fromString($documentId),
-                PropertyName::fromString($property),
-                TransformerIdentifier::fromString($transformer)
-            )
-        );
     }
 
     /**

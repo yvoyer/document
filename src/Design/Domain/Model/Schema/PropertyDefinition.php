@@ -9,8 +9,6 @@ use Star\Component\Document\Design\Domain\Model\PropertyConstrainNotFound;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerFactory;
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 use Star\Component\Document\Design\Domain\Model\Values\EmptyValue;
 
 final class PropertyDefinition
@@ -29,11 +27,6 @@ final class PropertyDefinition
      * @var PropertyConstraint[]
      */
     private $constraints = [];
-
-    /**
-     * @var TransformerIdentifier[]
-     */
-    private $transformers = [];
 
     public function __construct(PropertyName $name, PropertyType $type)
     {
@@ -59,10 +52,6 @@ final class PropertyDefinition
 
         foreach ($this->constraints as $name => $constraint) {
             $visitor->visitPropertyConstraint($this->name, $name, $constraint);
-        }
-
-        foreach ($this->transformers as $name => $transformer) {
-            $visitor->visitValueTransformer($this->name, $transformer);
         }
     }
 
@@ -104,37 +93,6 @@ final class PropertyDefinition
         return \array_keys($this->constraints);
     }
 
-    public function addTransformer(TransformerIdentifier $identifier): PropertyDefinition
-    {
-        $new = new self($this->getName(), $this->getType());
-        $new->transformers[$identifier->toString()] = $identifier;
-
-        return $this->merge($new);
-    }
-
-    public function hasTransformer(TransformerIdentifier $identifier): bool
-    {
-        return \array_key_exists($identifier->toString(), $this->transformers);
-    }
-
-    /**
-     * @param mixed $rawValue
-     * @param TransformerFactory $factory
-     *
-     * @return RecordValue
-     */
-    public function transformValue($rawValue, TransformerFactory $factory): RecordValue
-    {
-        $transformedValue = new EmptyValue();
-        foreach ($this->transformers as $id) {
-            $transformer = $factory->createTransformer($id);
-# todo           $transformer->handlesRaw($rawValue); continue;
-            $transformedValue = $transformer->transform($rawValue);
-        }
-
-        return $transformedValue;
-    }
-
     public function validateValue(RecordValue $value, ErrorList $errors): void
     {
         foreach ($this->constraints as $constraint) {
@@ -156,7 +114,6 @@ final class PropertyDefinition
     {
         $new = new self($this->name, $this->type);
         $new->constraints = array_merge($this->constraints, $definition->constraints);
-        $new->transformers = array_merge($this->transformers, $definition->transformers);
 
         return $new;
     }

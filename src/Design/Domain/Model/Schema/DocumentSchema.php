@@ -8,7 +8,6 @@ use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 use Star\Component\Document\Design\Domain\Model\Types\TypeData;
 
 final class DocumentSchema
@@ -46,11 +45,6 @@ final class DocumentSchema
     public function addConstraint(string $property, string $constraintName, PropertyConstraint $constraint): void
     {
         $this->properties[$property] = $this->getDefinition($property)->addConstraint($constraintName, $constraint);
-    }
-
-    public function addTransformer(string $property, TransformerIdentifier $identifier): void
-    {
-        $this->properties[$property] = $this->getDefinition($property)->addTransformer($identifier);
     }
 
     public function getDefinition(string $property): PropertyDefinition

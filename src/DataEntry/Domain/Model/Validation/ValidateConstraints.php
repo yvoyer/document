@@ -8,7 +8,6 @@ use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 
 final class ValidateConstraints implements DocumentVisitor
 {
@@ -52,12 +51,5 @@ final class ValidateConstraints implements DocumentVisitor
         PropertyConstraint $constraint
     ): void {
         $constraint->validate($propertyName->toString(), $this->value, $this->errors);
-    }
-
-    public function visitValueTransformer(
-        PropertyName $propertyName,
-        TransformerIdentifier $identifier
-    ): void {
-        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
     }
 }

@@ -14,7 +14,6 @@ use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\DocumentAggregate;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerRegistry;
 use Star\Component\Document\Design\Domain\Model\Types;
 use Star\Component\Document\Design\Domain\Model\Values\ListOptionValue;
 use Star\Component\Document\Design\Domain\Model\Values\OptionListValue;
@@ -32,11 +31,6 @@ final class DocumentBuilder
     private $document;
 
     /**
-     * @var TransformerRegistry
-     */
-    private $factory;
-
-    /**
      * @var StrategyToHandleValidationErrors
      */
     private $strategy;
@@ -45,7 +39,6 @@ final class DocumentBuilder
     {
         $this->id = $id;
         $this->document = DocumentAggregate::draft($id);
-        $this->factory = new TransformerRegistry();
         $this->strategy = new AlwaysThrowExceptionOnValidationErrors();
     }
 
@@ -128,7 +121,7 @@ final class DocumentBuilder
         /**
          * @var PropertyBuilder $builderClass
          */
-        return new $builderClass($name, $this->document, $this, $this->factory);
+        return new $builderClass($name, $this->document, $this);
     }
 
     public static function constraints(): ConstraintBuilder

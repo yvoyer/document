@@ -3,7 +3,6 @@
 namespace Star\Component\Document\Design\Domain\Model;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 
 interface DocumentVisitor
 {
@@ -20,10 +19,5 @@ interface DocumentVisitor
         PropertyName $propertyName,
         string $constraintName,
         PropertyConstraint $constraint
-    ): void;
-
-    public function visitValueTransformer(
-        PropertyName $propertyName,
-        TransformerIdentifier $identifier
     ): void;
 }

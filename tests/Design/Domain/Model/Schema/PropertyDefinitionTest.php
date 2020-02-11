@@ -3,19 +3,14 @@
 namespace Star\Component\Document\Design\Domain\Model\Schema;
 
 use PHPUnit\Framework\TestCase;
-use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerFactory;
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
-use Star\Component\Document\Design\Domain\Model\Transformation\ValueTransformer;
 use Star\Component\Document\Design\Domain\Model\Types\NullType;
 use Star\Component\Document\Design\Domain\Model\Values\EmptyValue;
-use Star\Component\Document\Design\Domain\Model\Values\StringValue;
 
 final class PropertyDefinitionTest extends TestCase
 {
@@ -114,43 +109,13 @@ final class PropertyDefinitionTest extends TestCase
         $this->assertSame($argumentConstraint, $new->getConstraint('const'));
     }
 
-    public function test_it_should_contain_value_transformer(): void
-    {
-        $definition = new PropertyDefinition(PropertyName::fromString('name'), new NullType());
-        $factory = new class implements TransformerFactory {
-            public function createTransformer(TransformerIdentifier $transformer): ValueTransformer
-            {
-                return new class () implements ValueTransformer {
-                    public function transform($rawValue): RecordValue
-                    {
-                        return StringValue::fromString('transformed value');
-                    }
-                };
-            }
-
-            public function transformerExists(TransformerIdentifier $identifier): bool
-            {
-                throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
-            }
-        };
-
-        $new = $definition->addTransformer(TransformerIdentifier::fromString('t1'));
-
-        $this->assertSame(
-            'transformed value',
-            $new->transformValue('raw', $factory)->toString()
-        );
-    }
-
     public function test_it_should_stop_visiting_on_visit_property(): void
     {
         $definition = new PropertyDefinition(PropertyName::fromString('name'), new NullType());
         /**
          * @var PropertyDefinition $definition
          */
-        $definition = $definition
-            ->addConstraint('const', new NoConstraint())
-            ->addTransformer(TransformerIdentifier::random());
+        $definition = $definition->addConstraint('const', new NoConstraint());
 
         $visitor = $this->createMock(DocumentVisitor::class);
         $visitor
@@ -160,10 +125,6 @@ final class PropertyDefinitionTest extends TestCase
         $visitor
             ->expects($this->never())
             ->method('visitPropertyConstraint');
-        $visitor
-            ->expects($this->never())
-            ->method('visitValueTransformer');
-
         $definition->acceptDocumentVisitor($visitor);
     }
 }

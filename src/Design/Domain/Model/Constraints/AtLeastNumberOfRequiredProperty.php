@@ -10,7 +10,6 @@ use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 
 final class AtLeastNumberOfRequiredProperty implements DocumentVisitor, DocumentConstraint
 {
@@ -45,12 +44,6 @@ final class AtLeastNumberOfRequiredProperty implements DocumentVisitor, Document
         PropertyName $propertyName,
         string $constraintName,
         PropertyConstraint $constraint
-    ): void {
-    }
-
-    public function visitValueTransformer(
-        PropertyName $propertyName,
-        TransformerIdentifier $identifier
     ): void {
     }
 

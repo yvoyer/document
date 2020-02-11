@@ -8,7 +8,6 @@ use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Schema\PropertyDefinition;
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 
 final class PropertyExtractor implements DocumentVisitor, \Countable
 {
@@ -42,12 +41,6 @@ final class PropertyExtractor implements DocumentVisitor, \Countable
         PropertyName $propertyName,
         string $constraintName,
         PropertyConstraint $constraint
-    ): void {
-    }
-
-    public function visitValueTransformer(
-        PropertyName $propertyName,
-        TransformerIdentifier $identifier
     ): void {
     }
 }

@@ -2,10 +2,10 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
-use Assert\Assertion;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
+use Star\Component\Document\Design\Domain\Model\Values\DateParser;
 use Star\Component\Document\Design\Domain\Model\Values\DateValue;
 
 final class AfterDate implements PropertyConstraint
@@ -33,8 +33,8 @@ final class AfterDate implements PropertyConstraint
             return;
         }
 
-        Assertion::isInstanceOf($value, DateValue::class);
-        if ((int) $this->target->diff($value->toDateTime())->format('%r%a') <= 0) {
+        $date = DateParser::fromString($value->toString());
+        if (!$date->isValid() || (int) $this->target->diff($date->toDateTime())->format('%r%a') <= 0) {
             $errors->addError(
                 $name,
                 'en',

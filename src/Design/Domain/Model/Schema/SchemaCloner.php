@@ -7,7 +7,6 @@ use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 
 final class SchemaCloner implements DocumentVisitor
 {
@@ -38,13 +37,6 @@ final class SchemaCloner implements DocumentVisitor
         PropertyConstraint $constraint
     ): void {
         $this->schema->addConstraint($propertyName->toString(), $constraintName, $constraint);
-    }
-
-    public function visitValueTransformer(
-        PropertyName $propertyName,
-        TransformerIdentifier $identifier
-    ): void {
-        $this->schema->addTransformer($propertyName->toString(), $identifier);
     }
 
     public function getClone(): DocumentSchema

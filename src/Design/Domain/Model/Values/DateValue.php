@@ -2,7 +2,6 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Values;
 
-use Assert\Assertion;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 
 final class DateValue implements RecordValue
@@ -15,11 +14,6 @@ final class DateValue implements RecordValue
     private function __construct(\DateTimeInterface $value)
     {
         $this->value = $value;
-    }
-
-    public function toDateTime(): \DateTimeInterface
-    {
-        return $this->value;
     }
 
     public function count(): int
@@ -53,9 +47,12 @@ final class DateValue implements RecordValue
             return new EmptyValue();
         }
 
-        Assertion::integer($time = \strtotime($date));
+        $providedDate = DateParser::fromString($date);
+        if (!$providedDate->isValid()) {
+            return StringValue::fromString($date);
+        }
 
-        return self::fromDateTime(new \DateTimeImmutable(\date('Y-m-d', $time)));
+        return self::fromDateTime($providedDate->toDateTime());
     }
 
     public static function fromDateTime(\DateTimeInterface $date): RecordValue

@@ -7,7 +7,6 @@ use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 
 final class SchemaDumper implements DocumentVisitor
 {
@@ -28,7 +27,6 @@ final class SchemaDumper implements DocumentVisitor
     {
         $this->data['properties'][$name->toString()]['type'] = $type->toData()->toArray();
         $this->data['properties'][$name->toString()]['constraints'] = [];
-        $this->data['properties'][$name->toString()]['transformers'] = [];
 
         return false;
     }
@@ -39,12 +37,5 @@ final class SchemaDumper implements DocumentVisitor
         PropertyConstraint $constraint
     ): void {
         $this->data['properties'][$propertyName->toString()]['constraints'][$constraintName] = $constraint->toData()->toArray();
-    }
-
-    public function visitValueTransformer(
-        PropertyName $propertyName,
-        TransformerIdentifier $identifier
-    ): void {
-        $this->data['properties'][$propertyName->toString()]['transformers'][] = $identifier->toString();
     }
 }

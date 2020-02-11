@@ -5,7 +5,6 @@ namespace Star\Component\Document\Design\Domain\Model;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 use Star\Component\Document\Design\Domain\Model\Schema\PropertyDefinition;
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 use Star\Component\Document\Design\Domain\Model\Events;
 use Star\Component\DomainEvent\AggregateRoot;
 
@@ -49,11 +48,6 @@ final class DocumentAggregate extends AggregateRoot implements DocumentDesigner
         $this->schema->addConstraint($name->toString(), $constraintName, $constraint);
     }
 
-    public function addPropertyTransformer(PropertyName $property, TransformerIdentifier $identifier): void
-    {
-        $this->mutate(new Events\TransformerAddedOnProperty($this->getIdentity(), $property, $identifier));
-    }
-
     public function setDocumentConstraint(DocumentConstraint $constraint): void
     {
         $this->mutate(new Events\DocumentConstraintRegistered($this->getIdentity(), $constraint));
@@ -94,11 +88,6 @@ final class DocumentAggregate extends AggregateRoot implements DocumentDesigner
     protected function onPropertyAdded(Events\PropertyAdded $event): void
     {
         $this->schema->addProperty($event->name()->toString(), $event->type());
-    }
-
-    protected function onTransformerAddedOnProperty(Events\TransformerAddedOnProperty $event): void
-    {
-        $this->schema->addTransformer($event->property()->toString(), $event->identifier());
     }
 
     protected function onDocumentConstraintRegistered(Events\DocumentConstraintRegistered $event): void

@@ -5,7 +5,6 @@ namespace Star\Component\Document\Design\Domain\Model\Schema;
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 use Star\Component\Document\Design\Domain\Model\Types;
 
 final class DocumentSchemaTest extends TestCase
@@ -150,8 +149,6 @@ final class DocumentSchemaTest extends TestCase
         $this->schema->addProperty('empty', new Types\NullType());
         $this->schema->addProperty('with-constraint', new Types\NullType());
         $this->schema->addConstraint('with-constraint', 'const', new NoConstraint());
-        $this->schema->addProperty('with-transformer', new Types\NullType());
-        $this->schema->addTransformer('with-transformer', TransformerIdentifier::fromString('trans'));
 
         $duplicate = $this->schema->clone(DocumentId::fromString('new-id'));
         $expected = \json_decode($this->schema->toString(), true);

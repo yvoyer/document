@@ -6,7 +6,6 @@ use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\Constraints;
 use Star\Component\Document\Design\Domain\Model\Schema\ReferencePropertyNotFound;
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
 use Star\Component\Document\Design\Domain\Model\Types\NullType;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
 
@@ -100,18 +99,5 @@ final class DocumentAggregateTest extends TestCase
         $this->expectException(ReferencePropertyNotFound::class);
         $this->expectExceptionMessage('The property with name "not found" could not be found.');
         $this->document->getPropertyDefinition(PropertyName::fromString('not found'));
-    }
-
-    public function test_it_should_add_transformer_on_property(): void
-    {
-        $name = PropertyName::fixture();
-        $identifier = TransformerIdentifier::random();
-        $this->document->addProperty($name, new NullType(), new Constraints\NoConstraint());
-
-        $this->assertFalse($this->document->getPropertyDefinition($name)->hasTransformer($identifier));
-
-        $this->document->addPropertyTransformer($name, $identifier);
-
-        $this->assertTrue($this->document->getPropertyDefinition($name)->hasTransformer($identifier));
     }
 }

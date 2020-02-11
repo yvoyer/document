@@ -23,9 +23,22 @@ final class ConstraintBuilder
         return new Constraints\RequiresValue();
     }
 
+    public function betweenDate(string $date): PropertyConstraint
+    {
+        return new Constraints\All(
+            $this->afterDate($date),
+            $this->beforeDate($date)
+        );
+    }
+
     public function singleOption(): PropertyConstraint
     {
         return new Constraints\RequiresSingleOption();
+    }
+
+    public function dateFormat(string $format): PropertyConstraint
+    {
+        return new Constraints\DateFormat($format);
     }
 
     /**
