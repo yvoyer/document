@@ -126,10 +126,10 @@ Feature: Enter values on document using property rules
     Then The records list of document "document" should looks like:
       | record-id | property | value |
       | 1         | field    | 123   |
-      | 3         | field    |       |
     And The record entry should have failed:
       | record-id | property | message |
-      | 2         | field    | Value "ABC" do not match pattern "/\d+/". |
+      | 2         | field    | Value "string(ABC)" do not match pattern "/\d+/". |
+      | 3         | field    | Value "empty()" do not match pattern "/\d+/".    |
 
   Scenario: Enter a record for a property with before-date constraint
     Given The document "document" is created with a date property named "field"
@@ -146,13 +146,16 @@ Feature: Enter values on document using property rules
       | 6         | field    | +1 day     |
       | 7         | field    | -1 day     |
     Then The records list of document "document" should looks like:
-      | record-id | property | value |
-      | 2         | field    | ABC   |
-      | 3         | field    | A     |
-      | 4         | field    |       |
+      | record-id | property | value      |
+      | 1         | field    | 2010-07-08 |
+      | 4         | field    |            |
     And The record entry should have failed:
       | record-id | property | message |
-      | 1         | field    | Property "field" is too long, expected a maximum of 3 characters, "ABCD" given. |
+      | 2         | field    | The property "field" only accepts date before "2010-07-09", "string(2010-07-09)" given. |
+      | 3         | field    | The property "field" only accepts date before "2010-07-09", "string(2010-07-10)" given. |
+      | 5         | field    | The property "field" only accepts date before "2010-07-09", "string(now)" given. |
+      | 6         | field    | The property "field" only accepts date before "2010-07-09", "string(+1 day)" given. |
+      | 7         | field    | The property "field" only accepts date before "2010-07-09", "string(-1 day)" given. |
 
   Scenario: Enter a record for a property with after-date constraint
     Given The document "document" is created with a date property named "field"
@@ -169,19 +172,22 @@ Feature: Enter values on document using property rules
       | 6         | field    | +1 day     |
       | 7         | field    | -1 day     |
     Then The records list of document "document" should looks like:
-      | record-id | property | value |
-      | 2         | field    | ABC   |
-      | 3         | field    | A     |
-      | 4         | field    |       |
+      | record-id | property | value      |
+      | 3         | field    | 2010-07-10 |
+      | 4         | field    |            |
+      | 5         | field    | now        |
+      | 6         | field    | +1 day     |
+      | 7         | field    | -1 day     |
     And The record entry should have failed:
       | record-id | property | message |
-      | 1         | field    | Property "field" is too long, expected a maximum of 3 characters, "ABCD" given. |
+      | 1         | field    | The property "field" only accepts date after "2010-07-09", "string(2010-07-08)" given. |
+      | 2         | field    | The property "field" only accepts date after "2010-07-09", "string(2010-07-09)" given. |
 
   Scenario: Enter a record for a property with between-date constraint
     Given The document "document" is created with a date property named "field"
     When I mark the property "field" of document "document" with constraints:
-      | name         | value      |
-      | between-date | 2010-07-09 |
+      | name         | value                 |
+      | between-date | 2010-07-08;2010-07-10 |
     And I enter the following values to document "document"
       | record-id | property | value      |
       | 1         | field    | 2010-07-08 |
@@ -193,12 +199,15 @@ Feature: Enter values on document using property rules
       | 7         | field    | -1 day     |
     Then The records list of document "document" should looks like:
       | record-id | property | value |
-      | 2         | field    | ABC   |
-      | 3         | field    | A     |
-      | 4         | field    |       |
+      | 2         | field    | 2010-07-09 |
+      | 4         | field    |            |
     And The record entry should have failed:
       | record-id | property | message |
-      | 1         | field    | Property "field" is too long, expected a maximum of 3 characters, "ABCD" given. |
+      | 1         | field    | The property "field" only accepts date after "2010-07-08", "string(2010-07-08)" given. |
+      | 3         | field    | The property "field" only accepts date before "2010-07-10", "string(2010-07-10)" given. |
+      | 5         | field    | The property "field" only accepts date before "2010-07-10", "string(now)" given. |
+      | 6         | field    | The property "field" only accepts date before "2010-07-10", "string(+1 day)" given. |
+      | 7         | field    | The property "field" only accepts date before "2010-07-10", "string(-1 day)" given. |
 
   Scenario: Enter a record for a property with between-date constraint
     Given The document "document" is created with a date property named "field"

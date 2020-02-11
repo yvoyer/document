@@ -3,6 +3,7 @@
 namespace Star\Component\Document\DataEntry\Domain\Messaging\Command;
 
 use Assert\Assertion;
+use Couchbase\DocIdSearchQuery;
 use Star\Component\Document\Common\Domain\Messaging\Command;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
@@ -24,6 +25,11 @@ final class CreateRecord implements Command
      */
     private $values = [];
 
+    /**
+     * @param DocumentId $documentId
+     * @param RecordId $recordId
+     * @param mixed[] $values
+     */
     public function __construct(
         DocumentId $documentId,
         RecordId $recordId,
@@ -49,6 +55,9 @@ final class CreateRecord implements Command
         return $this->recordId;
     }
 
+    /**
+     * @return mixed[]
+     */
     public function valueMap(): array
     {
         return $this->values;

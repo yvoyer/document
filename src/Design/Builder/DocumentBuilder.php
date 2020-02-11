@@ -44,27 +44,35 @@ final class DocumentBuilder
 
     public function createText(string $name): StringBuilder
     {
-        return $this->createProperty($name, new Types\StringType(), StringBuilder::class);
+        $this->createProperty($name, new Types\StringType());
+
+        return new StringBuilder(PropertyName::fromString($name), $this->document, $this);
     }
 
     public function createBoolean(string $name): BooleanBuilder
     {
-        return $this->createProperty($name, new Types\BooleanType(), BooleanBuilder::class);
+        $this->createProperty($name, new Types\BooleanType());
+
+        return new BooleanBuilder(PropertyName::fromString($name), $this->document, $this);
     }
 
     public function createDate(string $name): DateBuilder
     {
-        return $this->createProperty($name, new Types\DateType(), DateBuilder::class);
+        $this->createProperty($name, new Types\DateType());
+
+        return new DateBuilder(PropertyName::fromString($name), $this->document, $this);
     }
 
     public function createNumber(string $name): NumberBuilder
     {
-        return $this->createProperty($name, new Types\NumberType(), NumberBuilder::class);
+        $this->createProperty($name, new Types\NumberType());
+
+        return new NumberBuilder(PropertyName::fromString($name), $this->document, $this);
     }
 
     public function createCustomList(string $name, string ...$options): CustomListBuilder
     {
-        return $this->createProperty(
+        $this->createProperty(
             $name,
             new Types\CustomListType(
                 'list',
@@ -76,9 +84,10 @@ final class DocumentBuilder
                         \array_keys($options)
                     )
                 )
-            ),
-            CustomListBuilder::class
+            )
         );
+
+        return new CustomListBuilder(PropertyName::fromString($name), $this->document, $this);
     }
 
     public function startRecord(RecordId $recordId = null): RecordBuilder
@@ -110,18 +119,13 @@ final class DocumentBuilder
         return $this->document;
     }
 
-    public function createProperty(string $name, PropertyType $type, string $builderClass): PropertyBuilder
+    public function createProperty(string $name, PropertyType $type): void
     {
         $this->document->addProperty(
             $name = PropertyName::fromString($name),
             $type,
             new NoConstraint()
         );
-
-        /**
-         * @var PropertyBuilder $builderClass
-         */
-        return new $builderClass($name, $this->document, $this);
     }
 
     public static function constraints(): ConstraintBuilder

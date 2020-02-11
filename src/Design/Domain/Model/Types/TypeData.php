@@ -17,6 +17,10 @@ final class TypeData
      */
     private $arguments = [];
 
+    /**
+     * @param string $class
+     * @param mixed[] $arguments
+     */
     public function __construct(string $class, array $arguments = [])
     {
         Assertion::classExists($class);
@@ -40,6 +44,9 @@ final class TypeData
         return $class::fromData($this->arguments);
     }
 
+    /**
+     * @return string[]|mixed[][]
+     */
     public function toArray(): array
     {
         return [
@@ -64,8 +71,12 @@ final class TypeData
         return new self($class, $arguments);
     }
 
+    /**
+     * @param mixed[] $data
+     * @return TypeData
+     */
     public static function fromArray(array $data): self
     {
-        return self::fromString(\json_encode($data));
+        return self::fromString((string) \json_encode($data));
     }
 }

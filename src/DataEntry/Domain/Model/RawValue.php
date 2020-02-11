@@ -4,6 +4,7 @@ namespace Star\Component\Document\DataEntry\Domain\Model;
 
 use Assert\Assertion;
 use Star\Component\Document\Design\Domain\Model\Values\BooleanValue;
+use Star\Component\Document\Design\Domain\Model\Values\CanBeTypeCastToString;
 use Star\Component\Document\Design\Domain\Model\Values\DateValue;
 use Star\Component\Document\Design\Domain\Model\Values\EmptyValue;
 use Star\Component\Document\Design\Domain\Model\Values\FloatValue;
@@ -41,7 +42,7 @@ final class RawValue
 
     public function isString(): bool
     {
-        return $this->value instanceof StringValue;
+        return $this->value instanceof CanBeTypeCastToString;
     }
 
     public function isNumeric(): bool
@@ -108,6 +109,10 @@ final class RawValue
         return new self(DateValue::fromDateTime($value));
     }
 
+    /**
+     * @param mixed[] $value
+     * @return RawValue
+     */
     public static function fromArray(array $value): self
     {
         if (\count($value) === 0) {
@@ -122,6 +127,10 @@ final class RawValue
         return new self(new ObjectValue($value));
     }
 
+    /**
+     * @param int|float|string $value
+     * @return RawValue
+     */
     public static function fromNumeric($value): self
     {
         Assertion::numeric($value);

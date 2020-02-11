@@ -73,6 +73,10 @@ final class OptionListValue implements RecordValue
         );
     }
 
+    /**
+     * @param ListOptionValue[] $value
+     * @return OptionListValue
+     */
     public static function fromArray(array $value): self
     {
         Assertion::notEmpty($value, 'List of options is empty, but "ListOptionValue[]" was expected.');

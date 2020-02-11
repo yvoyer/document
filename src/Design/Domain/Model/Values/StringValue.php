@@ -5,7 +5,7 @@ namespace Star\Component\Document\Design\Domain\Model\Values;
 use Assert\Assertion;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 
-final class StringValue implements RecordValue
+final class StringValue implements RecordValue, CanBeTypeCastToString
 {
     /**
      * @var string
@@ -45,7 +45,7 @@ final class StringValue implements RecordValue
 
     public static function fromString(string $value): RecordValue
     {
-        if(\mb_strlen($value) === 0) {
+        if (\mb_strlen($value) === 0) {
             return new EmptyValue();
         }
 

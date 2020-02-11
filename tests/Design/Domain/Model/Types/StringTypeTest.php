@@ -22,12 +22,6 @@ final class StringTypeTest extends BaseTestType
             "Boolean false should be invalid" => [
                 false, 'The property "name" expected a "string" value, "boolean(false)" given.'
             ],
-            "Float should be invalid" => [
-                12.34, 'The property "name" expected a "string" value, "float(12.34)" given.'
-            ],
-            "Integer should be invalid" => [
-                34, 'The property "name" expected a "string" value, "int(34)" given.'
-            ],
             "Array should be invalid" => [
                 [12], 'The property "name" expected a "string" value, "list([12])" given.'
             ],
@@ -51,6 +45,22 @@ final class StringTypeTest extends BaseTestType
         $this->assertSame(
             '',
             $this->getType()->createValue('text', RawValue::fromMixed(''))->toString()
+        );
+    }
+
+    public function test_it_should_allow_int_value(): void
+    {
+        $this->assertSame(
+            '123',
+            $this->getType()->createValue('text', RawValue::fromMixed(123))->toString()
+        );
+    }
+
+    public function test_it_should_allow_float_value(): void
+    {
+        $this->assertSame(
+            '12.34',
+            $this->getType()->createValue('text', RawValue::fromMixed(12.34))->toString()
         );
     }
 }

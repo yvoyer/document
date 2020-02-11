@@ -75,7 +75,7 @@ final class DocumentSchema
     {
         $this->acceptDocumentVisitor($dumper = new SchemaDumper());
 
-        return \json_encode($dumper->toArray());
+        return (string) \json_encode($dumper->toArray());
     }
 
     public static function fromString(string $string): DocumentSchema
@@ -87,7 +87,9 @@ final class DocumentSchema
 
             foreach ($property['constraints'] as $constraintName => $constraintData) {
                 $schema->addConstraint(
-                    $name, $constraintName, ConstraintData::fromArray($constraintData)->createConstraint()
+                    $name,
+                    $constraintName,
+                    ConstraintData::fromArray($constraintData)->createConstraint()
                 );
             }
         }

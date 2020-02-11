@@ -33,6 +33,10 @@ final class StringType implements PropertyType
         return 'string';
     }
 
+    /**
+     * @param mixed[] $arguments
+     * @return PropertyType
+     */
     public static function fromData(array $arguments): PropertyType
     {
         return new self();

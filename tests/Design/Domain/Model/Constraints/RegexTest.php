@@ -22,7 +22,7 @@ final class RegexTest extends TestCase
         $this->assertTrue($errors->hasErrors());
         $propErrors = $errors->getErrorsForProperty($name, 'en');
         $this->assertCount(1, $propErrors);
-        $this->assertSame('Value "abc" do not match pattern "/\d+/".', $propErrors[0]);
+        $this->assertSame('Value "string(abc)" do not match pattern "/\d+/".', $propErrors[0]);
     }
 
     public function test_it_should_throw_exception_when_empty_pattern(): void

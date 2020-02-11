@@ -46,6 +46,9 @@ final class ListOptionValue
         return $this->label;
     }
 
+    /**
+     * @return int[]|string[]
+     */
     public function toArray(): array
     {
         return [

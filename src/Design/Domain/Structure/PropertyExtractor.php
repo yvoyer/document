@@ -7,12 +7,11 @@ use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\Schema\PropertyDefinition;
 
 final class PropertyExtractor implements DocumentVisitor, \Countable
 {
     /**
-     * @var PropertyDefinition[]
+     * @var PropertyType[]
      */
     private $properties = [];
 

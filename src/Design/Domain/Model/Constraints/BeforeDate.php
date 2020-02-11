@@ -42,7 +42,7 @@ final class BeforeDate implements PropertyConstraint
                     'The property "%s" only accepts date before "%s", "%s" given.',
                     $name,
                     $this->target->format(self::FORMAT),
-                    $value->toString()
+                    $value->toTypedString()
                 )
             );
         }

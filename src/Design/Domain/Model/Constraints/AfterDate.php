@@ -42,7 +42,7 @@ final class AfterDate implements PropertyConstraint
                     'The property "%s" only accepts date after "%s", "%s" given.',
                     $name,
                     $this->target->format(self::FORMAT),
-                    $value->toString()
+                    $value->toTypedString()
                 )
             );
         }

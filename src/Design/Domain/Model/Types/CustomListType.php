@@ -82,6 +82,10 @@ final class CustomListType implements PropertyType
         );
     }
 
+    /**
+     * @param mixed[] $arguments
+     * @return PropertyType
+     */
     public static function fromData(array $arguments): PropertyType
     {
         $typeName = $arguments['type-name'];

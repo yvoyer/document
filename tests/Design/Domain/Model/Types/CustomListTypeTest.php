@@ -29,10 +29,10 @@ final class CustomListTypeTest extends BaseTestType
                 'invalid', $arrayItemMessage . '"string(invalid)" given.'
             ],
             "String numeric should be invalid" => [
-                '12.34', $typeMessage . '"float(12.34)" given.'
+                '12.34', $arrayItemMessage . '"float(12.34)" given.'
             ],
             "Float should be invalid" => [
-                12.34, $typeMessage . '"float(12.34)" given.'
+                12.34, $arrayItemMessage . '"float(12.34)" given.'
             ],
             "Integer should be invalid" => [
                 34, $arrayItemMessage . '"int(34)" given.'

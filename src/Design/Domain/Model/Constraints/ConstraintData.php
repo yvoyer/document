@@ -13,10 +13,14 @@ final class ConstraintData
     private $class;
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $arguments = [];
 
+    /**
+     * @param string $class
+     * @param mixed[] $arguments
+     */
     public function __construct(string $class, array $arguments = [])
     {
         Assertion::implementsInterface($class, PropertyConstraint::class);
@@ -36,13 +40,16 @@ final class ConstraintData
     public function createConstraint(): PropertyConstraint
     {
         /**
-         * @var $class PropertyConstraint
+         * @var PropertyConstraint $class
          */
         $class = $this->class;
 
         return $class::fromData($this);
     }
 
+    /**
+     * @return mixed[]
+     */
     public function toArray(): array
     {
         return [
@@ -53,9 +60,13 @@ final class ConstraintData
 
     public function toString(): string
     {
-        return \json_encode($this->toArray());
+        return (string) \json_encode($this->toArray());
     }
 
+    /**
+     * @param mixed[] $data
+     * @return ConstraintData
+     */
     public static function fromArray(array $data): self
     {
         return new self($data['class'], $data['arguments']);

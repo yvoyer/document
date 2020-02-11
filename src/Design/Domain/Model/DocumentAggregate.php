@@ -3,6 +3,7 @@
 namespace Star\Component\Document\Design\Domain\Model;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
 use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 use Star\Component\Document\Design\Domain\Model\Schema\PropertyDefinition;
 use Star\Component\Document\Design\Domain\Model\Events;
@@ -19,6 +20,11 @@ final class DocumentAggregate extends AggregateRoot implements DocumentDesigner
      * @var DocumentState
      */
     private $state;
+
+    /**
+     * @var DocumentConstraint
+     */
+    private $constraint;
 
     public function getSchema(): DocumentSchema
     {
@@ -63,6 +69,11 @@ final class DocumentAggregate extends AggregateRoot implements DocumentDesigner
         return $this->state->isPublished();
     }
 
+    public function getConstraint(): DocumentConstraint
+    {
+        return $this->constraint;
+    }
+
     public function getPropertyDefinition(PropertyName $name): PropertyDefinition
     {
         return $this->schema->getDefinition($name->toString());
@@ -77,6 +88,7 @@ final class DocumentAggregate extends AggregateRoot implements DocumentDesigner
     {
         $this->schema = new DocumentSchema($event->documentId());
         $this->state = new DocumentState();
+        $this->constraint = new NoConstraint();
     }
 
     protected function onDocumentPublished(Events\DocumentPublished $event): void
@@ -92,7 +104,7 @@ final class DocumentAggregate extends AggregateRoot implements DocumentDesigner
 
     protected function onDocumentConstraintRegistered(Events\DocumentConstraintRegistered $event): void
     {
-        $this->constraints = $event->constraint();
+        $this->constraint = $event->constraint();
     }
 
     public static function draft(DocumentId $id): self

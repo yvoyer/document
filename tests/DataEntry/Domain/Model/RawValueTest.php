@@ -88,7 +88,7 @@ final class RawValueTest extends TestCase
         $this->assertSame($stringValue, RawValue::fromMixed($value)->toString());
         $this->assertFalse(RawValue::fromMixed($value)->isEmpty());
         $this->assertFalse(RawValue::fromMixed($value)->isArray());
-        $this->assertFalse(RawValue::fromMixed($value)->isString());
+        $this->assertTrue(RawValue::fromMixed($value)->isString());
         $this->assertFalse(RawValue::fromMixed($value)->isFloat());
         $this->assertFalse(RawValue::fromMixed($value)->isObject());
         $this->assertFalse(RawValue::fromMixed($value)->isDate());
@@ -102,7 +102,7 @@ final class RawValueTest extends TestCase
         $this->assertSame($stringValue, RawValue::fromMixed($value)->toString());
         $this->assertFalse(RawValue::fromMixed($value)->isEmpty());
         $this->assertFalse(RawValue::fromMixed($value)->isArray());
-        $this->assertFalse(RawValue::fromMixed($value)->isString());
+        $this->assertTrue(RawValue::fromMixed($value)->isString());
         $this->assertFalse(RawValue::fromMixed($value)->isInt());
         $this->assertFalse(RawValue::fromMixed($value)->isObject());
         $this->assertFalse(RawValue::fromMixed($value)->isDate());

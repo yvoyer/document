@@ -14,6 +14,10 @@ final class DateParser
      */
     private $format;
 
+    /**
+     * @param string $format
+     * @param \DateTimeInterface|false $value
+     */
     private function __construct(string $format, $value)
     {
         $this->format = $format;
@@ -31,7 +35,7 @@ final class DateParser
 
     public function diff(\DateTimeInterface $date, string $diffFormat): int
     {
-        if (! $this->isValid()) {
+        if (! $this->value instanceof \DateTimeInterface) {
             return 0;
         }
 
@@ -45,6 +49,10 @@ final class DateParser
 
     public function toDateTime(): \DateTimeInterface
     {
+        if (!$this->value instanceof \DateTimeInterface) {
+            throw new \RuntimeException('The date is invalid.');
+        }
+
         return $this->value;
     }
 

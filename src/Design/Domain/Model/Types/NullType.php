@@ -28,6 +28,10 @@ final class NullType implements PropertyType
         return 'null';
     }
 
+    /**
+     * @param mixed[] $arguments
+     * @return PropertyType
+     */
     public static function fromData(array $arguments): PropertyType
     {
         return new self();

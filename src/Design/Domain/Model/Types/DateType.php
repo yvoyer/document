@@ -38,6 +38,10 @@ final class DateType implements PropertyType
         return 'date';
     }
 
+    /**
+     * @param mixed[] $arguments
+     * @return PropertyType
+     */
     public static function fromData(array $arguments): PropertyType
     {
         return new self();

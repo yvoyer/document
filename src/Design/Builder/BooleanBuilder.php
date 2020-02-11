@@ -12,5 +12,4 @@ final class BooleanBuilder extends PropertyBuilder
 
         return $this;
     }
-
 }

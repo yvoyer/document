@@ -5,7 +5,7 @@ namespace Star\Component\Document\Design\Domain\Model\Values;
 use Assert\Assertion;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 
-final class IntegerValue implements RecordValue
+final class IntegerValue implements RecordValue, CanBeTypeCastToString
 {
     /**
      * @var int

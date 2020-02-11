@@ -42,11 +42,11 @@ final class ScalarListValue implements RecordValue
 
     public function toReadableString(): string
     {
-        return \json_encode($this->values);
+        return \strval(\json_encode($this->values));
     }
 
     /**
-     * @param string[]|int[] $values
+     * @param string[]|int[]|float[] $values
      * @return ScalarListValue
      */
     public static function fromArray(array $values): self
@@ -54,7 +54,7 @@ final class ScalarListValue implements RecordValue
         Assertion::notEmpty($values, 'List of scalars is empty, but "int[] | string[]" was expected.');
         $intValues = \array_map(
             function ($value) use ($values) {
-                if (! \is_numeric($value) && ! \is_float($value)) {
+                if (! \is_float($value) && ! \is_numeric($value)) {
                     throw new InvalidPropertyValue(
                         \sprintf(
                             'List of scalar expected "int[] | string[]", got "%s".',

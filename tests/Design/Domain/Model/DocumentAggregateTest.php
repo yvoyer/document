@@ -74,7 +74,7 @@ final class DocumentAggregateTest extends TestCase
         $this->document->acceptDocumentVisitor($visitor);
     }
 
-    public function test_it_should_add_a_constraint(): void
+    public function test_it_should_add_a_property_constraint(): void
     {
         $name = PropertyName::fixture();
         $this->document->addProperty(
@@ -99,5 +99,16 @@ final class DocumentAggregateTest extends TestCase
         $this->expectException(ReferencePropertyNotFound::class);
         $this->expectExceptionMessage('The property with name "not found" could not be found.');
         $this->document->getPropertyDefinition(PropertyName::fromString('not found'));
+    }
+
+    public function test_it_should_add_a_constraint_on_document(): void
+    {
+        $constraint = new Constraints\NoConstraint();
+
+        $this->assertNotSame($constraint, $this->document->getConstraint());
+
+        $this->document->setDocumentConstraint($constraint);
+
+        $this->assertSame($constraint, $this->document->getConstraint());
     }
 }

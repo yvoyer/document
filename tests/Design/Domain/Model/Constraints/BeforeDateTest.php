@@ -17,7 +17,9 @@ final class BeforeDateTest extends TestCase
     {
         $constraint = new BeforeDate('2000-04-05 00:00:00');
         $constraint->validate(
-            'name', DateValue::fromString($value), $errors = new ErrorList()
+            'name',
+            DateValue::fromString($value),
+            $errors = new ErrorList()
         );
         $this->assertFalse($errors->hasErrors());
         $this->assertCount(0, $errors);
@@ -42,7 +44,9 @@ final class BeforeDateTest extends TestCase
     {
         $constraint = new BeforeDate('2000-05-05 02:03:04');
         $constraint->validate(
-            $name = 'prop', DateValue::fromString($value), $errors = new ErrorList()
+            $name = 'prop',
+            DateValue::fromString($value),
+            $errors = new ErrorList()
         );
         $this->assertCount(1, $errors);
         $this->assertCount(1, $errors->getErrorsForProperty($name, 'en'));

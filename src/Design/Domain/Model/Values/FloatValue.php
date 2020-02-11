@@ -4,7 +4,7 @@ namespace Star\Component\Document\Design\Domain\Model\Values;
 
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 
-final class FloatValue implements RecordValue
+final class FloatValue implements RecordValue, CanBeTypeCastToString
 {
     /**
      * @var int The complete int value of the float ie. "12.34" => 1234

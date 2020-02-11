@@ -38,6 +38,10 @@ final class NumberType implements PropertyType
         return 'number';
     }
 
+    /**
+     * @param mixed[] $arguments
+     * @return PropertyType
+     */
     public static function fromData(array $arguments): PropertyType
     {
         return new self();

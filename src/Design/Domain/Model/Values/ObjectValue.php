@@ -26,7 +26,7 @@ final class ObjectValue implements RecordValue
         return false;
     }
 
-    public function count()
+    public function count(): int
     {
         return 1;
     }

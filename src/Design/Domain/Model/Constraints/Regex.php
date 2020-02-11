@@ -30,7 +30,7 @@ final class Regex implements PropertyConstraint
                 'en',
                 \sprintf(
                     'Value "%s" do not match pattern "%s".',
-                    $value->toString(),
+                    $value->toTypedString(),
                     $this->pattern
                 )
             );

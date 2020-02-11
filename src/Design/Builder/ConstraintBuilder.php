@@ -23,11 +23,11 @@ final class ConstraintBuilder
         return new Constraints\RequiresValue();
     }
 
-    public function betweenDate(string $date): PropertyConstraint
+    public function betweenDate(string $startDate, string $endDate): PropertyConstraint
     {
         return new Constraints\All(
-            $this->afterDate($date),
-            $this->beforeDate($date)
+            $this->afterDate($startDate),
+            $this->beforeDate($endDate)
         );
     }
 

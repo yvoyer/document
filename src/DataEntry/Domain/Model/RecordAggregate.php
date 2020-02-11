@@ -37,6 +37,12 @@ final class RecordAggregate extends AggregateRoot implements DocumentRecord
         return self::fromStream([new Events\RecordCreated($id, $schema->toString())]);
     }
 
+    /**
+     * @param RecordId $id
+     * @param DocumentSchema $schema
+     * @param mixed[] $values
+     * @return RecordAggregate
+     */
     public static function withValues(
         RecordId $id,
         DocumentSchema $schema,

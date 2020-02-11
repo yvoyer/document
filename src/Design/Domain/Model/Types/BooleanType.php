@@ -19,7 +19,8 @@ final class BooleanType implements PropertyType
                 $propertyName,
                 'en',
                 \sprintf(
-                    'Boolean property "%s" only accept boolish values (true, false, "true", "false") values, "%s" given.',
+                    'Boolean property "%s" only accept boolish values ' .
+                    '(true, false, "true", "false") values, "%s" given.',
                     $propertyName,
                     \gettype($rawValue)
                 )
@@ -52,6 +53,10 @@ final class BooleanType implements PropertyType
         return 'boolean';
     }
 
+    /**
+     * @param mixed[] $arguments
+     * @return PropertyType
+     */
     public static function fromData(array $arguments): PropertyType
     {
         return new self();

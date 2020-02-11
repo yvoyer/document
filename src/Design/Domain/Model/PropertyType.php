@@ -20,5 +20,9 @@ interface PropertyType
 
     public function toString(): string;
 
+    /**
+     * @param mixed[] $arguments
+     * @return PropertyType
+     */
     public static function fromData(array $arguments): PropertyType;
 }

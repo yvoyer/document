@@ -10,8 +10,14 @@ use Star\Component\Document\Design\Domain\Model\PropertyType;
 
 final class SchemaDumper implements DocumentVisitor
 {
+    /**
+     * @var mixed[]
+     */
     private $data = [];
 
+    /**
+     * @return mixed[]
+     */
     public function toArray(): array
     {
         return $this->data;
@@ -36,6 +42,7 @@ final class SchemaDumper implements DocumentVisitor
         string $constraintName,
         PropertyConstraint $constraint
     ): void {
-        $this->data['properties'][$propertyName->toString()]['constraints'][$constraintName] = $constraint->toData()->toArray();
+        $property = $propertyName->toString();
+        $this->data['properties'][$property]['constraints'][$constraintName] = $constraint->toData()->toArray();
     }
 }

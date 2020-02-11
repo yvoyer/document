@@ -29,23 +29,10 @@ final class ErrorList implements \Countable
         return $this->errors[$propertyName][$locale];
     }
 
-    private function supportedProperties(): array
-    {
-        return \array_keys($this->errors);
-    }
-
-    private function supportedLocales(): array
-    {
-        $locales = [];
-        foreach ($this->errors as $property => $locales) {
-            foreach ($locales as $locale => $messages) {
-                $locales[] = $locale;
-            }
-        }
-
-        return \array_unique($locales);
-    }
-
+    /**
+     * @param string $locale
+     * @return string[]
+     */
     public function getLocalizedMessages(string $locale): array
     {
         $messages = [];
