@@ -4,21 +4,20 @@ namespace Star\Component\Document\Design\Domain\Structure;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
-use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
+use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
+use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\PropertyType;
 
-final class PropertyExtractor implements DocumentVisitor
+final class PropertyExtractor implements DocumentVisitor, \Countable
 {
     /**
-     * @var PropertyDefinition[]
+     * @var PropertyType[]
      */
     private $properties = [];
 
-    /**
-     * @return PropertyDefinition[]
-     */
-    public function properties(): array
+    public function count(): int
     {
-        return array_values($this->properties);
+        return \count($this->properties);
     }
 
     public function hasProperty(string $name): bool
@@ -30,13 +29,17 @@ final class PropertyExtractor implements DocumentVisitor
     {
     }
 
-    public function visitProperty(PropertyDefinition $definition): void
+    public function visitProperty(PropertyName $name, PropertyType $type): bool
     {
-        $name = $definition->getName();
-        $this->properties[$name->toString()] = $definition;
+        $this->properties[$name->toString()] = $type;
+
+        return false;
     }
 
-    public function visitEnded(array $properties): void
-    {
+    public function visitPropertyConstraint(
+        PropertyName $propertyName,
+        string $constraintName,
+        PropertyConstraint $constraint
+    ): void {
     }
 }

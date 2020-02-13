@@ -5,7 +5,7 @@ namespace Star\Component\Document\Design\Domain\Model\Constraints;
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\Values\StringValue;
 
 final class AllTest extends TestCase
 {
@@ -26,10 +26,12 @@ final class AllTest extends TestCase
         $c3->expects($this->once())
             ->method('validate');
 
-        $constraint->validate(
-            PropertyName::fromString('name'),
-            'test',
-            new ErrorList()
-        );
+        $constraint->validate('name', StringValue::fromString('test'), new ErrorList());
+    }
+
+    public function test_it_should_be_build_from_constraint_data(): void
+    {
+        $source = new All(new NoConstraint(), new NoConstraint());
+        $this->assertEquals($source, All::fromData($source->toData()));
     }
 }

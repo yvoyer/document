@@ -2,47 +2,61 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Values;
 
-use Star\Component\Document\Design\Domain\Model\PropertyValue;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 
-final class DateValue implements PropertyValue
+final class DateValue implements RecordValue
 {
-    /**
-     * @var string
-     */
-    private $propertyName;
-
     /**
      * @var \DateTimeInterface
      */
     private $value;
 
-    /**
-     * @param string $propertyName
-     * @param \DateTimeInterface $value
-     */
-    public function __construct(string $propertyName, \DateTimeInterface $value)
+    private function __construct(\DateTimeInterface $value)
     {
-        $this->propertyName = $propertyName;
         $this->value = $value;
     }
 
-    /**
-     * Return the property name
-     *
-     * @return string
-     */
-    public function getName(): string
+    public function count(): int
     {
-        return $this->propertyName;
+        return 1;
     }
 
-    /**
-     * Returns the string representation of contained value.
-     *
-     * @return string
-     */
+    public function isEmpty(): bool
+    {
+        return false;
+    }
+
     public function toString(): string
     {
         return $this->value->format('Y-m-d');
+    }
+
+    public function toTypedString(): string
+    {
+        return \sprintf('date(%s)', $this->toString());
+    }
+
+    public function toReadableString(): string
+    {
+        return $this->toString();
+    }
+
+    public static function fromString(string $date): RecordValue
+    {
+        if (\mb_strlen($date) === 0) {
+            return new EmptyValue();
+        }
+
+        $providedDate = DateParser::fromString($date);
+        if (!$providedDate->isValid()) {
+            return StringValue::fromString($date);
+        }
+
+        return self::fromDateTime($providedDate->toDateTime());
+    }
+
+    public static function fromDateTime(\DateTimeInterface $date): RecordValue
+    {
+        return new self($date);
     }
 }

@@ -6,9 +6,10 @@ use Assert\Assertion;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
-use Star\Component\Document\Design\Domain\Model\DocumentProperty;
 use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
-use Star\Component\Document\Design\Domain\Model\PropertyDefinition;
+use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
+use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\PropertyType;
 
 final class AtLeastNumberOfRequiredProperty implements DocumentVisitor, DocumentConstraint
 {
@@ -16,6 +17,11 @@ final class AtLeastNumberOfRequiredProperty implements DocumentVisitor, Document
      * @var int
      */
     private $number;
+
+    /**
+     * @var int
+     */
+    private $count = 0;
 
     public function __construct(int $number)
     {
@@ -27,28 +33,31 @@ final class AtLeastNumberOfRequiredProperty implements DocumentVisitor, Document
     {
     }
 
-    public function visitProperty(PropertyDefinition $definition): void
+    public function visitProperty(PropertyName $name, PropertyType $type): bool
     {
+        $this->count ++;
+
+        return false;
     }
 
-    /**
-     * @param DocumentProperty[] $properties
-     */
-    public function visitEnded(array $properties): void
-    {
-        if (\count($properties) < $this->number) {
-            throw new MissingRequiredProperty(
-                \sprintf(
-                    'Document must have at least "%s" required property, got "%s".',
-                    $this->number,
-                    \count($properties)
-                )
-            );
-        }
+    public function visitPropertyConstraint(
+        PropertyName $propertyName,
+        string $constraintName,
+        PropertyConstraint $constraint
+    ): void {
     }
 
     public function onPublish(DocumentDesigner $document): void
     {
         $document->acceptDocumentVisitor($this);
+        if ($this->count < $this->number) {
+            throw new MissingRequiredProperty(
+                \sprintf(
+                    'Document must have at least "%s" required property, got "%s".',
+                    $this->number,
+                    $this->count
+                )
+            );
+        }
     }
 }

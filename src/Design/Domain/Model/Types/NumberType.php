@@ -2,37 +2,48 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
+use Star\Component\Document\DataEntry\Domain\Model\RawValue;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\PropertyValue;
+use Star\Component\Document\Design\Domain\Model\Values\EmptyValue;
 use Star\Component\Document\Design\Domain\Model\Values\FloatValue;
-use Star\Component\Document\Design\Domain\Model\Values\NumberValue;
+use Star\Component\Document\Design\Domain\Model\Values\IntegerValue;
 
 final class NumberType implements PropertyType
 {
-    /**
-     * @param mixed $value
-     * @return bool
-     */
-    private function isValid($value): bool
+    public function createValue(string $propertyName, RawValue $rawValue): RecordValue
     {
-        return \is_numeric($value);
+        if ($rawValue->isEmpty()) {
+            return new EmptyValue();
+        }
+
+        if (! $rawValue->isNumeric()) {
+            throw InvalidPropertyValue::invalidValueForType($propertyName, $this->toString(), $rawValue);
+        }
+
+        if ($rawValue->isInt()) {
+            return IntegerValue::fromString($rawValue->toString());
+        }
+
+        return FloatValue::fromString($rawValue->toString());
     }
 
-    public function createValue(string $propertyName, $rawValue): PropertyValue
+    public function toData(): TypeData
     {
-        if (! $this->isValid($rawValue)) {
-            throw InvalidPropertyValue::invalidValueForType($propertyName, 'number', $rawValue);
-        }
-
-        if (is_int($rawValue) || (int) $rawValue == $rawValue) {
-            return new NumberValue($propertyName, (int) $rawValue);
-        }
-
-        return FloatValue::fromString($propertyName, (string) $rawValue);
+        return new TypeData(self::class);
     }
 
     public function toString(): string
     {
         return 'number';
+    }
+
+    /**
+     * @param mixed[] $arguments
+     * @return PropertyType
+     */
+    public static function fromData(array $arguments): PropertyType
+    {
+        return new self();
     }
 }

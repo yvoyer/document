@@ -2,101 +2,105 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
+use Star\Component\Document\DataEntry\Domain\Model\RawValue;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\PropertyValue;
+use Star\Component\Document\Design\Domain\Model\Values\EmptyValue;
 use Star\Component\Document\Design\Domain\Model\Values\ListOptionValue;
-use Star\Component\Document\Design\Domain\Model\Values\ListValue;
+use Star\Component\Document\Design\Domain\Model\Values\OptionListValue;
 
 final class CustomListType implements PropertyType
 {
-    private const SEPARATOR = ';';
     /**
-     * @var ListOptionValue[]
+     * @var string
      */
-    private $allowed = [];
+    private $typeName;
 
-    public function __construct(ListOptionValue $first, ListOptionValue ...$others)
+    /**
+     * @var OptionListValue
+     */
+    private $allowed;
+
+    public function __construct(string $typeName, OptionListValue $allowedOptions)
     {
-        /**
-         * @var ListOptionValue[] $allowed
-         */
-        $allowed = \array_merge([$first], $others);
-        foreach ($allowed as $option) {
-            $this->allowed[$option->getId()] = $option;
-        }
+        $this->typeName = $typeName;
+        $this->allowed = $allowedOptions;
     }
 
-    /**
-     * @param mixed $values
-     * @return bool
-     */
-    private function isValid($values): bool
+    public function createValue(string $propertyName, RawValue $rawValue): RecordValue
     {
-        if (! \is_array($values)) {
-            return false;
+        if ($rawValue->isEmpty()) {
+            return new EmptyValue();
         }
 
+        if (! $rawValue->isString() && ! $rawValue->isInt() && ! $rawValue->isArray()) {
+            throw InvalidPropertyValue::invalidValueForType($propertyName, $this->toString(), $rawValue);
+        }
+
+        $values = \explode(RecordValue::LIST_SEPARATOR, $rawValue->toString());
         foreach ($values as $id) {
-            if (\is_string($id) || \is_int($id)) {
-                if (\array_key_exists($id, $this->allowed)) {
-                    continue;
-                }
+            if (! $this->allowed->isAllowed((int) $id)) {
+                throw new InvalidPropertyValue(
+                    \sprintf(
+                        'The property "%s" only accepts an array made of the following values: "%s", "%s" given.',
+                        $propertyName,
+                        $this->allowed->toString(),
+                        $rawValue->getType()
+                    )
+                );
             }
-
-            return false;
         }
 
-        return true;
-    }
-
-    /**
-     * @param string $propertyName
-     * @param string|string[]|int[] $rawValue
-     * @return PropertyValue
-     */
-    public function createValue(string $propertyName, $rawValue): PropertyValue
-    {
-        $convertedValue = $rawValue;
-        if (\is_string($rawValue)) {
-            $convertedValue = \explode(self::SEPARATOR, $rawValue);
-        }
-
-        if ($rawValue === '') {
-            $convertedValue = [];
-        }
-
-        if (! $this->isValid($convertedValue)) {
-            throw new InvalidPropertyValue(
-                \sprintf(
-                    'The property "%s" only accepts an array made of the following values: "%s", "%s" given.',
-                    $propertyName,
-                    \implode(
-                        self::SEPARATOR,
-                        \array_map(
-                            function (ListOptionValue $value): int {
-                                return $value->getId();
-                            },
-                            $this->allowed
-                        )
-                    ),
-                    InvalidPropertyValue::getValueType($rawValue)
-                )
-            );
-        }
-
-        return new ListValue(
-            $propertyName,
-            ...\array_map(
+        return OptionListValue::fromArray(
+            \array_map(
                 function (int $key_value) {
-                    return $this->allowed[$key_value];
+                    return $this->allowed->getOption($key_value);
                 },
-                (array) $convertedValue
+                (array) \explode(RecordValue::LIST_SEPARATOR, $rawValue->toString())
             )
         );
     }
 
     public function toString(): string
     {
-        return 'custom-list';
+        return $this->typeName;
+    }
+
+    public function toData(): TypeData
+    {
+        return new TypeData(
+            self::class,
+            \array_merge(
+                ['type-name' => $this->typeName],
+                \array_map(
+                    function (int $id): array {
+                        return $this->allowed->getOption($id)->toArray();
+                    },
+                    \explode(RecordValue::LIST_SEPARATOR, $this->allowed->toString())
+                )
+            )
+        );
+    }
+
+    /**
+     * @param mixed[] $arguments
+     * @return PropertyType
+     */
+    public static function fromData(array $arguments): PropertyType
+    {
+        $typeName = $arguments['type-name'];
+        unset($arguments['type-name']);
+
+        return new self(
+            $typeName,
+            OptionListValue::fromArray(
+                \array_map(
+                    function (array $row) {
+                        return new ListOptionValue($row['id'], $row['value'], $row['label']);
+                    },
+                    $arguments
+                )
+            )
+        );
     }
 }

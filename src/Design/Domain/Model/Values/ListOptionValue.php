@@ -2,6 +2,8 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Values;
 
+use Assert\Assertion;
+
 final class ListOptionValue
 {
     /**
@@ -21,6 +23,9 @@ final class ListOptionValue
 
     public function __construct(int $id, string $value, string $label)
     {
+        Assertion::notEmpty($value);
+        Assertion::notEmpty($label);
+
         $this->id = $id;
         $this->value = $value;
         $this->label = $label;
@@ -39,6 +44,18 @@ final class ListOptionValue
     public function getLabel(): string
     {
         return $this->label;
+    }
+
+    /**
+     * @return int[]|string[]
+     */
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'value' => $this->getValue(),
+            'label' => $this->getLabel(),
+        ];
     }
 
     public static function withValueAsLabel(int $id, string $value): self

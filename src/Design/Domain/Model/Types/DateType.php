@@ -2,56 +2,48 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
-use DateTimeImmutable;
-use DateTimeInterface;
+use Star\Component\Document\DataEntry\Domain\Model\RawValue;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\PropertyValue;
 use Star\Component\Document\Design\Domain\Model\Values\DateValue;
+use Star\Component\Document\Design\Domain\Model\Values\EmptyValue;
 use Star\Component\Document\Design\Domain\Model\Values\StringValue;
 
 final class DateType implements PropertyType
 {
-    /**
-     * @param DateTimeInterface|string $value
-     * @return bool
-     */
-    private function isValid($value): bool
+    public function createValue(string $propertyName, RawValue $rawValue): RecordValue
     {
-        if ($value instanceof DateTimeInterface) {
-            return true;
+        if ($rawValue->isEmpty()) {
+            return new EmptyValue();
         }
 
-        if (is_numeric($value)) {
-            return false;
+        if ($rawValue->isDate()) {
+            return DateValue::fromString($rawValue->toString());
         }
 
-        if (is_string($value)) {
-            try {
-                new DateTimeImmutable($value);
-                return true;
-            } catch (\Throwable $exception) {
-                // invalid format
-            }
+        if (\strtotime($rawValue->toString()) > 0 && !$rawValue->isFloat()) {
+            return StringValue::fromString($rawValue->toString());
         }
 
-        return false;
+        throw InvalidPropertyValue::invalidValueForType($propertyName, $this->toString(), $rawValue);
     }
 
-    public function createValue(string $propertyName, $rawValue): PropertyValue
+    public function toData(): TypeData
     {
-        if (! $this->isValid($rawValue)) {
-            throw InvalidPropertyValue::invalidValueForType($propertyName, 'date', $rawValue);
-        }
-
-        if (\is_string($rawValue)) {
-            return StringValue::fromString($propertyName, $rawValue);
-        }
-
-        return new DateValue($propertyName, $rawValue);
+        return new TypeData(self::class);
     }
 
     public function toString(): string
     {
         return 'date';
+    }
+
+    /**
+     * @param mixed[] $arguments
+     * @return PropertyType
+     */
+    public static function fromData(array $arguments): PropertyType
+    {
+        return new self();
     }
 }

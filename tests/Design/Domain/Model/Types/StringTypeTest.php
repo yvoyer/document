@@ -2,10 +2,11 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
+use Star\Component\Document\DataEntry\Domain\Model\RawValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Values\StringValue;
 
-final class StringTypeTest extends TypeTest
+final class StringTypeTest extends BaseTestType
 {
     public function getType(): PropertyType
     {
@@ -16,44 +17,50 @@ final class StringTypeTest extends TypeTest
     {
         return [
             "Boolean true should be invalid" => [
-                true, 'The property "name" expected a "string" value, "true" given.'
+                true, 'The property "name" expected a "string" value, "boolean(true)" given.'
             ],
             "Boolean false should be invalid" => [
-                false, 'The property "name" expected a "string" value, "false" given.'
-            ],
-            "Float should be invalid" => [
-                12.34, 'The property "name" expected a "string" value, "12.34" given.'
-            ],
-            "Integer should be invalid" => [
-                34, 'The property "name" expected a "string" value, "34" given.'
+                false, 'The property "name" expected a "string" value, "boolean(false)" given.'
             ],
             "Array should be invalid" => [
-                [], 'The property "name" expected a "string" value, "[]" given.'
+                [12], 'The property "name" expected a "string" value, "list([12])" given.'
             ],
             "Object should be invalid" => [
-                (object) [], 'The property "name" expected a "string" value, "stdClass" given.'
-            ],
-            "null should be invalid" => [
-                null, 'The property "name" expected a "string" value, "NULL" given.'
+                (object) [], 'The property "name" expected a "string" value, "object(stdClass)" given.'
             ],
         ];
     }
 
-    public function test_it_should_set_the_text_value()
+    public function test_it_should_set_the_text_value(): void
     {
         $this->assertInstanceOf(
             StringValue::class,
-            $value = $this->getType()->createValue('text', 'Some value')
+            $value = $this->getType()->createValue('text', RawValue::fromMixed('Some value'))
         );
         $this->assertSame('Some value', $value->toString());
     }
 
-    public function test_it_should_empty_value()
+    public function test_it_should_allow_empty_value(): void
     {
-        $this->assertInstanceOf(
-            StringValue::class,
-            $value = $this->getType()->createValue('text', '')
+        $this->assertSame(
+            '',
+            $this->getType()->createValue('text', RawValue::fromMixed(''))->toString()
         );
-        $this->assertSame('', $value->toString());
+    }
+
+    public function test_it_should_allow_int_value(): void
+    {
+        $this->assertSame(
+            '123',
+            $this->getType()->createValue('text', RawValue::fromMixed(123))->toString()
+        );
+    }
+
+    public function test_it_should_allow_float_value(): void
+    {
+        $this->assertSame(
+            '12.34',
+            $this->getType()->createValue('text', RawValue::fromMixed(12.34))->toString()
+        );
     }
 }

@@ -3,6 +3,7 @@
 namespace Star\Component\Document\Design\Domain\Model;
 
 use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\Schema\PropertyDefinition;
 
 interface ReadOnlyDocument
 {

@@ -24,7 +24,7 @@ final class RecordCollectionTest extends TestCase
         $this->assertCount(0, $this->collection);
 
         $this->collection->saveRecord(
-            $id = new RecordId('r1'),
+            $id = RecordId::fromString('r1'),
             $record = $this->createMock(DocumentRecord::class)
         );
 
@@ -35,7 +35,7 @@ final class RecordCollectionTest extends TestCase
 
     public function test_it_should_throw_exception_when_not_found(): void
     {
-        $id = new RecordId('not-found');
+        $id = RecordId::fromString('not-found');
         $this->assertCount(0, $this->collection);
         $this->assertFalse($this->collection->recordExists($id));
 

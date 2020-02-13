@@ -8,10 +8,16 @@ interface DocumentVisitor
 {
     public function visitDocument(DocumentId $id): void;
 
-    public function visitProperty(PropertyDefinition $definition): void;
-
     /**
-     * @param DocumentProperty[] $properties
+     * @param PropertyName $name
+     * @param PropertyType $type
+     * @return bool Whether to stop iteration after this visit
      */
-    public function visitEnded(array $properties): void;
+    public function visitProperty(PropertyName $name, PropertyType $type): bool;
+
+    public function visitPropertyConstraint(
+        PropertyName $propertyName,
+        string $constraintName,
+        PropertyConstraint $constraint
+    ): void;
 }

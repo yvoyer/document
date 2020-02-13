@@ -4,7 +4,6 @@ namespace Star\Component\Document;
 
 use Assert\Assertion;
 use Behat\Behat\Context\Context;
-use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
 use PHPUnit\Framework\Assert;
 use React\Promise\Deferred;
@@ -12,6 +11,8 @@ use React\Promise\PromiseInterface;
 use Star\Component\Document\Common\Domain\Messaging\Query;
 use Star\Component\Document\Common\Domain\Messaging\QueryBus;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\DataEntry\Domain\Messaging\Command\CreateRecord;
+use Star\Component\Document\DataEntry\Domain\Messaging\Command\CreateRecordHandler;
 use Star\Component\Document\DataEntry\Domain\Messaging\Command\SetRecordValue;
 use Star\Component\Document\DataEntry\Domain\Messaging\Command\SetRecordValueHandler;
 use Star\Component\Document\DataEntry\Domain\Messaging\Query\GetAllRecordsOfDocument;
@@ -20,9 +21,7 @@ use Star\Component\Document\DataEntry\Domain\Messaging\Query\RecordRow;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ValidationFailedForProperty;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
-use Star\Component\Document\DataEntry\Infrastructure\Port\DocumentDesignerToSchema;
-use Star\Component\Document\Design\Domain\Messaging\Command\AddValueTransformerOnProperty;
-use Star\Component\Document\Design\Domain\Messaging\Command\AddValueTransformerOnPropertyHandler;
+use Star\Component\Document\Design\Builder\DocumentBuilder;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddPropertyConstraint;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddPropertyConstraintHandler;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocument;
@@ -31,16 +30,11 @@ use Star\Component\Document\Design\Domain\Messaging\Command\CreateProperty;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreatePropertyHandler;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\ReadOnlyDocument;
-use Star\Component\Document\Design\Domain\Model\Transformation\ArrayTransformer;
-use Star\Component\Document\Design\Domain\Model\Transformation\DateTimeToString;
-use Star\Component\Document\Design\Domain\Model\Transformation\StringToDateTime;
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerRegistry;
 use Star\Component\Document\Design\Domain\Model\Types;
 use Star\Component\Document\Design\Domain\Model\Values\ListOptionValue;
+use Star\Component\Document\Design\Domain\Model\Values\OptionListValue;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
-use Star\Component\Document\Tools\DocumentBuilder;
 use Star\Component\DomainEvent\Messaging\CommandBus;
 use Star\Component\DomainEvent\Messaging\MessageMapBus;
 
@@ -65,27 +59,14 @@ class FeatureContext implements Context
     private $queries;
 
     /**
-     * @var TransformerRegistry
-     */
-    private $factory;
-
-    /**
      * @var string[][]
      */
     private $errors = [];
 
-    /**
-     * Initializes context.
-     *
-     * Every scenario gets its own context instance.
-     * You can also pass arbitrary arguments to the
-     * context constructor through behat.yml.
-     */
     public function __construct()
     {
         $records = new RecordCollection();
         $this->documents = new DocumentCollection();
-        $this->factory = new TransformerRegistry();
 
         $this->bus = new MessageMapBus();
         $this->bus->registerHandler(CreateDocument::class, new CreateDocumentHandler($this->documents));
@@ -95,11 +76,11 @@ class FeatureContext implements Context
         );
         $this->bus->registerHandler(
             SetRecordValue::class,
-            new SetRecordValueHandler($records, new DocumentDesignerToSchema($this->documents, $this->factory))
+            new SetRecordValueHandler($records)
         );
         $this->bus->registerHandler(
-            AddValueTransformerOnProperty::class,
-            new AddValueTransformerOnPropertyHandler($this->factory, $this->documents)
+            CreateRecord::class,
+            new CreateRecordHandler($records, $this->documents, $this->documents)
         );
 
         $queries = [
@@ -190,31 +171,13 @@ class FeatureContext implements Context
     }
 
     /**
-     * @Given The date transformer with id :arg1 is registered with format :arg2
-     */
-    public function theDateTransformerWithIdIsRegisteredWithFormat($identifier, $format)
-    {
-        $this->factory->registerTransformer(
-            $identifier,
-            new ArrayTransformer(new StringToDateTime(), new DateTimeToString($format))
-        );
-    }
-
-    /**
      * @Given The property :arg1 in document :arg2 is configured with format :arg3
      */
-    public function thePropertyInDocumentIsConfiguredWithFormat($property, $documentId, $format)
-    {
-        $this->iCreateADocumentNamed($documentId);
-        $this->iCreateADateFieldNamedInDocument($property, $documentId);
-        $this->bus->dispatchCommand(
-            new AddValueTransformerOnProperty(
-                DocumentId::fromString($documentId),
-                PropertyName::fromString($property),
-                TransformerIdentifier::fromString($format)
-            )
-        );
-    }
+#    public function thePropertyInDocumentIsConfiguredWithFormat($property, $documentId, $format)
+ #   {
+  #      $this->iCreateADocumentNamed($documentId);
+   #     $this->iCreateADateFieldNamedInDocument($property, $documentId);
+    #}
 
     /**
      * @Given The document :arg1 is created with a number property named :arg2
@@ -242,7 +205,7 @@ class FeatureContext implements Context
      */
     public function iCreateADocumentNamed(string $documentId)
     {
-        $this->bus->dispatchCommand(new CreateDocument(DocumentId::fromString($documentId)));
+        $this->bus->dispatchCommand(new CreateDocument($id = DocumentId::fromString($documentId)));
     }
 
     /**
@@ -329,11 +292,14 @@ class FeatureContext implements Context
                 DocumentId::fromString($documentId),
                 PropertyName::fromString($property),
                 new Types\CustomListType(
-                    ...\array_map(
-                        function (int $key) use ($allowed) {
-                            return ListOptionValue::withValueAsLabel($key, $allowed[$key]);
-                        },
-                        \array_keys($allowed)
+                    'custom-list',
+                    OptionListValue::fromArray(
+                        \array_map(
+                            function (int $key) use ($allowed) {
+                                return ListOptionValue::withValueAsLabel($key, $allowed[$key]);
+                            },
+                            \array_keys($allowed)
+                        )
                     )
                 )
             )
@@ -412,16 +378,16 @@ class FeatureContext implements Context
     public function iEnterTheFollowingValuesToDocument(string $documentId, TableNode $table)
     {
         foreach ($table->getHash() as $data) {
-            $recordId = new RecordId($data['record-id']);
+            $recordId = RecordId::fromString($data['record-id']);
             $property = $data['property'];
+            $value = $data['value'];
 
             try {
                 $this->bus->dispatchCommand(
-                    new SetRecordValue(
+                    new CreateRecord(
                         DocumentId::fromString($documentId),
                         $recordId,
-                        $property,
-                        $data['value']
+                        [$property => $value]
                     )
                 );
             } catch (ValidationFailedForProperty $exception) {
@@ -433,9 +399,9 @@ class FeatureContext implements Context
     }
 
     /**
-     * @Then The records list of document the :arg1 should looks like:
+     * @Then The records list of document :arg1 should looks like:
      */
-    public function theRecordsListOfDocumentTheShouldLooksLike(string $documentId, TableNode $table)
+    public function theRecordsListOfDocumentShouldLooksLike(string $documentId, TableNode $table)
     {
         $rows = [];
         $this->queries->handleQuery(
@@ -452,15 +418,15 @@ class FeatureContext implements Context
         Assert::assertCount(count($expected), $rows);
 
         foreach ($rows as $key => $row) {
+            $property = $expected[$key]['property'];
+            $recordId = $expected[$key]['record-id'];
+            $expectedValue = $expected[$key]['value'];
+
+            Assert::assertSame($recordId, $row->getRecordId()->toString(), 'Record id not as expected');
             Assert::assertSame(
-                $expected[$key]['record-id'],
-                $row->getRecordId()->toString(),
-                'Record id not as expected'
-            );
-            Assert::assertSame(
-                $expected[$key]['value'],
-                $row->getValue($expected[$key]['property']),
-                \sprintf('Value of property "%s" is not as expected', $expected[$key]['property'])
+                $expectedValue,
+                $row->getValue($property),
+                \sprintf('Value of property "%s" is not as expected', $property)
             );
         }
     }
@@ -471,7 +437,7 @@ class FeatureContext implements Context
     public function theDocumentShouldHaveNoProperties(string $documentId)
     {
         $this->getDocument($documentId)->acceptDocumentVisitor($visitor = new PropertyExtractor());
-        Assert::assertCount(0, $visitor->properties());
+        Assert::assertCount(0, $visitor);
     }
 
     /**

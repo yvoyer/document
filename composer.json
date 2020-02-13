@@ -18,7 +18,7 @@
         "php": "~7.1",
         "react/promise": "^2.5",
         "star/identity": "^1.0",
-        "star/state-machine": "^1.0@dev",
+        "star/state-machine": "^2.0",
         "star/domain-event": "^2.0"
     },
     "require-dev": {

@@ -2,9 +2,9 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
 
 final class All implements PropertyConstraint
 {
@@ -18,10 +18,39 @@ final class All implements PropertyConstraint
         $this->constraints = \array_merge([$first], $constraints);
     }
 
-    public function validate(PropertyName $name, $value, ErrorList $errors): void
+    public function validate(string $name, RecordValue $value, ErrorList $errors): void
     {
         foreach ($this->constraints as $constraint) {
             $constraint->validate($name, $value, $errors);
         }
+    }
+
+    public function toData(): ConstraintData
+    {
+        return new ConstraintData(
+            self::class,
+            \array_map(
+                function (PropertyConstraint $constraint) {
+                    return $constraint->toData()->toArray();
+                },
+                $this->constraints
+            )
+        );
+    }
+
+    public static function fromData(ConstraintData $data): PropertyConstraint
+    {
+        return new self(
+            ...\array_map(
+                function (array $constraint) {
+                    /**
+                     * @var PropertyConstraint $class
+                     */
+                    $class = $constraint['class'];
+                    return $class::fromData(new ConstraintData($constraint['class'], $constraint['arguments']));
+                },
+                $data->toArray()['arguments']
+            )
+        );
     }
 }

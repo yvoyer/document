@@ -2,14 +2,20 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
+use Star\Component\Document\Design\Domain\Model\Constraints\ConstraintData;
 
 interface PropertyConstraint
 {
     /**
-     * @param PropertyName $name
-     * @param mixed $value
+     * @param string $name
+     * @param RecordValue $value
      * @param ErrorList $errors
      */
-    public function validate(PropertyName $name, $value, ErrorList $errors): void;
+    public function validate(string $name, RecordValue $value, ErrorList $errors): void;
+
+    public function toData(): ConstraintData;
+
+    public static function fromData(ConstraintData $data): PropertyConstraint;
 }

@@ -4,7 +4,7 @@ namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\Values\EmptyValue;
 
 final class RequiredValueTest extends TestCase
 {
@@ -20,29 +20,17 @@ final class RequiredValueTest extends TestCase
 
     public function test_it_should_error_when_value_empty(): void
     {
-        $this->constraint->validate(
-            $name = PropertyName::fromString('name'),
-            '',
-            $errors = new ErrorList()
-        );
+        $this->constraint->validate($name = 'name', new EmptyValue(), $errors = new ErrorList());
         $this->assertTrue($errors->hasErrors());
         $this->assertSame(
-            'Property named "name" is required, but empty value given.',
-            $errors->getErrorsForProperty($name->toString(), 'en')[0]
+            'Property named "name" is required, but "empty()" given.',
+            $errors->getErrorsForProperty($name, 'en')[0]
         );
     }
 
-    public function test_it_should_error_when_array_value_empty(): void
+    public function test_it_should_be_build_from_constraint_data(): void
     {
-        $this->constraint->validate(
-            $name = PropertyName::fromString('name'),
-            [],
-            $errors = new ErrorList()
-        );
-        $this->assertTrue($errors->hasErrors());
-        $this->assertSame(
-            'Property named "name" is required, but empty value given.',
-            $errors->getErrorsForProperty($name->toString(), 'en')[0]
-        );
+        $source = new RequiresValue();
+        $this->assertEquals($source, RequiresValue::fromData($source->toData()));
     }
 }

@@ -2,46 +2,53 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Values;
 
-use Star\Component\Document\Design\Domain\Model\PropertyValue;
+use Assert\Assertion;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 
-final class StringValue implements PropertyValue
+final class StringValue implements RecordValue, CanBeTypeCastToString
 {
-    /**
-     * @var string
-     */
-    private $property;
-
     /**
      * @var string
      */
     private $value;
 
-    private function __construct(string $property, string $value)
+    private function __construct(string $value)
     {
-        $this->property = $property;
+        Assertion::notEmpty($value);
         $this->value = $value;
     }
 
-    /**
-     * @return string
-     */
-    public function getName(): string
+    public function count(): int
     {
-        return $this->property;
+        return 1;
     }
 
-    /**
-     * Returns the string representation of contained value.
-     *
-     * @return string
-     */
+    public function isEmpty(): bool
+    {
+        return false;
+    }
+
     public function toString(): string
     {
         return $this->value;
     }
 
-    public static function fromString(string $property, string $value): self
+    public function toTypedString(): string
     {
-        return new self($property, $value);
+        return \sprintf('string(%s)', $this->toString());
+    }
+
+    public function toReadableString(): string
+    {
+        return $this->toString();
+    }
+
+    public static function fromString(string $value): RecordValue
+    {
+        if (\mb_strlen($value) === 0) {
+            return new EmptyValue();
+        }
+
+        return new self($value);
     }
 }

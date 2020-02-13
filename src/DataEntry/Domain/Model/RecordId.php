@@ -12,32 +12,29 @@ final class RecordId implements Identity
      */
     private $value;
 
-    /**
-     * @param string $value
-     */
-    public function __construct(string $value)
+    private function __construct(string $value)
     {
         Assertion::notBlank($value);
         $this->value = $value;
     }
 
-    /**
-     * Returns the entity class for the identity.
-     *
-     * @return string
-     */
-    public function entityClass()
+    public function entityClass(): string
     {
         return DocumentRecord::class;
     }
 
-    /**
-     * Returns the string value of the identity.
-     *
-     * @return string
-     */
-    public function toString()
+    public function toString(): string
     {
         return $this->value;
+    }
+
+    public static function fromString(string $id): self
+    {
+        return new self($id);
+    }
+
+    public static function random(): self
+    {
+        return self::fromString(\uniqid('record-'));
     }
 }

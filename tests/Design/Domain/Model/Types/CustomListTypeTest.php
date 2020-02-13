@@ -2,136 +2,132 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
+use Star\Component\Document\DataEntry\Domain\Model\RawValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\Values\ListOptionValue;
-use Star\Component\Document\Design\Domain\Model\Values\ListValue;
+use Star\Component\Document\Design\Domain\Model\Values\OptionListValue;
 
-final class CustomListTypeTest extends TypeTest
+final class CustomListTypeTest extends BaseTestType
 {
     protected function getType(): PropertyType
     {
-        return new CustomListType(
-            ListOptionValue::withValueAsLabel(1, 'value 1'),
-            ListOptionValue::withValueAsLabel(2, 'value 2'),
-            ListOptionValue::withValueAsLabel(3, 'value 3')
-        );
+        return new CustomListType('list', OptionListValue::withElements(3));
     }
 
     public static function provideInvalidValuesExceptions(): array
     {
-        $message = 'The property "name" only accepts an array made of the following values: "1;2;3", ';
+        $arrayItemMessage = 'The property "name" only accepts an array made of the following values: "1;2;3", ';
+        $typeMessage = 'The property "name" expected a "list" value, ';
+
         return [
             "Boolean true should be invalid" => [
-                true, $message . '"true" given.'
+                true, $typeMessage . '"boolean(true)" given.'
             ],
             "Boolean false should be invalid" => [
-                false, $message . '"false" given.'
+                false, $typeMessage . '"boolean(false)" given.'
             ],
             "String value should be invalid" => [
-                'invalid', $message . '"invalid" given.'
+                'invalid', $arrayItemMessage . '"string(invalid)" given.'
             ],
             "String numeric should be invalid" => [
-                '12.34', $message . '"12.34" given.'
+                '12.34', $arrayItemMessage . '"float(12.34)" given.'
             ],
             "Float should be invalid" => [
-                12.34, $message . '"12.34" given.'
+                12.34, $arrayItemMessage . '"float(12.34)" given.'
             ],
             "Integer should be invalid" => [
-                34, $message . '"34" given.'
+                34, $arrayItemMessage . '"int(34)" given.'
             ],
             "Option string do not exists in available options" => [
-                ['invalid'], $message . '"["invalid"]" given.'
+                ['invalid'], 'List of scalar expected "int[] | string[]", got "["invalid"]".',
             ],
             "Option int do not exists in available options" => [
-                [123], $message . '"[123]" given.'
+                [123], $arrayItemMessage . '"list([123])" given.'
             ],
             "Array of invalid option boolean" => [
-                [true, false], $message . '"[true,false]" given.'
+                [true, false], 'List of scalar expected "int[] | string[]", got "[true,false]".',
             ],
             "Array of invalid option array" => [
-                [[]], $message . '"[[]]" given.'
+                [[]], 'List of scalar expected "int[] | string[]", got "[[]]".',
             ],
             "Array of invalid option object" => [
-                [(object) []], $message . '"[{}]" given.'
+                [(object) []], 'List of scalar expected "int[] | string[]", got "[{}]".',
             ],
             "Array of invalid option null" => [
-                [null], $message . '"[null]" given.'
-            ],
-            "Object should be invalid" => [
-                (object) [], $message . '"stdClass" given.'
-            ],
-            "null should be invalid" => [
-                null, $message . '"NULL" given.'
+                [null], 'List of scalar expected "int[] | string[]", got "[null]".',
             ],
             "invalid second id should be invalid" => [
-                [1, 999], $message . '"[1,999]" given.'
+                [1, 999], $arrayItemMessage . '"list([1,999])" given.'
             ],
         ];
     }
 
     public function test_it_should_accept_empty_array()
     {
-        $this->assertInstanceOf(
-            ListValue::class,
-            $value = $this->getType()->createValue('prop', [])
+        $this->assertSame(
+            '',
+            $value = $this->getType()->createValue('prop', RawValue::fromMixed([]))->toString()
         );
-        $this->assertSame('', $value->toString());
     }
 
     public function test_it_should_accept_single_value_array()
     {
         $this->assertInstanceOf(
-            ListValue::class,
-            $value = $this->getType()->createValue('prop', [1])
+            OptionListValue::class,
+            $value = $this->getType()->createValue('prop', RawValue::fromMixed([1]))
         );
-        $this->assertSame('value 1', $value->toString());
+        $this->assertSame('1', $value->toString());
+        $this->assertSame('list([Label 1])', $value->toTypedString());
     }
 
     public function test_it_should_accept_multi_value_array()
     {
         $this->assertInstanceOf(
-            ListValue::class,
-            $value = $this->getType()->createValue('prop', [1, 3])
+            OptionListValue::class,
+            $value = $this->getType()->createValue('prop', RawValue::fromMixed([1, 3]))
         );
-        $this->assertSame('value 1;value 3', $value->toString());
+        $this->assertSame('1;3', $value->toString());
+        $this->assertSame('list([Label 1;Label 3])', $value->toTypedString());
     }
 
     public function test_it_should_return_in_same_order_as_given()
     {
         $this->assertInstanceOf(
-            ListValue::class,
-            $value = $this->getType()->createValue('prop', [2, 1, 3])
+            OptionListValue::class,
+            $value = $this->getType()->createValue('prop', RawValue::fromMixed([2, 1, 3]))
         );
-        $this->assertSame('value 2;value 1;value 3', $value->toString());
+        $this->assertSame('2;1;3', $value->toString());
+        $this->assertSame('list([Label 2;Label 1;Label 3])', $value->toTypedString());
     }
 
     public function test_it_should_accept_string_value_for_key()
     {
         $this->assertInstanceOf(
-            ListValue::class,
-            $value = $this->getType()->createValue('prop', ["1", "2", "3"])
+            OptionListValue::class,
+            $value = $this->getType()->createValue('prop', RawValue::fromMixed(["1", "2", "3"]))
         );
-        $this->assertSame('value 1;value 2;value 3', $value->toString());
+        $this->assertSame('1;2;3', $value->toString());
+        $this->assertSame('list([Label 1;Label 2;Label 3])', $value->toTypedString());
     }
 
     public function test_it_should_accept_imploded_string()
     {
-        $this->assertInstanceOf(
-            ListValue::class,
-            $value = $this->getType()->createValue('prop', "")
+        $this->assertSame(
+            '',
+            $this->getType()->createValue('prop', RawValue::fromMixed(""))->toString()
         );
-        $this->assertSame('', $value->toString());
 
         $this->assertInstanceOf(
-            ListValue::class,
-            $value = $this->getType()->createValue('prop', "2")
+            OptionListValue::class,
+            $value = $this->getType()->createValue('prop', RawValue::fromMixed("2"))
         );
-        $this->assertSame('value 2', $value->toString());
+        $this->assertSame('2', $value->toString());
+        $this->assertSame('list([Label 2])', $value->toTypedString());
 
         $this->assertInstanceOf(
-            ListValue::class,
-            $value = $this->getType()->createValue('prop', "1;2;3")
+            OptionListValue::class,
+            $value = $this->getType()->createValue('prop', RawValue::fromMixed("1;2;3"))
         );
-        $this->assertSame('value 1;value 2;value 3', $value->toString());
+        $this->assertSame('1;2;3', $value->toString());
+        $this->assertSame('list([Label 1;Label 2;Label 3])', $value->toTypedString());
     }
 }

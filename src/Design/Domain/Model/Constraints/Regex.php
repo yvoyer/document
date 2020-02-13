@@ -3,9 +3,9 @@
 namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
 use Assert\Assertion;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
 
 final class Regex implements PropertyConstraint
 {
@@ -22,24 +22,28 @@ final class Regex implements PropertyConstraint
         $this->pattern = $pattern;
     }
 
-    /**
-     * @param PropertyName $name
-     * @param mixed $value
-     * @param ErrorList $errors
-     */
-    public function validate(PropertyName $name, $value, ErrorList $errors): void
+    public function validate(string $name, RecordValue $value, ErrorList $errors): void
     {
-        Assertion::string($value);
-        if (! \preg_match($this->pattern, $value)) {
+        if (! \preg_match($this->pattern, $value->toString())) {
             $errors->addError(
-                $name->toString(),
+                $name,
                 'en',
                 \sprintf(
                     'Value "%s" do not match pattern "%s".',
-                    $value,
+                    $value->toTypedString(),
                     $this->pattern
                 )
             );
         }
+    }
+
+    public function toData(): ConstraintData
+    {
+        return new ConstraintData(self::class, ['pattern' => $this->pattern]);
+    }
+
+    public static function fromData(ConstraintData $data): PropertyConstraint
+    {
+        return new self($data->getArgument('pattern'));
     }
 }

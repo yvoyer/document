@@ -2,45 +2,60 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Values;
 
-use Star\Component\Document\Design\Domain\Model\PropertyValue;
+use Assert\Assertion;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 
-final class BooleanValue implements PropertyValue
+final class BooleanValue implements RecordValue
 {
-    /**
-     * @var string
-     */
-    private $property;
-
     /**
      * @var bool
      */
     private $value;
 
-    /**
-     * @param string $property
-     * @param bool $value
-     */
-    public function __construct(string $property, bool $value)
+    public function __construct(bool $value)
     {
-        $this->property = $property;
         $this->value = $value;
     }
 
-    /**
-     * @return string
-     */
-    public function getName(): string
+    public function count(): int
     {
-        return $this->property;
+        return 1;
     }
 
-    /**
-     * Returns the string representation of contained value.
-     *
-     * @return string
-     */
+    public function isEmpty(): bool
+    {
+        return false;
+    }
+
     public function toString(): string
     {
         return ($this->value) ? 'true' : 'false';
+    }
+
+    public function toTypedString(): string
+    {
+        return \sprintf('boolean(%s)', $this->toString());
+    }
+
+    public function toReadableString(): string
+    {
+        return $this->toString();
+    }
+
+    public static function trueValue(): RecordValue
+    {
+        return new self(true);
+    }
+
+    public static function falseValue(): RecordValue
+    {
+        return new self(false);
+    }
+
+    public static function fromString(string $value): RecordValue
+    {
+        Assertion::inArray($value, ['true', 'false']);
+
+        return new self(($value === 'true'));
     }
 }

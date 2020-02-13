@@ -2,32 +2,43 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
-use Star\Component\Document\Design\Domain\Model\PropertyValue;
+use Star\Component\Document\DataEntry\Domain\Model\RawValue;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+use Star\Component\Document\Design\Domain\Model\Values\EmptyValue;
 use Star\Component\Document\Design\Domain\Model\Values\StringValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 
 final class StringType implements PropertyType
 {
-    /**
-     * @param mixed $value
-     * @return bool
-     */
-    private function isValid($value): bool
+    public function createValue(string $propertyName, RawValue $rawValue): RecordValue
     {
-        return \is_string($value);
-    }
-
-    public function createValue(string $propertyName, $rawValue): PropertyValue
-    {
-        if (! $this->isValid($rawValue)) {
-            throw InvalidPropertyValue::invalidValueForType($propertyName, 'string', $rawValue);
+        if ($rawValue->isEmpty()) {
+            return new EmptyValue();
         }
 
-        return StringValue::fromString($propertyName, $rawValue);
+        if (!$rawValue->isString()) {
+            throw InvalidPropertyValue::invalidValueForType($propertyName, $this->toString(), $rawValue);
+        }
+
+        return StringValue::fromString($rawValue->toString());
+    }
+
+    public function toData(): TypeData
+    {
+        return new TypeData(self::class);
     }
 
     public function toString(): string
     {
         return 'string';
+    }
+
+    /**
+     * @param mixed[] $arguments
+     * @return PropertyType
+     */
+    public static function fromData(array $arguments): PropertyType
+    {
+        return new self();
     }
 }

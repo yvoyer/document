@@ -2,7 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
-use Star\Component\Document\Design\Domain\Model\Transformation\TransformerIdentifier;
+use Star\Component\Document\Design\Domain\Model\Schema\PropertyDefinition;
 
 final class DocumentProperty implements ReadOnlyProperty
 {
@@ -32,14 +32,9 @@ final class DocumentProperty implements ReadOnlyProperty
         $this->definition = $this->definition->removeConstraint($name);
     }
 
-    public function addTransformer(TransformerIdentifier $identifier): void
-    {
-        $this->definition = $this->definition->addTransformer($identifier);
-    }
-
     public function acceptDocumentVisitor(DocumentVisitor $visitor): void
     {
-        $visitor->visitProperty($this->getDefinition());
+        $this->definition->acceptDocumentVisitor($visitor);
     }
 
     public function matchName(PropertyName $name): bool

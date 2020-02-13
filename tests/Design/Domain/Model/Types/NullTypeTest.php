@@ -2,10 +2,10 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
+use Star\Component\Document\DataEntry\Domain\Model\RawValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\Values\NullValue;
 
-final class NullTypeTest extends TypeTest
+final class NullTypeTest extends BaseTestType
 {
     /**
      * @return PropertyType
@@ -19,38 +19,53 @@ final class NullTypeTest extends TypeTest
     {
         return [
             "Boolean true should be invalid" => [
-                true, 'The property "name" expected a "null" value, "true" given.'
+                true, 'The property "name" expected a "null" value, "boolean(true)" given.'
             ],
             "Boolean false should be invalid" => [
-                false, 'The property "name" expected a "null" value, "false" given.'
+                false, 'The property "name" expected a "null" value, "boolean(false)" given.'
             ],
             "String value should be invalid" => [
-                'invalid', 'The property "name" expected a "null" value, "invalid" given.'
+                'invalid', 'The property "name" expected a "null" value, "string(invalid)" given.'
             ],
             "String numeric should be invalid" => [
-                '12.34', 'The property "name" expected a "null" value, "12.34" given.'
+                '12.34', 'The property "name" expected a "null" value, "float(12.34)" given.'
             ],
             "Float should be invalid" => [
-                12.34, 'The property "name" expected a "null" value, "12.34" given.'
+                12.34, 'The property "name" expected a "null" value, "float(12.34)" given.'
             ],
             "Integer should be invalid" => [
-                34, 'The property "name" expected a "null" value, "34" given.'
+                34, 'The property "name" expected a "null" value, "int(34)" given.'
             ],
             "Array should be invalid" => [
-                [], 'The property "name" expected a "null" value, "[]" given.'
+                [1], 'The property "name" expected a "null" value, "list([1])" given.'
             ],
             "Object should be invalid" => [
-                (object) [], 'The property "name" expected a "null" value, "stdClass" given.'
+                (object) [], 'The property "name" expected a "null" value, "object(stdClass)" given.'
             ],
         ];
     }
 
-    public function test_it_should_set_the_null_value()
+    public function test_it_should_allow_the_null_value()
     {
-        $this->assertInstanceOf(
-            NullValue::class,
-            $value = $this->getType()->createValue('text', null)
+        $this->assertSame(
+            '',
+            $this->getType()->createValue('name', RawValue::fromMixed(null))->toString()
         );
-        $this->assertSame('null', $value->toString());
+    }
+
+    public function test_it_should_allow_the_empty_string()
+    {
+        $this->assertSame(
+            '',
+            $this->getType()->createValue('name', RawValue::fromMixed(''))->toString()
+        );
+    }
+
+    public function test_it_should_allow_empty_array()
+    {
+        $this->assertSame(
+            '',
+            $this->getType()->createValue('name', RawValue::fromMixed([]))->toString()
+        );
     }
 }
