@@ -3,6 +3,7 @@
 namespace Star\Component\Document\DataEntry\Domain\Model;
 
 use PHPUnit\Framework\TestCase;
+use Star\Component\Document\Design\Domain\Model\Types\NullType;
 
 final class RawValueTest extends TestCase
 {
@@ -53,6 +54,12 @@ final class RawValueTest extends TestCase
         $this->assertArrayValue('1', [1]);
         $this->assertArrayValue('1;2;3', [1, 2, 3]);
         $this->assertArrayValue('1;2;3', ['1', '2', '3']);
+    }
+
+    public function test_it_should_create_object_value(): void
+    {
+        $this->assertObjectValue('stdClass', (object) []);
+        $this->assertObjectValue(NullType::class, new NullType());
     }
 
     private function assertBooleanValue(string $stringValue, $value): void

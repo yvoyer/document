@@ -2,6 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Values;
 
+use Assert\Assertion;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 
 final class ObjectValue implements RecordValue
@@ -11,8 +12,12 @@ final class ObjectValue implements RecordValue
      */
     private $object;
 
-    public function __construct(object $object)
+    /**
+     * @param object $object
+     */
+    public function __construct($object)
     {
+        Assertion::isObject($object);
         $this->object = $object;
     }
 

@@ -122,7 +122,11 @@ final class RawValue
         return new self(ScalarListValue::fromArray($value));
     }
 
-    public static function fromObject(object $value): self
+    /**
+     * @param object $value
+     * @return RawValue
+     */
+    public static function fromObject($value): self
     {
         return new self(new ObjectValue($value));
     }
