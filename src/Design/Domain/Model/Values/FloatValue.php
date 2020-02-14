@@ -16,7 +16,7 @@ final class FloatValue implements RecordValue, CanBeTypeCastToString
      */
     private $decimal;
 
-    public function __construct(int $value, int $decimal)
+    private function __construct(int $value, int $decimal)
     {
         $this->value = $value;
         $this->decimal = $decimal;
@@ -34,7 +34,7 @@ final class FloatValue implements RecordValue, CanBeTypeCastToString
 
     public function toString(): string
     {
-        return (string) \substr_replace((string) $this->value, '.', - $this->decimal, 0);
+        return \strval($this->value / \pow(10, $this->decimal));
     }
 
     public function toTypedString(): string
@@ -55,8 +55,20 @@ final class FloatValue implements RecordValue, CanBeTypeCastToString
     public static function fromString(string $value): RecordValue
     {
         $parts = \explode('.', $value);
+        $decimal = 0;
+        if (\count($parts) === 2) {
+            $decimal = \mb_strlen($parts[1]);
+        }
 
-        return new self((int) \str_replace('.', '', $value), \mb_strlen($parts[1]));
+        return new self(
+            (int) \str_replace([' ', '.'], '', $value),
+            (int) $decimal
+        );
+    }
+
+    public static function fromInt(int $round, int $decimal): RecordValue
+    {
+        return new self($round, $decimal);
     }
 
     public static function fromFloat(float $value): RecordValue
