@@ -4,6 +4,7 @@ namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Design\Builder\DocumentBuilder;
+use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\Schema\ReferencePropertyNotFound;
@@ -35,18 +36,17 @@ final class AddPropertyConstraintHandlerTest extends TestCase
             ->getDocument();
         $this->documents->saveDocument($document->getIdentity(), $document);
 
-        $this->assertFalse($document->getPropertyDefinition($name)->hasConstraint('attribute'));
+        $this->assertFalse($document->getPropertyDefinition($name)->hasConstraint('const'));
 
         $this->handler->__invoke(
             new AddPropertyConstraint(
                 $document->getIdentity(),
                 $name,
-                'attribute',
-                $this->createMock(PropertyConstraint::class)
+                new NoConstraint('const')
             )
         );
 
-        $this->assertTrue($document->getPropertyDefinition($name)->hasConstraint('attribute'));
+        $this->assertTrue($document->getPropertyDefinition($name)->hasConstraint('const'));
     }
 
     public function test_it_should_throw_exception_when_property_not_found_in_document(): void
@@ -60,7 +60,6 @@ final class AddPropertyConstraintHandlerTest extends TestCase
             new AddPropertyConstraint(
                 $document->getIdentity(),
                 PropertyName::fromString('not found'),
-                'const',
                 $this->createMock(PropertyConstraint::class)
             )
         );

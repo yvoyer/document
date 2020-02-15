@@ -3,19 +3,20 @@
 namespace Star\Component\Document\Design\Builder;
 
 use Star\Component\Document\Design\Domain\Model\Constraints;
+use Star\Component\Document\Design\Domain\Model\Parameters;
 
 final class CustomListBuilder extends PropertyBuilder
 {
     public function required(): self
     {
-        $this->withConstraint('required', new Constraints\RequiresValue());
+        $this->withConstraint(new Constraints\RequiresValue());
 
         return $this;
     }
 
-    public function singleOption(): self
+    public function allowMultiOption(): self
     {
-        $this->withConstraint('single-option', new Constraints\RequiresSingleOption());
+        $this->withParameter(new Parameters\AllowMultipleOptions());
 
         return $this;
     }

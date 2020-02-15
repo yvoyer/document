@@ -22,7 +22,7 @@ final class AddPropertyConstraintHandler
     public function __invoke(AddPropertyConstraint $command): void
     {
         $document = $this->documents->getDocumentByIdentity($command->documentId());
-        $document->addPropertyConstraint($command->name(), $command->constraintName(), $command->constraint());
+        $document->addPropertyConstraint($command->name(), $command->constraint());
 
         $this->documents->saveDocument($command->documentId(), $document);
     }

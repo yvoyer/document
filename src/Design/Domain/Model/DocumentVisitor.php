@@ -20,4 +20,6 @@ interface DocumentVisitor
         string $constraintName,
         PropertyConstraint $constraint
     ): void;
+
+    public function visitParameter(PropertyName $propertyName, PropertyParameter $parameter): void;
 }

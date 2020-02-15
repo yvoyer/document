@@ -7,6 +7,7 @@ use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\PropertyParameter;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 
 final class ValidateConstraints implements DocumentVisitor
@@ -51,5 +52,10 @@ final class ValidateConstraints implements DocumentVisitor
         PropertyConstraint $constraint
     ): void {
         $constraint->validate($propertyName->toString(), $this->value, $this->errors);
+    }
+
+    public function visitParameter(PropertyName $propertyName, PropertyParameter $parameter): void
+    {
+        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
     }
 }

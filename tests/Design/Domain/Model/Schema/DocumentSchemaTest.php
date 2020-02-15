@@ -5,6 +5,7 @@ namespace Star\Component\Document\Design\Domain\Model\Schema;
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
+use Star\Component\Document\Design\Domain\Model\Parameters\NullParameter;
 use Star\Component\Document\Design\Domain\Model\Types;
 
 final class DocumentSchemaTest extends TestCase
@@ -69,7 +70,7 @@ final class DocumentSchemaTest extends TestCase
         $constraint = 'const';
 
         $this->schema->addProperty($property, new Types\NullType());
-        $this->schema->addConstraint($property, $constraint, new NoConstraint());
+        $this->schema->addConstraint($property, new NoConstraint($constraint));
         $this->assertArrayIsJson(
             [
                 'id' => 'd-id',
@@ -100,7 +101,7 @@ final class DocumentSchemaTest extends TestCase
         $constraint = 'const';
 
         $this->schema->addProperty($property, new Types\NullType());
-        $this->schema->addConstraint($property, $constraint, new NoConstraint());
+        $this->schema->addConstraint($property, new NoConstraint($constraint));
         $this->assertArrayIsJson(
             [
                 'id' => 'd-id',
@@ -148,7 +149,7 @@ final class DocumentSchemaTest extends TestCase
     {
         $this->schema->addProperty('empty', new Types\NullType());
         $this->schema->addProperty('with-constraint', new Types\NullType());
-        $this->schema->addConstraint('with-constraint', 'const', new NoConstraint());
+        $this->schema->addConstraint('with-constraint', new NoConstraint());
 
         $duplicate = $this->schema->clone(DocumentId::fromString('new-id'));
         $expected = \json_decode($this->schema->toString(), true);
@@ -156,4 +157,67 @@ final class DocumentSchemaTest extends TestCase
 
         $this->assertJsonStringEqualsJsonString(\json_encode($expected), $duplicate->toString());
     }
+
+    public function test_add_parameter(): void
+    {
+        $this->schema->addProperty('prop', new Types\NullType());
+        $this->assertSame(
+            \json_encode(
+                [
+                    'id' => 'd-id',
+                    'properties' => [
+                        'prop' => [
+                            'type' => [
+                                'class' => Types\NullType::class,
+                                'arguments' => [],
+                            ],
+                            'constraints' => [],
+                        ],
+                    ],
+                ]
+            ),
+            $this->schema->toString()
+        );
+
+        $this->schema->addParameter('prop', new NullParameter('param'));
+
+        $this->assertSame(
+            \json_encode(
+                [
+                    'id' => 'd-id',
+                    'properties' => [
+                        'prop' => [
+                            'type' => [
+                                'class' => Types\NullType::class,
+                                'arguments' => [],
+                            ],
+                            'constraints' => [],
+                            'parameters' => [
+                                'param' => [
+                                    'name' => 'param',
+                                    'class' => NullParameter::class,
+                                    'arguments' => [],
+                                ],
+                            ],
+                        ],
+                    ],
+                ]
+            ),
+            $this->schema->toString()
+        );
+    }
+
+    public function test_parameters_should_be_cloned(): void
+    {
+        $this->schema->addProperty('prop', new Types\NullType());
+        $this->schema->addParameter('prop', new NullParameter('param'));
+
+        $this->assertTrue($this->schema->getDefinition('prop')->hasParameter('param'));
+
+        $clone = $this->schema->clone(DocumentId::random());
+
+        $this->assertTrue($clone->getDefinition('prop')->hasParameter('param'));
+        $this->assertTrue($this->schema->getDefinition('prop')->hasParameter('param'));
+    }
 }
+

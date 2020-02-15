@@ -1,25 +1,26 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Design\Domain\Model\Constraints;
+namespace Star\Component\Document\Design\Domain\Model\Parameters;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\Values\OptionListValue;
 
-final class RequiresSingleOptionTest extends TestCase
+final class AllowMultipleOptionsTest extends TestCase
 {
     /**
-     * @var RequiresSingleOption
+     * @var AllowMultipleOptions
      */
     private $constraint;
 
     public function setUp(): void
     {
-        $this->constraint = new RequiresSingleOption();
+        $this->constraint = new AllowMultipleOptions();
     }
 
     public function test_it_should_error_when_setting_multiple_values_on_single_value_property(): void
     {
+        $this->markTestSkipped('todo');
         $this->constraint->validate(
             $name = 'name',
             OptionListValue::withElements(3),
@@ -34,7 +35,7 @@ final class RequiresSingleOptionTest extends TestCase
 
     public function test_it_should_be_build_from_constraint_data(): void
     {
-        $source = new RequiresSingleOption();
-        $this->assertEquals($source, RequiresSingleOption::fromData($source->toData()));
+        $source = new AllowMultipleOptions();
+        $this->assertEquals($source, AllowMultipleOptions::fromParameterData($source->toParameterData()));
     }
 }

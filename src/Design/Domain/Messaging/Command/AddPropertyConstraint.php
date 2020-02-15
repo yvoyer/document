@@ -20,11 +20,6 @@ final class AddPropertyConstraint implements Command
     private $name;
 
     /**
-     * @var string
-     */
-    private $constraintName;
-
-    /**
      * @var PropertyConstraint
      */
     private $constraint;
@@ -32,12 +27,10 @@ final class AddPropertyConstraint implements Command
     public function __construct(
         DocumentId $documentId,
         PropertyName $name,
-        string $constraintName,
         PropertyConstraint $constraint
     ) {
         $this->documentId = $documentId;
         $this->name = $name;
-        $this->constraintName = $constraintName;
         $this->constraint = $constraint;
     }
 
@@ -49,11 +42,6 @@ final class AddPropertyConstraint implements Command
     public function name(): PropertyName
     {
         return $this->name;
-    }
-
-    public function constraintName(): string
-    {
-        return $this->constraintName;
     }
 
     public function constraint(): PropertyConstraint

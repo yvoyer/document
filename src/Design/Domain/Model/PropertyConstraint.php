@@ -9,11 +9,13 @@ use Star\Component\Document\Design\Domain\Model\Constraints\ConstraintData;
 interface PropertyConstraint
 {
     /**
-     * @param string $name
+     * @param string $propertyName
      * @param RecordValue $value
      * @param ErrorList $errors
      */
-    public function validate(string $name, RecordValue $value, ErrorList $errors): void;
+    public function validate(string $propertyName, RecordValue $value, ErrorList $errors): void;
+
+    public function getName(): string;
 
     public function toData(): ConstraintData;
 

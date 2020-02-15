@@ -7,6 +7,7 @@ use Star\Component\Document\Design\Domain\Model\Constraints\ConstraintData;
 use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\PropertyParameter;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Types\TypeData;
 
@@ -32,19 +33,24 @@ final class DocumentSchema
         return $this->documentId;
     }
 
-    public function addProperty(string $name, PropertyType $type): void
+    public function addProperty(string $property, PropertyType $type): void
     {
-        $this->properties[$name] = new PropertyDefinition(PropertyName::fromString($name), $type);
+        $this->properties[$property] = new PropertyDefinition(PropertyName::fromString($property), $type);
     }
 
-    public function removeConstraint(string $name, string $constraint): void
+    public function removeConstraint(string $property, string $constraint): void
     {
-        $this->properties[$name] = $this->getDefinition($name)->removeConstraint($constraint);
+        $this->properties[$property] = $this->getDefinition($property)->removeConstraint($constraint);
     }
 
-    public function addConstraint(string $property, string $constraintName, PropertyConstraint $constraint): void
+    public function addConstraint(string $property, PropertyConstraint $constraint): void
     {
-        $this->properties[$property] = $this->getDefinition($property)->addConstraint($constraintName, $constraint);
+        $this->properties[$property] = $this->getDefinition($property)->addConstraint($constraint);
+    }
+
+    public function addParameter(string $property, PropertyParameter $parameter): void
+    {
+        $this->properties[$property] = $this->getDefinition($property)->addParameter($parameter);
     }
 
     public function getDefinition(string $property): PropertyDefinition
@@ -81,16 +87,23 @@ final class DocumentSchema
     public static function fromString(string $string): DocumentSchema
     {
         $data = \json_decode($string, true);
-        $schema = new DocumentSchema(DocumentId::fromString($data['id']));
-        foreach ($data['properties'] as $name => $property) {
-            $schema->addProperty($name, TypeData::fromArray($property['type'])->createType());
+        $schema = new DocumentSchema(DocumentId::fromString($data[SchemaDumper::INDEX_ID]));
+        foreach ($data[SchemaDumper::INDEX_PROPERTIES] as $name => $property) {
+            $schema->addProperty($name, TypeData::fromArray($property[SchemaDumper::INDEX_TYPE])->createType());
 
-            foreach ($property['constraints'] as $constraintName => $constraintData) {
+            foreach ($property[SchemaDumper::INDEX_CONSTRAINTS] as $constraintName => $constraintData) {
                 $schema->addConstraint(
                     $name,
-                    $constraintName,
                     ConstraintData::fromArray($constraintData)->createConstraint()
                 );
+            }
+
+            if (! \array_key_exists(SchemaDumper::INDEX_PARAMETERS, $property)) {
+                $property[SchemaDumper::INDEX_PARAMETERS] = [];
+            }
+
+            foreach ($property[SchemaDumper::INDEX_PARAMETERS] as $parameterName => $parameter) {
+                $schema->addParameter($parameterName, $parameter);
             }
         }
 

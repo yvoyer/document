@@ -16,16 +16,13 @@ $document = DocumentBuilder::createDocument('All boolean')
 $document->acceptDocumentVisitor(new OutputDocument())
 ?>
 --EXPECTF--
-Document: "All dates"
-Property: Format (date)
-  Constraints:
-    - date-format({"format":"y-m-d"})
-Property: Required (date)
+Document: "All boolean"
+Property: Required (boolean)
   Constraints:
     - required([])
-Property: Past (date)
-  Constraints:
-    - past-date({"target":"2000-12-31"})
-Property: Future (date)
-  Constraints:
-    - future-date({"target":"1999-01-01"})
+Property: Labels (boolean)
+  Parameters:
+    - label({"true":"True","false":"False"}})
+Property: Default (boolean)
+  Parameters:
+    - default({"value":boolean(true)})

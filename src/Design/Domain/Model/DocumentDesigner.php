@@ -9,14 +9,13 @@ interface DocumentDesigner extends ReadOnlyDocument
     public function addProperty(
         PropertyName $name,
         PropertyType $type,
-        PropertyConstraint $constraint
+        PropertyConstraint $constraint = null,
+        PropertyParameter $parameter = null
     ): void;
 
-    public function addPropertyConstraint(
-        PropertyName $name,
-        string $constraintName,
-        PropertyConstraint $constraint
-    ): void;
+    public function addPropertyConstraint(PropertyName $name, PropertyConstraint $constraint): void;
+
+    public function addPropertyParameter(PropertyName $name, PropertyParameter $parameter): void;
 
     public function setDocumentConstraint(DocumentConstraint $constraint): void;
 

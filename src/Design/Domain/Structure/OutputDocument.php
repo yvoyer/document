@@ -6,6 +6,7 @@ use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\PropertyParameter;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 
 final class OutputDocument implements DocumentVisitor
@@ -41,6 +42,11 @@ final class OutputDocument implements DocumentVisitor
                 \json_encode($constraint->toData()->toArray()['arguments'])
             )
         );
+    }
+
+    public function visitParameter(PropertyName $propertyName, PropertyParameter $parameter): void
+    {
+        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
     }
 
     protected function writeLine(string $text): void

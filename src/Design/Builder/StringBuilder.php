@@ -8,14 +8,14 @@ final class StringBuilder extends PropertyBuilder
 {
     public function matchesRegex(string $pattern): self
     {
-        $this->withConstraint('regex', new Constraints\Regex($pattern));
+        $this->withConstraint(new Constraints\Regex($pattern));
 
         return $this;
     }
 
     public function required(): self
     {
-        $this->withConstraint('required', new Constraints\RequiresValue());
+        $this->withConstraint(new Constraints\RequiresValue());
 
         return $this;
     }

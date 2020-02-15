@@ -4,28 +4,30 @@ namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
-use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
-use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 
-final class NoConstraint implements PropertyConstraint, DocumentConstraint
+final class ClosureConstraint implements PropertyConstraint
 {
     /**
      * @var string
      */
     private $name;
 
-    public function __construct(string $name = 'no-constraint')
+    /**
+     * @var \Closure
+     */
+    private $closure;
+
+    public function __construct(string $name, \Closure $closure)
     {
         $this->name = $name;
+        $this->closure = $closure;
     }
 
     public function validate(string $propertyName, RecordValue $value, ErrorList $errors): void
     {
-    }
-
-    public function onPublish(DocumentDesigner $document): void
-    {
+        $closure = $this->closure;
+        $closure($propertyName, $value, $errors);
     }
 
     public function getName(): string
@@ -35,11 +37,16 @@ final class NoConstraint implements PropertyConstraint, DocumentConstraint
 
     public function toData(): ConstraintData
     {
-        return new ConstraintData(self::class, ['name' => $this->name]);
+        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
     }
 
     public static function fromData(ConstraintData $data): PropertyConstraint
     {
-        return new self($data->getArgument('name'));
+        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+    }
+
+    public static function nullConstraint(string $name = 'closure'): self
+    {
+        return new self($name, function () {});
     }
 }

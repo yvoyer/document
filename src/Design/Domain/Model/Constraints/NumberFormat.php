@@ -33,12 +33,17 @@ final class NumberFormat implements PropertyConstraint
         $this->thousandSeparator = $thousandSeparator;
     }
 
+    public function getName(): string
+    {
+        return 'number-format';
+    }
+
     /**
-     * @param string $name
+     * @param string $propertyName
      * @param RecordValue $value
      * @param ErrorList $errors
      */
-    public function validate(string $name, RecordValue $value, ErrorList $errors): void
+    public function validate(string $propertyName, RecordValue $value, ErrorList $errors): void
     {
         $expected = \number_format(
             \floatval($value->toString()),
@@ -49,11 +54,11 @@ final class NumberFormat implements PropertyConstraint
 
         if ($expected !== $value->toString()) {
             $errors->addError(
-                $name,
+                $propertyName,
                 'en',
                 \sprintf(
                     'Property "%s" expects a number of format "%s", "%s" given.',
-                    $name,
+                    $propertyName,
                     \sprintf(
                         'TTT%sCCC%s%s',
                         $this->thousandSeparator,

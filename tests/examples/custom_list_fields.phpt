@@ -10,7 +10,7 @@ require __DIR__ . '/../../vendor/autoload.php';
 
 $document = DocumentBuilder::createDocument('All lists')
     ->createCustomList('Required')->required()->endProperty()
-    ->createCustomList('Single option')->singleOption()->endProperty()
+    ->createCustomList('Allow multi-option')->allowMultiple()->endProperty()
     ->getDocument();
 $document->acceptDocumentVisitor(new OutputDocument())
 ?>

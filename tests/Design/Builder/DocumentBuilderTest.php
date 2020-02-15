@@ -132,7 +132,7 @@ final class DocumentBuilderTest extends TestCase
     public function test_it_should_throw_exception_when_setting_more_than_one_value_on_single_value_property()
     {
         $builder = DocumentBuilder::createDocument('id')
-            ->createCustomList('name', 'option 1', 'option 2', 'option 3')->singleOption()->endProperty()
+            ->createCustomList('name', 'option 1', 'option 2', 'option 3')->allowMultiOption()->endProperty()
             ->startRecord(RecordId::random());
 
         $this->expectException(ValidationFailedForProperty::class);
@@ -150,7 +150,7 @@ final class DocumentBuilderTest extends TestCase
             ->createDate('date')->endProperty()
             ->createNumber('int')->endProperty()
             ->createNumber('float')->endProperty()
-            ->createCustomList('custom-list-single', 'option 1', 'option 2', 'option 3')->singleOption()->endProperty()
+            ->createCustomList('custom-list-single', 'option 1', 'option 2', 'option 3')->allowMultiOption()->endProperty()
             ->createCustomList('custom-list-multi', 'option 4', 'option 5', 'option 6')->endProperty()
             ->startRecord(RecordId::random())
             ->setValue('text', 'my text')

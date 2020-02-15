@@ -33,7 +33,7 @@ final class ConstraintBuilder
 
     public function singleOption(): PropertyConstraint
     {
-        return new Constraints\RequiresSingleOption();
+        return new Constraints\AllowMultipleOptions();
     }
 
     public function dateFormat(string $format): PropertyConstraint

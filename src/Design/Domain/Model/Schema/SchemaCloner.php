@@ -6,6 +6,7 @@ use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\PropertyParameter;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 
 final class SchemaCloner implements DocumentVisitor
@@ -18,6 +19,11 @@ final class SchemaCloner implements DocumentVisitor
     public function __construct(DocumentId $id)
     {
         $this->schema = new DocumentSchema($id);
+    }
+
+    public function getClone(): DocumentSchema
+    {
+        return $this->schema;
     }
 
     public function visitDocument(DocumentId $id): void
@@ -36,11 +42,11 @@ final class SchemaCloner implements DocumentVisitor
         string $constraintName,
         PropertyConstraint $constraint
     ): void {
-        $this->schema->addConstraint($propertyName->toString(), $constraintName, $constraint);
+        $this->schema->addConstraint($propertyName->toString(), $constraint);
     }
 
-    public function getClone(): DocumentSchema
+    public function visitParameter(PropertyName $propertyName, PropertyParameter $parameter): void
     {
-        return $this->schema;
+        $this->schema->addParameter($propertyName->toString(), $parameter);
     }
 }

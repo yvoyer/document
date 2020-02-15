@@ -18,10 +18,15 @@ final class All implements PropertyConstraint
         $this->constraints = \array_merge([$first], $constraints);
     }
 
-    public function validate(string $name, RecordValue $value, ErrorList $errors): void
+    public function getName(): string
+    {
+        throw new \RuntimeException(__METHOD__ . ' not implemented');
+    }
+
+    public function validate(string $propertyName, RecordValue $value, ErrorList $errors): void
     {
         foreach ($this->constraints as $constraint) {
-            $constraint->validate($name, $value, $errors);
+            $constraint->validate($propertyName, $value, $errors);
         }
     }
 

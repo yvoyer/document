@@ -20,7 +20,12 @@ final class DateFormat implements PropertyConstraint
         $this->format = $format;
     }
 
-    public function validate(string $name, RecordValue $value, ErrorList $errors): void
+    public function getName(): string
+    {
+        return 'date-format';
+    }
+
+    public function validate(string $propertyName, RecordValue $value, ErrorList $errors): void
     {
         if ($value->isEmpty()) {
             return;
@@ -30,7 +35,7 @@ final class DateFormat implements PropertyConstraint
         $messageFormat = 'The date value "%s" is not in format "%s", provided date resulted in "%s".';
         if ($date->toString() !== $value->toString()) {
             $errors->addError(
-                $name,
+                $propertyName,
                 'en',
                 \sprintf($messageFormat, $value->toTypedString(), $this->format, $date->toString())
             );

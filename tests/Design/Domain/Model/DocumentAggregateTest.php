@@ -5,6 +5,7 @@ namespace Star\Component\Document\Design\Domain\Model;
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\Constraints;
+use Star\Component\Document\Design\Domain\Model\Parameters\NullParameter;
 use Star\Component\Document\Design\Domain\Model\Schema\ReferencePropertyNotFound;
 use Star\Component\Document\Design\Domain\Model\Types\NullType;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
@@ -77,19 +78,12 @@ final class DocumentAggregateTest extends TestCase
     public function test_it_should_add_a_property_constraint(): void
     {
         $name = PropertyName::fixture();
-        $this->document->addProperty(
-            $name,
-            new NullType(),
-            new Constraints\RequiresValue()
-        );
+        $this->document->addProperty($name, new NullType());
 
         $this->assertFalse($this->document->getPropertyDefinition($name)->hasConstraint('const'));
 
-        $this->document->addPropertyConstraint(
-            $name,
-            'const',
-            $this->createMock(PropertyConstraint::class)
-        );
+        $constraint = new Constraints\NoConstraint('const');
+        $this->document->addPropertyConstraint($name, $constraint);
 
         $this->assertTrue($this->document->getPropertyDefinition($name)->hasConstraint('const'));
     }
@@ -103,12 +97,27 @@ final class DocumentAggregateTest extends TestCase
 
     public function test_it_should_add_a_constraint_on_document(): void
     {
-        $constraint = new Constraints\NoConstraint();
+        $constraint = $this->createMock(DocumentConstraint::class);
 
         $this->assertNotSame($constraint, $this->document->getConstraint());
 
         $this->document->setDocumentConstraint($constraint);
 
         $this->assertSame($constraint, $this->document->getConstraint());
+    }
+
+    public function test_it_should_add_a_parameter_on_the_property(): void {
+        $name = PropertyName::fixture();
+        $this->document->addProperty($name, new NullType());
+
+        $this->assertFalse(
+            $this->document->getSchema()->getDefinition($name->toString())->hasParameter('name')
+        );
+
+        $this->document->addPropertyParameter($name, new NullParameter('name'));
+
+        $this->assertTrue(
+            $this->document->getSchema()->getDefinition($name->toString())->hasParameter('name')
+        );
     }
 }
