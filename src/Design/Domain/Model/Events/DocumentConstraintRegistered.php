@@ -2,11 +2,10 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Events;
 
-use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
-use Star\Component\DomainEvent\DomainEvent;
+use Star\Component\Document\Design\Domain\Model\DocumentId;
 
-final class DocumentConstraintRegistered implements DomainEvent
+final class DocumentConstraintRegistered implements DocumentEvent
 {
     /**
      * @var DocumentId
@@ -14,19 +13,30 @@ final class DocumentConstraintRegistered implements DomainEvent
     private $id;
 
     /**
+     * @var string
+     */
+    private $name;
+
+    /**
      * @var DocumentConstraint
      */
     private $constraint;
 
-    public function __construct(DocumentId $id, DocumentConstraint $constraint)
+    public function __construct(DocumentId $id, string $name, DocumentConstraint $constraint)
     {
         $this->id = $id;
+        $this->name = $name;
         $this->constraint = $constraint;
     }
 
     public function documentId(): DocumentId
     {
         return $this->id;
+    }
+
+    public function constraintName(): string
+    {
+        return $this->name;
     }
 
     public function constraint(): DocumentConstraint

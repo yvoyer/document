@@ -4,6 +4,7 @@ namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
+use Star\Component\Document\Design\Domain\Model\Constraint;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 
 final class BetweenDate implements PropertyConstraint
@@ -27,16 +28,10 @@ final class BetweenDate implements PropertyConstraint
     public function validate(string $propertyName, RecordValue $value, ErrorList $errors): void
     {
         $constraint = new All(
-            $this->getName(),
             new AfterDate($this->fromDate),
             new BeforeDate($this->toDate)
         );
         $constraint->validate($propertyName, $value, $errors);
-    }
-
-    public function getName(): string
-    {
-        return 'between';
     }
 
     public function toData(): ConstraintData
@@ -50,9 +45,9 @@ final class BetweenDate implements PropertyConstraint
         );
     }
 
-    public static function fromData(ConstraintData $data): PropertyConstraint
+    public static function fromData(ConstraintData $data): Constraint
     {
-        return new self(
+        return new static(
             $data->getArgument('from'),
             $data->getArgument('to')
         );

@@ -2,10 +2,10 @@
 
 namespace Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory;
 
-use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
 use Star\Component\Document\DataEntry\Domain\Model\RecordRepository;
+use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Identity\Exception\EntityNotFoundException;
 
 final class RecordCollection implements RecordRepository, \Countable

@@ -2,15 +2,18 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Model;
 
-use Assert\Assertion;
-use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\Events;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\AlwaysThrowExceptionOnValidationErrors;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleValidationErrors;
-use Star\Component\Document\DataEntry\Domain\Model\Validation\ValidateConstraints;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\ValidateProperty;
+use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 use Star\Component\DomainEvent\AggregateRoot;
+use function array_key_exists;
+use function array_keys;
+use function array_merge;
 
 final class RecordAggregate extends AggregateRoot implements DocumentRecord
 {
@@ -20,7 +23,7 @@ final class RecordAggregate extends AggregateRoot implements DocumentRecord
     private $id;
 
     /**
-     * @var DocumentSchema
+     * @var SchemaMetadata
      */
     private $schema;
 
@@ -29,32 +32,28 @@ final class RecordAggregate extends AggregateRoot implements DocumentRecord
      */
     private $values = [];
 
-    public static function withoutValues(
-        RecordId $id,
-        DocumentSchema $schema
-    ): self {
-        return self::fromStream([new Events\RecordCreated($id, $schema->toString())]);
-    }
-
     /**
      * @param RecordId $id
-     * @param DocumentSchema $schema
-     * @param mixed[] $values
+     * @param SchemaMetadata $schema
+     * @param RecordValue[] $values Indexed by the string representation of the property name
+     * @param StrategyToHandleValidationErrors|null $strategy
      * @return RecordAggregate
      */
     public static function withValues(
         RecordId $id,
-        DocumentSchema $schema,
-        array $values
-    ): self {
-        $record = self::withoutValues($id, $schema);
-        Assertion::notEmpty(
-            $values,
-            'Record cannot have an empty array of values, at least one item should be given.'
-        );
+        SchemaMetadata $schema,
+        array $values = [],
+        StrategyToHandleValidationErrors $strategy = null
+    ): RecordAggregate {
+        /**
+         * @var RecordAggregate $record
+         */
+        $record = self::fromStream([new Events\RecordWasCreated($id, $schema->toString())]);
+        $schema->acceptDocumentVisitor($visitor = new HandleDefaultValues(...array_keys($values)));
 
-        foreach ($values as $property => $rawValue) {
-            $record->setValue($property, $rawValue, new AlwaysThrowExceptionOnValidationErrors());
+        $values = array_merge($values, $visitor->allDefaultValues());
+        foreach ($values as $property => $value) {
+            $record->setValue($property, $value, $strategy);
         }
 
         return $record;
@@ -70,47 +69,89 @@ final class RecordAggregate extends AggregateRoot implements DocumentRecord
         return $this->schema->getIdentity();
     }
 
-    /**
-     * @param string $propertyName
-     * @param mixed $rawValue
-     * @param StrategyToHandleValidationErrors $strategy
-     */
     public function setValue(
         string $propertyName,
-        $rawValue,
-        StrategyToHandleValidationErrors $strategy
+        RecordValue $value,
+        StrategyToHandleValidationErrors $strategy = null
     ): void {
-        $rawValue = RawValue::fromMixed($rawValue);
-        $type = $this->schema->getDefinition($propertyName)->getType();
+        if (! $strategy) {
+            $strategy = new AlwaysThrowExceptionOnValidationErrors();
+        }
+
+        $property = $this->schema->getPropertyMetadata($propertyName);
+        if (! $property->supportsType($value)) {
+            throw $property->generateExceptionForNotSupportedTypeForValue(
+                $propertyName,
+                $value
+            );
+        }
+
+        if (! $property->supportsValue($value)) {
+            throw $property->generateExceptionForNotSupportedValue($propertyName, $value);
+        }
+
         $errors = new ErrorList();
-        $value = $type->createValue($propertyName, $rawValue);
-        $this->schema->acceptDocumentVisitor(new ValidateConstraints($propertyName, $value, $errors));
+        $this->schema->acceptDocumentVisitor(new ValidateProperty($propertyName, $value, $errors));
 
         if ($errors->hasErrors()) {
             $strategy->handleFailure($errors);
         }
 
-        $this->values[$propertyName] = $value;
+        if (array_key_exists($propertyName, $this->values)) {
+            $oldValue = $this->values[$propertyName];
+            if ($oldValue->toString() !== $value->toString()) {
+                $this->mutate(
+                    new Events\PropertyValueWasChanged(
+                        $this->getIdentity(),
+                        $this->getDocumentId(),
+                        PropertyName::fromString($propertyName),
+                        $oldValue,
+                        $value
+                    )
+                );
+            }
+        } else {
+            $this->mutate(
+                new Events\PropertyValueWasSet(
+                    $this->getIdentity(),
+                    $this->getDocumentId(),
+                    PropertyName::fromString($propertyName),
+                    $value
+                )
+            );
+        }
+
+        $this->values[$propertyName] = $property->toWriteFormat($value);
     }
 
     public function getValue(string $propertyName): RecordValue
     {
-        $property = $this->schema->getDefinition($propertyName);
-        if (! $this->hasValue($propertyName)) {
-            $this->values[$propertyName] = $property->createDefaultValue();
-        }
+        $property = $this->schema->getPropertyMetadata($propertyName);
 
-        return $this->values[$propertyName];
+        return $property->toReadFormat($this->values[$propertyName]);
     }
 
-    protected function onRecordCreated(Events\RecordCreated $event): void
+    public function executeAction(RecordAction $action): void
+    {
+        $action->perform($this->schema, $this);
+        $this->mutate(new Events\ActionWasPerformed($this->getIdentity(), $action));
+    }
+
+    protected function onActionWasPerformed(Events\ActionWasPerformed $event): void
+    {
+    }
+
+    protected function onRecordWasCreated(Events\RecordWasCreated $event): void
     {
         $this->id = $event->recordId();
-        $this->schema = DocumentSchema::fromString($event->schema());
+        $this->schema = DocumentSchema::fromJsonString($event->schema());
     }
 
-    private function hasValue(string $propertyName): bool
+    protected function onPropertyValueWasSet(Events\PropertyValueWasSet $event): void
     {
-        return \array_key_exists($propertyName, $this->values);
+    }
+
+    protected function onPropertyValueWasChanged(Events\PropertyValueWasChanged $event): void
+    {
     }
 }

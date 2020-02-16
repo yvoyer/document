@@ -11,15 +11,15 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Star\\Component\\Document\\": ["tests", "features/bootstrap"]
+            "Star\\Component\\Document\\Tests\\": ["tests", "features/bootstrap"]
         }
     },
     "require": {
-        "php": "~7.1",
-        "react/promise": "^2.5",
+        "php": "^7.1|^8.0",
+        "ext-json": "*",
+        "star/domain-event": "^2.0",
         "star/identity": "^1.0",
-        "star/state-machine": "^2.0",
-        "star/domain-event": "^2.0"
+        "star/state-machine": "^2.0"
     },
     "require-dev": {
         "behat/behat": "^3.4",
@@ -31,11 +31,11 @@
     },
     "authors": [
         {
-            "name": "Yannick Voyer",
-            "email": "yvoyer.star@gmail.com"
+            "name": "Yannick Voyer"
         }
     ],
     "config": {
-        "bin-dir": "bin"
+        "bin-dir": "bin",
+        "sort-packages": true
     }
 }

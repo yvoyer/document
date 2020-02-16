@@ -24,7 +24,22 @@ final class BooleanLabel implements PropertyParameter
         $this->falseLabel = $falseLabel;
     }
 
-    public function validate(string $propertyName, RecordValue $value, ErrorList $errors): void
+    public function toWriteFormat(RecordValue $value): RecordValue
+    {
+        return $value;
+    }
+
+    public function toReadFormat(RecordValue $value): RecordValue
+    {
+//        var_dump($value);
+//        if ($value->isEmpty()) {
+//            return BooleanValue::falseValue();
+//        }
+//
+        return $value;
+    }
+
+    public function validate(string $name, RecordValue $value, ErrorList $errors): void
     {
     }
 
@@ -37,16 +52,6 @@ final class BooleanLabel implements PropertyParameter
                 'false-label' => $this->falseLabel,
             ]
         );
-    }
-
-    public function getName(): string
-    {
-        return 'label';
-    }
-
-    public function onCreateDefaultValue(RecordValue $value): RecordValue
-    {
-        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
     }
 
     public static function fromParameterData(ParameterData $data): PropertyParameter

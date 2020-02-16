@@ -4,6 +4,8 @@ namespace Star\Component\Document\Design\Domain\Model\Types;
 
 use Assert\Assertion;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
+use function json_decode;
+use function json_encode;
 
 final class TypeData
 {
@@ -45,7 +47,7 @@ final class TypeData
     }
 
     /**
-     * @return string[]|mixed[][]
+     * @return string[]|mixed[]
      */
     public function toArray(): array
     {
@@ -58,7 +60,7 @@ final class TypeData
     public static function fromString(string $string): self
     {
         Assertion::isJsonString($string);
-        $data = \json_decode($string, true);
+        $data = json_decode($string, true);
         Assertion::keyExists($data, 'class');
         Assertion::keyExists($data, 'arguments');
 
@@ -77,6 +79,6 @@ final class TypeData
      */
     public static function fromArray(array $data): self
     {
-        return self::fromString((string) \json_encode($data));
+        return self::fromString((string) json_encode($data));
     }
 }

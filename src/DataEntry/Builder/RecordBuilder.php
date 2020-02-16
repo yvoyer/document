@@ -3,6 +3,7 @@
 namespace Star\Component\Document\DataEntry\Builder;
 
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Builder\DocumentBuilder;
 
 final class RecordBuilder
@@ -25,13 +26,7 @@ final class RecordBuilder
         $this->builder = $builder;
     }
 
-    /**
-     * @param string $property
-     * @param mixed $value
-     *
-     * @return RecordBuilder
-     */
-    public function setValue(string $property, $value): self
+    public function setValue(string $property, RecordValue $value): self
     {
         $this->record->setValue($property, $value, $this->builder->getErrorStrategyHandler());
 

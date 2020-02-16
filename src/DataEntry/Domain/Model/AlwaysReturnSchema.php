@@ -2,22 +2,21 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Model;
 
-use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
+use Star\Component\Document\Design\Domain\Model\DocumentId;
 
 final class AlwaysReturnSchema implements SchemaFactory
 {
     /**
-     * @var DocumentSchema
+     * @var SchemaMetadata
      */
     private $schema;
 
-    public function __construct(DocumentSchema $schema)
+    public function __construct(SchemaMetadata $schema)
     {
         $this->schema = $schema;
     }
 
-    public function createSchema(DocumentId $documentId): DocumentSchema
+    public function createSchema(DocumentId $documentId): SchemaMetadata
     {
         return $this->schema;
     }

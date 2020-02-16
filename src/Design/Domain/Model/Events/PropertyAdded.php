@@ -2,12 +2,17 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Events;
 
+use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\DomainEvent\DomainEvent;
 
-final class PropertyAdded implements DomainEvent
+final class PropertyAdded implements DocumentEvent
 {
+    /**
+     * @var DocumentId
+     */
+    private $document;
+
     /**
      * @var PropertyName
      */
@@ -18,10 +23,19 @@ final class PropertyAdded implements DomainEvent
      */
     private $type;
 
-    public function __construct(PropertyName $name, PropertyType $type)
-    {
+    public function __construct(
+        DocumentId $document,
+        PropertyName $name,
+        PropertyType $type
+    ) {
+        $this->document = $document;
         $this->name = $name;
         $this->type = $type;
+    }
+
+    public function documentId(): DocumentId
+    {
+        return $this->document;
     }
 
     public function name(): PropertyName

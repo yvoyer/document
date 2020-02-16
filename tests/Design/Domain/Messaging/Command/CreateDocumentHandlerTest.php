@@ -1,10 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Design\Domain\Messaging\Command;
+namespace Star\Component\Document\Tests\Design\Domain\Messaging\Command;
 
 use PHPUnit\Framework\TestCase;
-use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
+use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocument;
+use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocumentHandler;
+use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
 
 final class CreateDocumentHandlerTest extends TestCase
@@ -36,6 +37,6 @@ final class CreateDocumentHandlerTest extends TestCase
 
         $this->assertCount(1, $this->documents);
         $document = $this->documents->getDocumentByIdentity($id);
-        $this->assertInstanceOf(DocumentDesigner::class, $document);
+        $this->assertSame('id', $document->getIdentity()->toString());
     }
 }

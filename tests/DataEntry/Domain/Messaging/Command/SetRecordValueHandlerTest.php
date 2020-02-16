@@ -1,15 +1,19 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\DataEntry\Domain\Messaging\Command;
+namespace Star\Component\Document\Tests\DataEntry\Domain\Messaging\Command;
 
 use PHPUnit\Framework\TestCase;
-use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\DataEntry\Domain\Messaging\Command\SetRecordValue;
+use Star\Component\Document\DataEntry\Domain\Messaging\Command\SetRecordValueHandler;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
 use Star\Component\Document\DataEntry\Domain\Model\RecordAggregate;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\Values\StringValue;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
-use Star\Component\Document\Design\Domain\Model\Schema\SchemaBuilder;
+use Star\Component\Document\Design\Builder\DocumentBuilder;
+use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Identity\Exception\EntityNotFoundException;
+use function sprintf;
 
 final class SetRecordValueHandlerTest extends TestCase
 {
@@ -36,13 +40,18 @@ final class SetRecordValueHandlerTest extends TestCase
 
         $this->expectException(EntityNotFoundException::class);
         $this->expectExceptionMessage(
-            \sprintf(
+            sprintf(
                 "Object of class '%s' with identity 'id' could not be found.",
                 DocumentRecord::class
             )
         );
         $this->handler->__invoke(
-            new SetRecordValue(DocumentId::random(), RecordId::fromString('id'), 'name', 'value')
+            new SetRecordValue(
+                DocumentId::random(),
+                RecordId::fromString('id'),
+                'name',
+                StringValue::fromString('value')
+            )
         );
     }
 
@@ -53,23 +62,23 @@ final class SetRecordValueHandlerTest extends TestCase
 
         $this->records->saveRecord(
             $recordId,
-            RecordAggregate::withoutValues(
+            RecordAggregate::withValues(
                 $recordId,
-                SchemaBuilder::create($documentId)
-                    ->addText('p1')->endProperty()
-                    ->addText('p2')->endProperty()
-                    ->addText('p3')->endProperty()
+                DocumentBuilder::createDocument($documentId->toString())
+                    ->createText('p1')->endProperty()
+                    ->createText('p2')->endProperty()
+                    ->createText('p3')->endProperty()
                     ->getSchema()
             )
         );
         $this->handler->__invoke(
-            new SetRecordValue($documentId, $recordId, 'p1', 'v1')
+            new SetRecordValue($documentId, $recordId, 'p1', StringValue::fromString('v1'))
         );
         $this->handler->__invoke(
-            new SetRecordValue($documentId, $recordId, 'p2', 'v2')
+            new SetRecordValue($documentId, $recordId, 'p2', StringValue::fromString('v2'))
         );
         $this->handler->__invoke(
-            new SetRecordValue($documentId, $recordId, 'p3', 'v3')
+            new SetRecordValue($documentId, $recordId, 'p3', StringValue::fromString('v3'))
         );
 
         $this->assertCount(1, $this->records);
@@ -87,9 +96,9 @@ final class SetRecordValueHandlerTest extends TestCase
         $recordId = RecordId::fromString('r1');
         $record = RecordAggregate::withValues(
             $recordId,
-            SchemaBuilder::create()->addText('name')->endProperty()->getSchema(),
+            DocumentBuilder::createDocument()->createText('name')->endProperty()->getSchema(),
             [
-                'name' => 'old-value',
+                'name' => StringValue::fromString('old-value'),
             ]
         );
         $this->records->saveRecord($recordId, $record);
@@ -98,7 +107,12 @@ final class SetRecordValueHandlerTest extends TestCase
         $this->assertSame('old-value', $record->getValue('name')->toString());
 
         $this->handler->__invoke(
-            new SetRecordValue(DocumentId::random(), $recordId, 'name', 'new-value')
+            new SetRecordValue(
+                DocumentId::random(),
+                $recordId,
+                'name',
+                StringValue::fromString('new-value')
+            )
         );
 
         $this->assertSame('new-value', $record->getValue('name')->toString());

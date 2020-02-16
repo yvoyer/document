@@ -21,6 +21,6 @@ final class CreatePropertyHandler
         $document = $this->documents->getDocumentByIdentity($command->documentId());
         $document->addProperty($command->name(), $command->type());
 
-        $this->documents->saveDocument($command->documentId(), $document);
+        $this->documents->saveDocument($document);
     }
 }

@@ -1,10 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory;
+namespace Star\Component\Document\Tests\DataEntry\Infrastructure\Persistence\InMemory;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
 use Star\Component\Identity\Exception\EntityNotFoundException;
 
 final class RecordCollectionTest extends TestCase

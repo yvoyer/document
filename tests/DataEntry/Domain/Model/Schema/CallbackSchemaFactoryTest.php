@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\DataEntry\Infrastructure\Port;
+namespace Star\Component\Document\Tests\DataEntry\Domain\Model\Schema;
 
 use PHPUnit\Framework\TestCase;
-use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\Schema\CallbackSchemaFactory;
+use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 
 final class CallbackSchemaFactoryTest extends TestCase

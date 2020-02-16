@@ -2,11 +2,14 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
+use DateTimeImmutable;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
+use Star\Component\Document\DataEntry\Domain\Model\Values\DateParser;
+use Star\Component\Document\DataEntry\Domain\Model\Values\DateValue;
+use Star\Component\Document\Design\Domain\Model\Constraint;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
-use Star\Component\Document\Design\Domain\Model\Values\DateParser;
-use Star\Component\Document\Design\Domain\Model\Values\DateValue;
+use function sprintf;
 
 final class AfterDate implements PropertyConstraint
 {
@@ -19,12 +22,7 @@ final class AfterDate implements PropertyConstraint
 
     public function __construct(string $target)
     {
-        $this->target = new \DateTimeImmutable($target);
-    }
-
-    public function getName(): string
-    {
-        return 'after-date';
+        $this->target = new DateTimeImmutable($target);
     }
 
     /**
@@ -43,7 +41,7 @@ final class AfterDate implements PropertyConstraint
             $errors->addError(
                 $propertyName,
                 'en',
-                \sprintf(
+                sprintf(
                     'The property "%s" only accepts date after "%s", "%s" given.',
                     $propertyName,
                     $this->target->format(self::FORMAT),
@@ -58,8 +56,8 @@ final class AfterDate implements PropertyConstraint
         return new ConstraintData(self::class, ['target' => $this->target->format(self::FORMAT)]);
     }
 
-    public static function fromData(ConstraintData $data): PropertyConstraint
+    public static function fromData(ConstraintData $data): Constraint
     {
-        return new self($data->getArgument('target'));
+        return new static($data->getArgument('target'));
     }
 }

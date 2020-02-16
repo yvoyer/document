@@ -2,9 +2,10 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Messaging\Command;
 
-use Star\Component\Document\Common\Domain\Messaging\Command;
-use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\DomainEvent\Messaging\Command;
 
 final class SetRecordValue implements Command
 {
@@ -24,21 +25,15 @@ final class SetRecordValue implements Command
     private $property;
 
     /**
-     * @var mixed
+     * @var RecordValue
      */
     private $value;
 
-    /**
-     * @param DocumentId $documentId
-     * @param RecordId $recordId
-     * @param string $property
-     * @param mixed $value
-     */
     public function __construct(
         DocumentId $documentId,
         RecordId $recordId,
         string $property,
-        $value
+        RecordValue $value
     ) {
         $this->documentId = $documentId;
         $this->recordId = $recordId;
@@ -61,10 +56,7 @@ final class SetRecordValue implements Command
         return $this->property;
     }
 
-    /**
-     * @return mixed
-     */
-    public function value()
+    public function value(): RecordValue
     {
         return $this->value;
     }

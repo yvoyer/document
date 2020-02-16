@@ -32,4 +32,4 @@ Property: Labels (boolean)
 Property: Default (boolean)
   Constraints:
   Parameters:
-    - default-value({"value":"true"})
+    - default-value({"value":"true","value-class":"Star\\Component\\Document\\DataEntry\\Domain\\Model\\Values\\BooleanValue"})

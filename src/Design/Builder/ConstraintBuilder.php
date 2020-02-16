@@ -2,7 +2,6 @@
 
 namespace Star\Component\Document\Design\Builder;
 
-use Assert\Assertion;
 use Star\Component\Document\Design\Domain\Model\Constraints;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 
@@ -31,11 +30,6 @@ final class ConstraintBuilder
     public function requiresOptionCount(int $count): PropertyConstraint
     {
         return new Constraints\RequiresOptionCount($count);
-    }
-
-    public function dateFormat(string $format): PropertyConstraint
-    {
-        return new Constraints\DateFormat($format);
     }
 
     public function numberFormat(
@@ -71,18 +65,5 @@ final class ConstraintBuilder
     public function regex(string $pattern): PropertyConstraint
     {
         return new Constraints\Regex($pattern);
-    }
-
-    /**
-     * @param string $name
-     * @param mixed[] $values
-     * @return PropertyConstraint
-     */
-    public function fromString(string $name, array $values): PropertyConstraint
-    {
-        $method = \str_replace(' ', '', \lcfirst(\ucwords(\str_replace('-', ' ', $name))));
-        Assertion::methodExists($method, $this, 'Constraint "%s" is not supported by the constraint builder.');
-
-        return $this->{$method}(...$values);
     }
 }

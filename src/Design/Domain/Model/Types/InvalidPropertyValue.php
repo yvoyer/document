@@ -2,18 +2,21 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
-use Star\Component\Document\DataEntry\Domain\Model\RawValue;
+use InvalidArgumentException;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+use Star\Component\Document\Design\Domain\Model\PropertyType;
+use function sprintf;
 
-final class InvalidPropertyValue extends \InvalidArgumentException
+final class InvalidPropertyValue extends InvalidArgumentException
 {
-    public static function invalidValueForType(string $propertyName, string $type, RawValue $value): self
+    public static function invalidValueForType(string $propertyName, RecordValue $value, PropertyType $type): self
     {
         return new self(
-            \sprintf(
+            sprintf(
                 'The property "%s" expected a "%s" value, "%s" given.',
                 $propertyName,
-                $type,
-                $value->getType()
+                $type->toHumanReadableString(),
+                $value->toTypedString()
             )
         );
     }

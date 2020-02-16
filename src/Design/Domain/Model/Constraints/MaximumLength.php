@@ -5,7 +5,11 @@ namespace Star\Component\Document\Design\Domain\Model\Constraints;
 use Assert\Assertion;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
+use Star\Component\Document\Design\Domain\Model\Constraint;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
+use function is_string;
+use function mb_strlen;
+use function sprintf;
 
 final class MaximumLength implements PropertyConstraint
 {
@@ -19,18 +23,13 @@ final class MaximumLength implements PropertyConstraint
         $this->length = $length;
     }
 
-    public function getName(): string
-    {
-        return 'maximum-length';
-    }
-
     public function validate(string $propertyName, RecordValue $value, ErrorList $errors): void
     {
-        if (\mb_strlen($value->toString()) > $this->length) {
+        if (mb_strlen($value->toString()) > $this->length) {
             $errors->addError(
                 $propertyName,
                 'en',
-                \sprintf(
+                sprintf(
                     'Property "%s" is too long, expected a maximum of %s characters, "%s" given.',
                     $propertyName,
                     $this->length,
@@ -62,15 +61,15 @@ final class MaximumLength implements PropertyConstraint
      */
     public static function fromMixed($length): self
     {
-        if (\is_string($length)) {
+        if (is_string($length)) {
             return self::fromString($length);
         }
 
         return self::fromInt($length);
     }
 
-    public static function fromData(ConstraintData $data): PropertyConstraint
+    public static function fromData(ConstraintData $data): Constraint
     {
-        return new self($data->getArgument('length'));
+        return new static($data->getArgument('length'));
     }
 }

@@ -2,35 +2,52 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
-use Star\Component\Document\DataEntry\Domain\Model\RawValue;
+use RuntimeException;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+use Star\Component\Document\DataEntry\Domain\Model\Values\DateValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\Values\DateValue;
-use Star\Component\Document\Design\Domain\Model\Values\EmptyValue;
-use Star\Component\Document\Design\Domain\Model\Values\StringValue;
 
 final class DateType implements PropertyType
 {
-    public function createValue(string $propertyName, RawValue $rawValue): RecordValue
+    public function toWriteFormat(RecordValue $value): RecordValue
     {
-        if ($rawValue->isEmpty()) {
-            return new EmptyValue();
-        }
-
-        if ($rawValue->isDate()) {
-            return DateValue::fromString($rawValue->toString());
-        }
-
-        if (\strtotime($rawValue->toString()) > 0 && !$rawValue->isFloat()) {
-            return StringValue::fromString($rawValue->toString());
-        }
-
-        throw InvalidPropertyValue::invalidValueForType($propertyName, $this->toString(), $rawValue);
+        return $value;
     }
 
-    public function createDefaultValue(): RecordValue
+    public function toReadFormat(RecordValue $value): RecordValue
     {
-        return new EmptyValue();
+        return $value;
+    }
+
+    public function supportsType(RecordValue $value): bool
+    {
+        return $value instanceof DateValue || $value->isEmpty();
+    }
+
+    public function supportsValue(RecordValue $value): bool
+    {
+        if ($value->isEmpty()) {
+            return true;
+        }
+
+        return $value instanceof DateValue;
+    }
+
+    public function generateExceptionForNotSupportedTypeForValue(
+        string $property,
+        RecordValue $value
+    ): NotSupportedTypeForValue {
+        return new NotSupportedTypeForValue($property, $value, $this);
+    }
+
+    public function generateExceptionForNotSupportedValue(string $property, RecordValue $value): InvalidPropertyValue
+    {
+        throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
+    }
+
+    public function doBehavior(string $property, RecordValue $value): RecordValue
+    {
+        throw new RuntimeException(__METHOD__ . ' not implemented yet.');
     }
 
     public function toData(): TypeData
@@ -38,7 +55,7 @@ final class DateType implements PropertyType
         return new TypeData(self::class);
     }
 
-    public function toString(): string
+    public function toHumanReadableString(): string
     {
         return 'date';
     }

@@ -2,7 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
-interface DocumentConstraint
+interface DocumentConstraint extends Constraint
 {
-    public function onPublish(DocumentDesigner $document): void;
+    public function onRegistered(DocumentDesigner $document): void;
 }
