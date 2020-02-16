@@ -22,12 +22,17 @@ final class AfterDate implements PropertyConstraint
         $this->target = new \DateTimeImmutable($target);
     }
 
+    public function getName(): string
+    {
+        return 'after-date';
+    }
+
     /**
-     * @param string $name
+     * @param string $propertyName
      * @param RecordValue|DateValue $value
      * @param ErrorList $errors
      */
-    public function validate(string $name, RecordValue $value, ErrorList $errors): void
+    public function validate(string $propertyName, RecordValue $value, ErrorList $errors): void
     {
         if ($value->isEmpty()) {
             return;
@@ -36,11 +41,11 @@ final class AfterDate implements PropertyConstraint
         $date = DateParser::fromString($value->toString());
         if (!$date->isValid() || (int) $this->target->diff($date->toDateTime())->format('%r%a') <= 0) {
             $errors->addError(
-                $name,
+                $propertyName,
                 'en',
                 \sprintf(
                     'The property "%s" only accepts date after "%s", "%s" given.',
-                    $name,
+                    $propertyName,
                     $this->target->format(self::FORMAT),
                     $value->toTypedString()
                 )

@@ -22,9 +22,9 @@ final class DocumentProperty implements ReadOnlyProperty
         $this->definition = $definition;
     }
 
-    public function addConstraint(string $name, PropertyConstraint $constraint): void
+    public function addConstraint(PropertyConstraint $constraint): void
     {
-        $this->definition = $this->definition->addConstraint($name, $constraint);
+        $this->definition = $this->definition->addConstraint($constraint);
     }
 
     public function removeConstraint(string $name): void

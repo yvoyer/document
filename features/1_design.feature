@@ -53,9 +53,7 @@ Feature: Designing a document
       | 1         | Option 1     |
       | 2         | Option 2     |
       | 3         | Option 3     |
-    When I mark the property "List" as required on the document "Doc"
-    And I mark the property "List" as single option on the document "Doc"
+    When I mark the property "List" as requiring at least "2" options on the document "Doc"
     Then The property "List" of document "Doc" should have the following definition:
-      | type        | constraint    |
-      | custom-list | required      |
-      | custom-list | single-option |
+      | type        | constraint     |
+      | custom-list | required-count |

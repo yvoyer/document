@@ -2,7 +2,6 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Events;
 
-use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\DomainEvent\DomainEvent;
@@ -19,19 +18,10 @@ final class PropertyAdded implements DomainEvent
      */
     private $type;
 
-    /**
-     * @var PropertyConstraint
-     */
-    private $constraint;
-
-    public function __construct(
-        PropertyName $name,
-        PropertyType $type,
-        PropertyConstraint $constraint // todo remove ??
-    ) {
+    public function __construct(PropertyName $name, PropertyType $type)
+    {
         $this->name = $name;
         $this->type = $type;
-        $this->constraint = $constraint;
     }
 
     public function name(): PropertyName
@@ -42,10 +32,5 @@ final class PropertyAdded implements DomainEvent
     public function type(): PropertyType
     {
         return $this->type;
-    }
-
-    public function constraint(): PropertyConstraint
-    {
-        return $this->constraint;
     }
 }

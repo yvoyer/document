@@ -19,15 +19,20 @@ final class MinimumLength implements PropertyConstraint
         $this->length = $length;
     }
 
-    public function validate(string $name, RecordValue $value, ErrorList $errors): void
+    public function getName(): string
+    {
+        return 'minimum-length';
+    }
+
+    public function validate(string $propertyName, RecordValue $value, ErrorList $errors): void
     {
         if (\mb_strlen($value->toString()) < $this->length) {
             $errors->addError(
-                $name,
+                $propertyName,
                 'en',
                 \sprintf(
                     'Property "%s" is too short, expected a minimum of %s characters, "%s" given.',
-                    $name,
+                    $propertyName,
                     $this->length,
                     $value->toString()
                 )

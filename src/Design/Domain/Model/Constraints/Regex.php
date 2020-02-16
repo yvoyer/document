@@ -22,11 +22,16 @@ final class Regex implements PropertyConstraint
         $this->pattern = $pattern;
     }
 
-    public function validate(string $name, RecordValue $value, ErrorList $errors): void
+    public function getName(): string
+    {
+        return 'regex';
+    }
+
+    public function validate(string $propertyName, RecordValue $value, ErrorList $errors): void
     {
         if (! \preg_match($this->pattern, $value->toString())) {
             $errors->addError(
-                $name,
+                $propertyName,
                 'en',
                 \sprintf(
                     'Value "%s" do not match pattern "%s".',

@@ -8,8 +8,8 @@ use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstrainNotFound;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\PropertyParameter;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\Values\EmptyValue;
 
 final class PropertyDefinition
 {
@@ -27,6 +27,11 @@ final class PropertyDefinition
      * @var PropertyConstraint[]
      */
     private $constraints = [];
+
+    /**
+     * @var PropertyParameter[]
+     */
+    private $parameters = [];
 
     public function __construct(PropertyName $name, PropertyType $type)
     {
@@ -50,15 +55,21 @@ final class PropertyDefinition
             return;
         }
 
+        $visitor->enterConstraints($this->name);
         foreach ($this->constraints as $name => $constraint) {
             $visitor->visitPropertyConstraint($this->name, $name, $constraint);
         }
+
+        $visitor->enterParameters($this->name);
+        foreach ($this->parameters as $parameter) {
+            $visitor->visitParameter($this->name, $parameter);
+        }
     }
 
-    public function addConstraint(string $name, PropertyConstraint $constraint): PropertyDefinition
+    public function addConstraint(PropertyConstraint $constraint): PropertyDefinition
     {
         $new = $this->merge($this);
-        $new->constraints[$name] = $constraint;
+        $new->constraints[$constraint->getName()] = $constraint;
 
         return $new;
     }
@@ -93,6 +104,29 @@ final class PropertyDefinition
         return \array_keys($this->constraints);
     }
 
+    public function addParameter(PropertyParameter $parameter): PropertyDefinition
+    {
+        $new = $this->merge(new PropertyDefinition($this->name, $this->type));
+        $new->parameters[$parameter->getName()] = $parameter;
+
+        return $new;
+    }
+
+    public function hasParameter(string $name): bool
+    {
+        return \array_key_exists($name, $this->parameters);
+    }
+
+    public function createDefaultValue(): RecordValue
+    {
+        $default = $this->type->createDefaultValue();
+        foreach ($this->parameters as $parameterName => $parameter) {
+            $default = $parameter->onCreateDefaultValue($default);
+        }
+
+        return $default;
+    }
+
     public function validateValue(RecordValue $value, ErrorList $errors): void
     {
         foreach ($this->constraints as $constraint) {
@@ -113,7 +147,8 @@ final class PropertyDefinition
     public function merge(PropertyDefinition $definition): PropertyDefinition
     {
         $new = new self($this->name, $this->type);
-        $new->constraints = array_merge($this->constraints, $definition->constraints);
+        $new->constraints = \array_merge($this->constraints, $definition->constraints);
+        $new->parameters = \array_merge($this->parameters, $definition->parameters);
 
         return $new;
     }

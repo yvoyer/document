@@ -61,6 +61,11 @@ final class CustomListType implements PropertyType
         );
     }
 
+    public function createDefaultValue(): RecordValue
+    {
+        return new EmptyValue();
+    }
+
     public function toString(): string
     {
         return $this->typeName;

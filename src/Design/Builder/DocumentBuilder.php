@@ -8,7 +8,6 @@ use Star\Component\Document\DataEntry\Domain\Model\RecordAggregate;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\AlwaysThrowExceptionOnValidationErrors;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleValidationErrors;
-use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\DocumentAggregate;
@@ -70,8 +69,9 @@ final class DocumentBuilder
         return new NumberBuilder(PropertyName::fromString($name), $this->document, $this);
     }
 
-    public function createCustomList(string $name, string ...$options): CustomListBuilder
+    public function createCustomList(string $name, string $first, string ...$others): CustomListBuilder
     {
+        $options = \array_merge([$first], $others);
         $this->createProperty(
             $name,
             new Types\CustomListType(
@@ -121,11 +121,7 @@ final class DocumentBuilder
 
     public function createProperty(string $name, PropertyType $type): void
     {
-        $this->document->addProperty(
-            $name = PropertyName::fromString($name),
-            $type,
-            new NoConstraint()
-        );
+        $this->document->addProperty($name = PropertyName::fromString($name), $type);
     }
 
     public static function constraints(): ConstraintBuilder

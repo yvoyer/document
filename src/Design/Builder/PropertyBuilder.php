@@ -5,6 +5,7 @@ namespace Star\Component\Document\Design\Builder;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\PropertyParameter;
 
 abstract class PropertyBuilder
 {
@@ -33,9 +34,16 @@ abstract class PropertyBuilder
         $this->builder = $builder;
     }
 
-    public function withConstraint(string $name, PropertyConstraint $constraint): self
+    public function withConstraint(PropertyConstraint $constraint): self
     {
-        $this->document->addPropertyConstraint($this->name, $name, $constraint);
+        $this->document->addPropertyConstraint($this->name, $constraint);
+
+        return $this;
+    }
+
+    public function withParameter(PropertyParameter $parameter): self
+    {
+        $this->document->addPropertyParameter($this->name, $parameter);
 
         return $this;
     }
@@ -48,5 +56,10 @@ abstract class PropertyBuilder
     public function buildDocument(): DocumentDesigner
     {
         return $this->builder->getDocument();
+    }
+
+    protected function constraints(): ConstraintBuilder
+    {
+        return $this->builder::constraints();
     }
 }

@@ -4,9 +4,10 @@ namespace Star\Component\Document\Design\Domain\Model\Schema;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
+use Star\Component\Document\Design\Domain\Model\Constraints\ClosureConstraint;
 use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
-use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
+use Star\Component\Document\Design\Domain\Model\Parameters\NullParameter;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Types\NullType;
@@ -26,15 +27,16 @@ final class PropertyDefinitionTest extends TestCase
     {
         $definition = new PropertyDefinition(PropertyName::fromString('name'), new NullType());
         $new = $definition->addConstraint(
-            'const',
-            $constraint = $this->createMock(PropertyConstraint::class)
+            new ClosureConstraint(
+                'const',
+                function ($name, $value, ErrorList $errors) {
+                    $errors->addError($name, 'en', 'bad value');
+                }
+            )
         );
-        $this->assertInstanceOf(PropertyDefinition::class, $new);
-        $constraint
-            ->expects($this->once())
-            ->method('validate');
 
-        $new->validateValue(new EmptyValue(), new ErrorList());
+        $new->validateValue(new EmptyValue(), $errors = new ErrorList());
+        $this->assertTrue($errors->hasErrors());
     }
 
     public function test_it_should_use_the_name_of_the_callee_when_merging_definitions(): void
@@ -66,20 +68,16 @@ final class PropertyDefinitionTest extends TestCase
     public function test_it_should_merge_constraints_when_merging_definitions(): void
     {
         $callee = (new PropertyDefinition(PropertyName::fromString('callee'), new NullType()))
-            ->addConstraint(
-                'const',
-                $constraint = $this->createMock(PropertyConstraint::class)
-            );
+            ->addConstraint($constraint = ClosureConstraint::nullConstraint('const'));
         $argument = new PropertyDefinition(
             PropertyName::fromString('argument'),
-            $this->createMock(PropertyType::class)
+            new NullType()
         );
         $this->assertTrue($callee->hasConstraint('const'));
         $this->assertFalse($argument->hasConstraint('const'));
 
         $new = $callee->merge($argument);
 
-        $this->assertInstanceOf(PropertyDefinition::class, $new);
         $this->assertTrue($new->hasConstraint('const'));
         $this->assertSame($constraint, $new->getConstraint('const'));
     }
@@ -87,24 +85,15 @@ final class PropertyDefinitionTest extends TestCase
     public function test_it_should_use_the_given_definition_when_overriding_a_constraint_on_merge(): void
     {
         $callee = (new PropertyDefinition(PropertyName::fromString('callee'), new NullType()))
-            ->addConstraint(
-                'const',
-                $calleeConstraint = $this->createMock(PropertyConstraint::class)
-            );
-        $definition = new PropertyDefinition(
-            PropertyName::fromString('argument'),
-            $this->createMock(PropertyType::class)
-        );
-        $argument = $definition->addConstraint(
-            'const',
-            $argumentConstraint = $this->createMock(PropertyConstraint::class)
-        );
+            ->addConstraint($calleeConstraint = ClosureConstraint::nullConstraint('const'));
+        $definition = new PropertyDefinition(PropertyName::fromString('argument'), new NullType());
+        $argument = $definition->addConstraint($argumentConstraint = ClosureConstraint::nullConstraint('const'));
+
         $this->assertTrue($callee->hasConstraint('const'));
         $this->assertTrue($argument->hasConstraint('const'));
 
         $new = $callee->merge($argument);
 
-        $this->assertInstanceOf(PropertyDefinition::class, $new);
         $this->assertTrue($new->hasConstraint('const'));
         $this->assertSame($argumentConstraint, $new->getConstraint('const'));
     }
@@ -115,7 +104,7 @@ final class PropertyDefinitionTest extends TestCase
         /**
          * @var PropertyDefinition $definition
          */
-        $definition = $definition->addConstraint('const', new NoConstraint());
+        $definition = $definition->addConstraint(new NoConstraint());
 
         $visitor = $this->createMock(DocumentVisitor::class);
         $visitor
@@ -126,5 +115,16 @@ final class PropertyDefinitionTest extends TestCase
             ->expects($this->never())
             ->method('visitPropertyConstraint');
         $definition->acceptDocumentVisitor($visitor);
+    }
+
+    public function test_it_should_add_parameter(): void
+    {
+        $definition = new PropertyDefinition(PropertyName::fixture(), new NullType());
+        $this->assertFalse($definition->hasParameter('name'));
+
+        $new = $definition->addParameter(new NullParameter('name'));
+
+        $this->assertTrue($new->hasParameter('name'));
+        $this->assertFalse($definition->hasParameter('name'));
     }
 }

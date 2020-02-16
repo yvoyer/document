@@ -25,20 +25,29 @@ final class ConstraintBuilder
 
     public function betweenDate(string $startDate, string $endDate): PropertyConstraint
     {
-        return new Constraints\All(
-            $this->afterDate($startDate),
-            $this->beforeDate($endDate)
-        );
+        return new Constraints\BetweenDate($startDate, $endDate);
     }
 
-    public function singleOption(): PropertyConstraint
+    public function requiresOptionCount(int $count): PropertyConstraint
     {
-        return new Constraints\RequiresSingleOption();
+        return new Constraints\RequiresOptionCount($count);
     }
 
     public function dateFormat(string $format): PropertyConstraint
     {
         return new Constraints\DateFormat($format);
+    }
+
+    public function numberFormat(
+        int $decimal = 2,
+        string $decimalPoint = '.',
+        string $thousandSeparator = ','
+    ): PropertyConstraint {
+        return new Constraints\NumberFormat(
+            $decimal,
+            $decimalPoint,
+            $thousandSeparator
+        );
     }
 
     /**

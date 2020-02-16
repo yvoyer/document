@@ -15,9 +15,15 @@ interface DocumentVisitor
      */
     public function visitProperty(PropertyName $name, PropertyType $type): bool;
 
+    public function enterConstraints(PropertyName $propertyName): void;
+
     public function visitPropertyConstraint(
         PropertyName $propertyName,
         string $constraintName,
         PropertyConstraint $constraint
     ): void;
+
+    public function enterParameters(PropertyName $propertyName): void;
+
+    public function visitParameter(PropertyName $propertyName, PropertyParameter $parameter): void;
 }

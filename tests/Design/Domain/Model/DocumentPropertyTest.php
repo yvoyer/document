@@ -3,6 +3,8 @@
 namespace Star\Component\Document\Design\Domain\Model;
 
 use PHPUnit\Framework\TestCase;
+use Star\Component\Document\Design\Domain\Model\Constraints\All;
+use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
 use Star\Component\Document\Design\Domain\Model\Schema\PropertyDefinition;
 use Star\Component\Document\Design\Domain\Model\Types\NullType;
 
@@ -31,7 +33,7 @@ final class DocumentPropertyTest extends TestCase
     {
         $this->assertFalse($this->property->getDefinition()->hasConstraint('name'));
 
-        $this->property->addConstraint('name', $this->createMock(PropertyConstraint::class));
+        $this->property->addConstraint(new All('name', new NoConstraint()));
 
         $this->assertTrue($this->property->getDefinition()->hasConstraint('name'));
 

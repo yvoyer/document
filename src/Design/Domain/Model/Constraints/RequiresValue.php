@@ -8,15 +8,20 @@ use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 
 final class RequiresValue implements PropertyConstraint
 {
-    public function validate(string $name, RecordValue $value, ErrorList $errors): void
+    public function getName(): string
+    {
+        return 'required';
+    }
+
+    public function validate(string $propertyName, RecordValue $value, ErrorList $errors): void
     {
         if ($value->isEmpty()) {
             $errors->addError(
-                $name,
+                $propertyName,
                 'en',
                 \sprintf(
                     'Property named "%s" is required, but "%s" given.',
-                    $name,
+                    $propertyName,
                     $value->toTypedString()
                 )
             );

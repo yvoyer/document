@@ -18,6 +18,11 @@ final class NullType implements PropertyType
         return new EmptyValue();
     }
 
+    public function createDefaultValue(): RecordValue
+    {
+        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+    }
+
     public function toData(): TypeData
     {
         return new TypeData(self::class);

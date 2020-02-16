@@ -22,12 +22,17 @@ final class BeforeDate implements PropertyConstraint
         $this->target = new \DateTimeImmutable($target);
     }
 
+    public function getName(): string
+    {
+        return 'before-date';
+    }
+
     /**
-     * @param string $name
+     * @param string $propertyName
      * @param RecordValue|DateValue $value
      * @param ErrorList $errors
      */
-    public function validate(string $name, RecordValue $value, ErrorList $errors): void
+    public function validate(string $propertyName, RecordValue $value, ErrorList $errors): void
     {
         if ($value->isEmpty()) {
             return;
@@ -36,11 +41,11 @@ final class BeforeDate implements PropertyConstraint
         $date = DateParser::fromString($value->toString());
         if ($date->diff($this->target, '%r%a') >= 0) {
             $errors->addError(
-                $name,
+                $propertyName,
                 'en',
                 \sprintf(
                     'The property "%s" only accepts date before "%s", "%s" given.',
-                    $name,
+                    $propertyName,
                     $this->target->format(self::FORMAT),
                     $value->toTypedString()
                 )

@@ -2,13 +2,18 @@
 
 namespace Star\Component\Document\Design\Builder;
 
-use Star\Component\Document\Design\Domain\Model\Constraints\RequiresValue;
-
 final class StringBuilder extends PropertyBuilder
 {
+    public function matchesRegex(string $pattern): self
+    {
+        $this->withConstraint($this->constraints()->regex($pattern));
+
+        return $this;
+    }
+
     public function required(): self
     {
-        $this->withConstraint('required', new RequiresValue());
+        $this->withConstraint($this->constraints()->required());
 
         return $this;
     }

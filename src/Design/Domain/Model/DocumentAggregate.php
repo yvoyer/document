@@ -41,17 +41,30 @@ final class DocumentAggregate extends AggregateRoot implements DocumentDesigner
         $this->mutate(new Events\DocumentPublished($this->getIdentity()));
     }
 
-    public function addProperty(PropertyName $name, PropertyType $type, PropertyConstraint $constraint): void
-    {
-        $this->mutate(new Events\PropertyAdded($name, $type, $constraint));
+    public function addProperty(
+        PropertyName $name,
+        PropertyType $type,
+        PropertyConstraint $constraint = null,
+        PropertyParameter $parameter = null
+    ): void {
+        $this->mutate(new Events\PropertyAdded($name, $type));
+        if ($constraint instanceof PropertyConstraint) {
+            $this->addPropertyConstraint($name, $constraint);
+        }
+
+        if ($parameter instanceof PropertyParameter) {
+            $this->addPropertyParameter($name, $parameter);
+        }
     }
 
-    public function addPropertyConstraint(
-        PropertyName $name,
-        string $constraintName,
-        PropertyConstraint $constraint
-    ): void {
-        $this->schema->addConstraint($name->toString(), $constraintName, $constraint);
+    public function addPropertyConstraint(PropertyName $name, PropertyConstraint $constraint): void
+    {
+        $this->schema->addConstraint($name->toString(), $constraint);
+    }
+
+    public function addPropertyParameter(PropertyName $name, PropertyParameter $parameter): void
+    {
+        $this->mutate(new Events\PropertyParameterAdded($this->getIdentity(), $name, $parameter));
     }
 
     public function setDocumentConstraint(DocumentConstraint $constraint): void
@@ -105,6 +118,11 @@ final class DocumentAggregate extends AggregateRoot implements DocumentDesigner
     protected function onDocumentConstraintRegistered(Events\DocumentConstraintRegistered $event): void
     {
         $this->constraint = $event->constraint();
+    }
+
+    protected function onPropertyParameterAdded(Events\PropertyParameterAdded $event): void
+    {
+        $this->schema->addParameter($event->property()->toString(), $event->parameter());
     }
 
     public static function draft(DocumentId $id): self

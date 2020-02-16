@@ -28,6 +28,11 @@ final class NumberType implements PropertyType
         return FloatValue::fromString($rawValue->toString());
     }
 
+    public function createDefaultValue(): RecordValue
+    {
+        return new EmptyValue();
+    }
+
     public function toData(): TypeData
     {
         return new TypeData(self::class);

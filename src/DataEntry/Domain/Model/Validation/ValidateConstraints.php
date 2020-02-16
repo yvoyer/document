@@ -7,6 +7,7 @@ use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\PropertyParameter;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 
 final class ValidateConstraints implements DocumentVisitor
@@ -45,11 +46,24 @@ final class ValidateConstraints implements DocumentVisitor
         return ! $name->matchName($this->property);
     }
 
+    public function enterConstraints(PropertyName $propertyName): void
+    {
+    }
+
     public function visitPropertyConstraint(
         PropertyName $propertyName,
         string $constraintName,
         PropertyConstraint $constraint
     ): void {
         $constraint->validate($propertyName->toString(), $this->value, $this->errors);
+    }
+
+    public function enterParameters(PropertyName $propertyName): void
+    {
+    }
+
+    public function visitParameter(PropertyName $propertyName, PropertyParameter $parameter): void
+    {
+        $parameter->validate($propertyName->toString(), $this->value, $this->errors);
     }
 }

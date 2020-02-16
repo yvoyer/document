@@ -16,6 +16,8 @@ interface PropertyType
      */
     public function createValue(string $propertyName, RawValue $rawValue): RecordValue;
 
+    public function createDefaultValue(): RecordValue;
+
     public function toData(): TypeData;
 
     public function toString(): string;
