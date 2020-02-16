@@ -47,6 +47,10 @@ final class ClosureConstraint implements PropertyConstraint
 
     public static function nullConstraint(string $name = 'closure'): self
     {
-        return new self($name, function () {});
+        return new self(
+            $name,
+            function () {
+            }
+        );
     }
 }

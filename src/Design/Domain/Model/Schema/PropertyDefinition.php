@@ -55,10 +55,12 @@ final class PropertyDefinition
             return;
         }
 
+        $visitor->enterConstraints($this->name);
         foreach ($this->constraints as $name => $constraint) {
             $visitor->visitPropertyConstraint($this->name, $name, $constraint);
         }
 
+        $visitor->enterParameters($this->name);
         foreach ($this->parameters as $parameter) {
             $visitor->visitParameter($this->name, $parameter);
         }
@@ -113,6 +115,16 @@ final class PropertyDefinition
     public function hasParameter(string $name): bool
     {
         return \array_key_exists($name, $this->parameters);
+    }
+
+    public function createDefaultValue(): RecordValue
+    {
+        $default = $this->type->createDefaultValue();
+        foreach ($this->parameters as $parameterName => $parameter) {
+            $default = $parameter->onCreateDefaultValue($default);
+        }
+
+        return $default;
     }
 
     public function validateValue(RecordValue $value, ErrorList $errors): void

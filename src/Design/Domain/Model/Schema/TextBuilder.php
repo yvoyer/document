@@ -30,7 +30,7 @@ final class TextBuilder
 
     public function required(): self
     {
-        $this->schema->addConstraint($this->property, 'required', new RequiresValue());
+        $this->schema->addConstraint($this->property, new RequiresValue());
 
         return $this;
     }

@@ -2,8 +2,9 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Parameters;
 
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\PropertyParameter;
-use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 
 final class NullParameter implements PropertyParameter
 {
@@ -17,9 +18,14 @@ final class NullParameter implements PropertyParameter
         $this->name = $name;
     }
 
+    public function validate(string $propertyName, RecordValue $value, ErrorList $errors): void
+    {
+        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+    }
+
     public function toParameterData(): ParameterData
     {
-        return new ParameterData($this->getName(), self::class);
+        return ParameterData::fromParameter($this, ['name' => $this->name]);
     }
 
     public function getName(): string
@@ -27,13 +33,13 @@ final class NullParameter implements PropertyParameter
         return $this->name;
     }
 
-    public function onAdd(DocumentSchema $schema): void
+    public function onCreateDefaultValue(RecordValue $value): RecordValue
     {
-        // do nothing
+        return $value;
     }
 
     public static function fromParameterData(ParameterData $data): PropertyParameter
     {
-        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+        return new self($data->getArgument('name'));
     }
 }

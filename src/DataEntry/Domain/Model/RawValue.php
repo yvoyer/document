@@ -80,6 +80,11 @@ final class RawValue
         return $this->value->toTypedString();
     }
 
+    public function toRecordValue(): RecordValue
+    {
+        return $this->value;
+    }
+
     public static function fromBoolean(bool $value): self
     {
         return new self(new BooleanValue($value));

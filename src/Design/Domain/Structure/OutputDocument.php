@@ -25,9 +25,13 @@ final class OutputDocument implements DocumentVisitor
                 $type->toString()
             )
         );
-        $this->writeLine('  Constraints:');
 
         return false;
+    }
+
+    public function enterConstraints(PropertyName $propertyName): void
+    {
+        $this->writeLine('  Constraints:');
     }
 
     public function visitPropertyConstraint(
@@ -44,9 +48,20 @@ final class OutputDocument implements DocumentVisitor
         );
     }
 
+    public function enterParameters(PropertyName $propertyName): void
+    {
+        $this->writeLine('  Parameters:');
+    }
+
     public function visitParameter(PropertyName $propertyName, PropertyParameter $parameter): void
     {
-        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+        $this->writeLine(
+            \sprintf(
+                '    - %s(%s)',
+                $parameter->getName(),
+                \json_encode($parameter->toParameterData()->toArray()['arguments'])
+            )
+        );
     }
 
     protected function writeLine(string $text): void

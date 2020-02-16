@@ -9,18 +9,24 @@ use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 final class All implements PropertyConstraint
 {
     /**
+     * @var string
+     */
+    private $name;
+
+    /**
      * @var PropertyConstraint[]
      */
     private $constraints;
 
-    public function __construct(PropertyConstraint $first, PropertyConstraint ...$constraints)
+    public function __construct(string $name, PropertyConstraint $first, PropertyConstraint ...$constraints)
     {
+        $this->name = $name;
         $this->constraints = \array_merge([$first], $constraints);
     }
 
     public function getName(): string
     {
-        throw new \RuntimeException(__METHOD__ . ' not implemented');
+        return $this->name;
     }
 
     public function validate(string $propertyName, RecordValue $value, ErrorList $errors): void
@@ -34,18 +40,22 @@ final class All implements PropertyConstraint
     {
         return new ConstraintData(
             self::class,
-            \array_map(
-                function (PropertyConstraint $constraint) {
-                    return $constraint->toData()->toArray();
-                },
-                $this->constraints
-            )
+            [
+                'name' => $this->name,
+                'constraints' => \array_map(
+                    function (PropertyConstraint $constraint) {
+                        return $constraint->toData()->toArray();
+                    },
+                    $this->constraints
+                ),
+            ]
         );
     }
 
     public static function fromData(ConstraintData $data): PropertyConstraint
     {
         return new self(
+            $data->getArgument('name'),
             ...\array_map(
                 function (array $constraint) {
                     /**
@@ -54,7 +64,7 @@ final class All implements PropertyConstraint
                     $class = $constraint['class'];
                     return $class::fromData(new ConstraintData($constraint['class'], $constraint['arguments']));
                 },
-                $data->toArray()['arguments']
+                $data->getArgument('constraints')
             )
         );
     }

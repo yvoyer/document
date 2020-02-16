@@ -23,6 +23,11 @@ final class StringType implements PropertyType
         return StringValue::fromString($rawValue->toString());
     }
 
+    public function createDefaultValue(): RecordValue
+    {
+        return StringValue::fromString('');
+    }
+
     public function toData(): TypeData
     {
         return new TypeData(self::class);

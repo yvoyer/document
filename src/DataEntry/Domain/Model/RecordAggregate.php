@@ -4,7 +4,6 @@ namespace Star\Component\Document\DataEntry\Domain\Model;
 
 use Assert\Assertion;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\DataEntry\Domain\Exception\UndefinedProperty;
 use Star\Component\Document\DataEntry\Domain\Model\Events;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\AlwaysThrowExceptionOnValidationErrors;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
@@ -96,8 +95,9 @@ final class RecordAggregate extends AggregateRoot implements DocumentRecord
 
     public function getValue(string $propertyName): RecordValue
     {
-        if (! $this->hasProperty($propertyName)) {
-            throw new UndefinedProperty($propertyName);
+        $property = $this->schema->getDefinition($propertyName);
+        if (! $this->hasValue($propertyName)) {
+            $this->values[$propertyName] = $property->createDefaultValue();
         }
 
         return $this->values[$propertyName];
@@ -109,8 +109,8 @@ final class RecordAggregate extends AggregateRoot implements DocumentRecord
         $this->schema = DocumentSchema::fromString($event->schema());
     }
 
-    private function hasProperty(string $propertyName): bool
+    private function hasValue(string $propertyName): bool
     {
-        return isset($this->values[$propertyName]);
+        return \array_key_exists($propertyName, $this->values);
     }
 }

@@ -12,6 +12,7 @@ final class AllTest extends TestCase
     public function test_it_should_validate_all_constraints(): void
     {
         $constraint = new All(
+            'const',
             $c1 = $this->createMock(PropertyConstraint::class),
             $c2 = $this->createMock(PropertyConstraint::class),
             $c3 = $this->createMock(PropertyConstraint::class)
@@ -31,7 +32,7 @@ final class AllTest extends TestCase
 
     public function test_it_should_be_build_from_constraint_data(): void
     {
-        $source = new All(new NoConstraint(), new NoConstraint());
+        $source = new All('const', new NoConstraint(), new NoConstraint());
         $this->assertEquals($source, All::fromData($source->toData()));
     }
 }

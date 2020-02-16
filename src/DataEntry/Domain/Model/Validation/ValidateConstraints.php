@@ -46,6 +46,10 @@ final class ValidateConstraints implements DocumentVisitor
         return ! $name->matchName($this->property);
     }
 
+    public function enterConstraints(PropertyName $propertyName): void
+    {
+    }
+
     public function visitPropertyConstraint(
         PropertyName $propertyName,
         string $constraintName,
@@ -54,8 +58,12 @@ final class ValidateConstraints implements DocumentVisitor
         $constraint->validate($propertyName->toString(), $this->value, $this->errors);
     }
 
+    public function enterParameters(PropertyName $propertyName): void
+    {
+    }
+
     public function visitParameter(PropertyName $propertyName, PropertyParameter $parameter): void
     {
-        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+        $parameter->validate($propertyName->toString(), $this->value, $this->errors);
     }
 }

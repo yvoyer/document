@@ -315,7 +315,7 @@ class FeatureContext implements Context
         TableNode $table
     ) {
         $this->iCreateACustomListFieldNamedInDocumentWithTheFollowingOptions($property, $documentId, $table);
-        $this->iMarkThePropertyAsSingleOptionOnTheDocument($property, $documentId);
+        $this->iMarkThePropertyAsRequiredOnTheDocument($property, $documentId);
     }
 
     /**
@@ -335,7 +335,6 @@ class FeatureContext implements Context
                 new AddPropertyConstraint(
                     $documentId,
                     $propertyName,
-                    $name,
                     DocumentBuilder::constraints()->fromString($name, $value)
                 )
             );
@@ -351,23 +350,21 @@ class FeatureContext implements Context
             new AddPropertyConstraint(
                 DocumentId::fromString($documentId),
                 PropertyName::fromString($fieldId),
-                'required',
                 DocumentBuilder::constraints()->required()
             )
         );
     }
 
     /**
-     * @When I mark the property :arg1 as single option on the document :arg2
+     * @When I mark the property :arg1 as requiring at least :arg2 options on the document :arg3
      */
-    public function iMarkThePropertyAsSingleOptionOnTheDocument(string $fieldId, string $documentId)
+    public function iMarkThePropertyAsRequiringAtLeastOptionsOnTheDocument(string $fieldId, string $count, string $documentId)
     {
         $this->bus->dispatchCommand(
             new AddPropertyConstraint(
                 DocumentId::fromString($documentId),
                 PropertyName::fromString($fieldId),
-                'single-option',
-                DocumentBuilder::constraints()->singleOption()
+                DocumentBuilder::constraints()->requiresOptionCount((int) $count)
             )
         );
     }
@@ -466,16 +463,16 @@ class FeatureContext implements Context
      */
     public function thePropertyOfDocumentShouldHaveTheFollowingDefinition($property, $documentId, TableNode $table)
     {
+        $definition = $this->getDocument($documentId)->getPropertyDefinition(PropertyName::fromString($property));
+        var_dump($definition);
         foreach ($table->getHash() as $options) {
             Assert::assertSame(
                 $options['type'],
-                $this->getDocument($documentId)
-                    ->getPropertyDefinition(PropertyName::fromString($property))
+                $definition
                     ->getType()->toString()
             );
             Assert::assertTrue(
-                $this->getDocument($documentId)
-                    ->getPropertyDefinition(PropertyName::fromString($property))
+                $definition
                     ->hasConstraint($options['constraint'])
             );
         }

@@ -2,14 +2,20 @@
 
 namespace Star\Component\Document\Design\Builder;
 
-use Star\Component\Document\Design\Domain\Model\Constraints;
 use Star\Component\Document\Design\Domain\Model\Parameters;
 
 final class CustomListBuilder extends PropertyBuilder
 {
     public function required(): self
     {
-        $this->withConstraint(new Constraints\RequiresValue());
+        $this->requiresOptions(1);
+
+        return $this;
+    }
+
+    public function requiresOptions(int $count): self
+    {
+        $this->withConstraint($this->constraints()->requiresOptionCount($count));
 
         return $this;
     }

@@ -19,9 +19,12 @@ $document->acceptDocumentVisitor(new OutputDocument())
 Document: "All num"
 Property: Int (number)
   Constraints:
+  Parameters:
 Property: Required (number)
   Constraints:
     - required([])
+  Parameters:
 Property: Float (number)
   Constraints:
-    - float({"decimal":2,"point":".","thousands_separator":","})
+    - number-format({"decimal":2,"point":".","thousands_separator":","})
+  Parameters:

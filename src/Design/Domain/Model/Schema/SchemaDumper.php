@@ -39,9 +39,13 @@ final class SchemaDumper implements DocumentVisitor
     public function visitProperty(PropertyName $name, PropertyType $type): bool
     {
         $this->data[self::INDEX_PROPERTIES][$name->toString()][self::INDEX_TYPE] = $type->toData()->toArray();
-        $this->data[self::INDEX_PROPERTIES][$name->toString()][self::INDEX_CONSTRAINTS] = [];
 
         return false;
+    }
+
+    public function enterConstraints(PropertyName $propertyName): void
+    {
+        $this->data[self::INDEX_PROPERTIES][$propertyName->toString()][self::INDEX_CONSTRAINTS] = [];
     }
 
     public function visitPropertyConstraint(
@@ -54,9 +58,15 @@ final class SchemaDumper implements DocumentVisitor
         $this->data[self::INDEX_PROPERTIES][$property][self::INDEX_CONSTRAINTS][$constraintName] = $constraintData;
     }
 
+    public function enterParameters(PropertyName $propertyName): void
+    {
+        $this->data[self::INDEX_PROPERTIES][$propertyName->toString()][self::INDEX_PARAMETERS] = [];
+    }
+
     public function visitParameter(PropertyName $propertyName, PropertyParameter $parameter): void
     {
         $parameterData = $parameter->toParameterData()->toArray();
-        $this->data[self::INDEX_PROPERTIES][$propertyName->toString()][self::INDEX_PARAMETERS][$parameter->getName()] = $parameterData;
+        $this->data[self::INDEX_PROPERTIES][$propertyName->toString()][self::INDEX_PARAMETERS][$parameter->getName()]
+            = $parameterData;
     }
 }

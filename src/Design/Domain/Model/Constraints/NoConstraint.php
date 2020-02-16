@@ -10,16 +10,6 @@ use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 
 final class NoConstraint implements PropertyConstraint, DocumentConstraint
 {
-    /**
-     * @var string
-     */
-    private $name;
-
-    public function __construct(string $name = 'no-constraint')
-    {
-        $this->name = $name;
-    }
-
     public function validate(string $propertyName, RecordValue $value, ErrorList $errors): void
     {
     }
@@ -30,16 +20,16 @@ final class NoConstraint implements PropertyConstraint, DocumentConstraint
 
     public function getName(): string
     {
-        return $this->name;
+        return 'no-constraint';
     }
 
     public function toData(): ConstraintData
     {
-        return new ConstraintData(self::class, ['name' => $this->name]);
+        return new ConstraintData(self::class);
     }
 
     public static function fromData(ConstraintData $data): PropertyConstraint
     {
-        return new self($data->getArgument('name'));
+        return new self();
     }
 }

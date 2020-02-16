@@ -4,6 +4,7 @@ namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Design\Builder\DocumentBuilder;
+use Star\Component\Document\Design\Domain\Model\Constraints\All;
 use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
@@ -42,7 +43,7 @@ final class AddPropertyConstraintHandlerTest extends TestCase
             new AddPropertyConstraint(
                 $document->getIdentity(),
                 $name,
-                new NoConstraint('const')
+                new All('const', new NoConstraint())
             )
         );
 

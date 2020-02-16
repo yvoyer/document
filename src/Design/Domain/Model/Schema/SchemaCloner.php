@@ -37,12 +37,20 @@ final class SchemaCloner implements DocumentVisitor
         return false;
     }
 
+    public function enterConstraints(PropertyName $propertyName): void
+    {
+    }
+
     public function visitPropertyConstraint(
         PropertyName $propertyName,
         string $constraintName,
         PropertyConstraint $constraint
     ): void {
         $this->schema->addConstraint($propertyName->toString(), $constraint);
+    }
+
+    public function enterParameters(PropertyName $propertyName): void
+    {
     }
 
     public function visitParameter(PropertyName $propertyName, PropertyParameter $parameter): void

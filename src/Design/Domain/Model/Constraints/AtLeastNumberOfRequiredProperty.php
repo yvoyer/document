@@ -41,11 +41,21 @@ final class AtLeastNumberOfRequiredProperty implements DocumentVisitor, Document
         return false;
     }
 
+    public function enterConstraints(PropertyName $propertyName): void
+    {
+        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+    }
+
     public function visitPropertyConstraint(
         PropertyName $propertyName,
         string $constraintName,
         PropertyConstraint $constraint
     ): void {
+    }
+
+    public function enterParameters(PropertyName $propertyName): void
+    {
+        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
     }
 
     public function visitParameter(PropertyName $propertyName, PropertyParameter $parameter): void

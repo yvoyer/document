@@ -6,27 +6,26 @@ use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\PropertyParameter;
 
-final class ClosureParameter implements PropertyParameter
+final class BooleanLabel implements PropertyParameter
 {
     /**
      * @var string
      */
-    private $name;
+    private $trueLabel;
 
     /**
-     * @var \Closure
+     * @var string
      */
-    private $closure;
+    private $falseLabel;
 
-    public function __construct(string $name, \Closure $closure)
+    public function __construct(string $trueLabel, string $falseLabel)
     {
-        $this->name = $name;
-        $this->closure = $closure;
+        $this->trueLabel = $trueLabel;
+        $this->falseLabel = $falseLabel;
     }
 
     public function validate(string $propertyName, RecordValue $value, ErrorList $errors): void
     {
-        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
     }
 
     public function toParameterData(): ParameterData
@@ -34,15 +33,15 @@ final class ClosureParameter implements PropertyParameter
         return ParameterData::fromParameter(
             $this,
             [
-                'name' => $this->name,
-                'closure' => $this->closure,
+                'true-label' => $this->trueLabel,
+                'false-label' => $this->falseLabel,
             ]
         );
     }
 
     public function getName(): string
     {
-        return $this->name;
+        return 'label';
     }
 
     public function onCreateDefaultValue(RecordValue $value): RecordValue
@@ -53,8 +52,8 @@ final class ClosureParameter implements PropertyParameter
     public static function fromParameterData(ParameterData $data): PropertyParameter
     {
         return new self(
-            $data->getArgument('name'),
-            $data->getArgument('closure')
+            $data->getArgument('true-label'),
+            $data->getArgument('false-label')
         );
     }
 }

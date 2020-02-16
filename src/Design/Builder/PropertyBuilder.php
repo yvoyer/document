@@ -57,4 +57,9 @@ abstract class PropertyBuilder
     {
         return $this->builder->getDocument();
     }
+
+    protected function constraints(): ConstraintBuilder
+    {
+        return $this->builder::constraints();
+    }
 }

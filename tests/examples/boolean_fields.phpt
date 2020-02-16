@@ -9,6 +9,7 @@ use Star\Component\Document\Design\Domain\Structure\OutputDocument;
 require __DIR__ . '/../../vendor/autoload.php';
 
 $document = DocumentBuilder::createDocument('All boolean')
+    ->createBoolean('Optional')->endProperty()
     ->createBoolean('Required')->required()->endProperty()
     ->createBoolean('Labels')->labeled('True', 'False')->endProperty()
     ->createBoolean('Default')->defaultValue(true)->endProperty()
@@ -17,12 +18,18 @@ $document->acceptDocumentVisitor(new OutputDocument())
 ?>
 --EXPECTF--
 Document: "All boolean"
+Property: Optional (boolean)
+  Constraints:
+  Parameters:
 Property: Required (boolean)
   Constraints:
     - required([])
+  Parameters:
 Property: Labels (boolean)
+  Constraints:
   Parameters:
-    - label({"true":"True","false":"False"}})
+    - label({"true-label":"True","false-label":"False"})
 Property: Default (boolean)
+  Constraints:
   Parameters:
-    - default({"value":boolean(true)})
+    - default-value({"value":"true"})

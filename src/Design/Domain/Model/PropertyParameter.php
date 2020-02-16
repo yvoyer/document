@@ -2,16 +2,16 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\Parameters\ParameterData;
-use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 
-interface PropertyParameter
+interface PropertyParameter extends CanBeValidated
 {
     public function toParameterData(): ParameterData;
 
     public function getName(): string;
 
-    public function onAdd(DocumentSchema $schema): void;
+    public function onCreateDefaultValue(RecordValue $value): RecordValue;
 
     public static function fromParameterData(ParameterData $data): PropertyParameter;
 }

@@ -42,7 +42,7 @@ final class DocumentAggregateTest extends TestCase
         $this->document->acceptDocumentVisitor($visitor = new PropertyExtractor());
         $this->assertFalse($visitor->hasProperty($name->toString()));
 
-        $this->document->addProperty($name, new NullType(), new Constraints\NoConstraint());
+        $this->document->addProperty($name, new NullType());
 
         $this->document->acceptDocumentVisitor($visitor = new PropertyExtractor());
         $this->assertTrue($visitor->hasProperty($name->toString()));
@@ -62,11 +62,7 @@ final class DocumentAggregateTest extends TestCase
 
     public function test_it_should_visit_the_document_properties(): void
     {
-        $this->document->addProperty(
-            PropertyName::fixture(),
-            new NullType(),
-            new Constraints\NoConstraint()
-        );
+        $this->document->addProperty(PropertyName::fixture(), new NullType());
         $visitor = $this->createMock(DocumentVisitor::class);
         $visitor
             ->expects($this->once())
@@ -82,7 +78,7 @@ final class DocumentAggregateTest extends TestCase
 
         $this->assertFalse($this->document->getPropertyDefinition($name)->hasConstraint('const'));
 
-        $constraint = new Constraints\NoConstraint('const');
+        $constraint = new Constraints\All('const', new Constraints\NoConstraint());
         $this->document->addPropertyConstraint($name, $constraint);
 
         $this->assertTrue($this->document->getPropertyDefinition($name)->hasConstraint('const'));
@@ -106,7 +102,8 @@ final class DocumentAggregateTest extends TestCase
         $this->assertSame($constraint, $this->document->getConstraint());
     }
 
-    public function test_it_should_add_a_parameter_on_the_property(): void {
+    public function test_it_should_add_a_parameter_on_the_property(): void
+    {
         $name = PropertyName::fixture();
         $this->document->addProperty($name, new NullType());
 

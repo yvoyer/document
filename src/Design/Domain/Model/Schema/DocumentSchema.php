@@ -5,6 +5,7 @@ namespace Star\Component\Document\Design\Domain\Model\Schema;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\Constraints\ConstraintData;
 use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
+use Star\Component\Document\Design\Domain\Model\Parameters\ParameterData;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyParameter;
@@ -88,22 +89,28 @@ final class DocumentSchema
     {
         $data = \json_decode($string, true);
         $schema = new DocumentSchema(DocumentId::fromString($data[SchemaDumper::INDEX_ID]));
-        foreach ($data[SchemaDumper::INDEX_PROPERTIES] as $name => $property) {
-            $schema->addProperty($name, TypeData::fromArray($property[SchemaDumper::INDEX_TYPE])->createType());
+        foreach ($data[SchemaDumper::INDEX_PROPERTIES] as $propertyName => $propertyData) {
+            $schema->addProperty(
+                $propertyName,
+                TypeData::fromArray($propertyData[SchemaDumper::INDEX_TYPE])->createType()
+            );
 
-            foreach ($property[SchemaDumper::INDEX_CONSTRAINTS] as $constraintName => $constraintData) {
+            foreach ($propertyData[SchemaDumper::INDEX_CONSTRAINTS] as $constraintName => $constraintData) {
                 $schema->addConstraint(
-                    $name,
+                    $propertyName,
                     ConstraintData::fromArray($constraintData)->createConstraint()
                 );
             }
 
-            if (! \array_key_exists(SchemaDumper::INDEX_PARAMETERS, $property)) {
-                $property[SchemaDumper::INDEX_PARAMETERS] = [];
+            if (! \array_key_exists(SchemaDumper::INDEX_PARAMETERS, $propertyData)) {
+                $propertyData[SchemaDumper::INDEX_PARAMETERS] = [];
             }
 
-            foreach ($property[SchemaDumper::INDEX_PARAMETERS] as $parameterName => $parameter) {
-                $schema->addParameter($parameterName, $parameter);
+            foreach ($propertyData[SchemaDumper::INDEX_PARAMETERS] as $parameterName => $parameterData) {
+                $schema->addParameter(
+                    $propertyName,
+                    ParameterData::fromArray($parameterData)->createParameter()
+                );
             }
         }
 

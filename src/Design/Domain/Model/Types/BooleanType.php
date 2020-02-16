@@ -43,6 +43,11 @@ final class BooleanType implements PropertyType
         return BooleanValue::fromString($rawValue->toString());
     }
 
+    public function createDefaultValue(): RecordValue
+    {
+        return BooleanValue::falseValue();
+    }
+
     public function toData(): TypeData
     {
         return new TypeData(self::class);

@@ -28,6 +28,11 @@ final class DateType implements PropertyType
         throw InvalidPropertyValue::invalidValueForType($propertyName, $this->toString(), $rawValue);
     }
 
+    public function createDefaultValue(): RecordValue
+    {
+        return new EmptyValue();
+    }
+
     public function toData(): TypeData
     {
         return new TypeData(self::class);

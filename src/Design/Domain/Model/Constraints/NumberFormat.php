@@ -85,6 +85,10 @@ final class NumberFormat implements PropertyConstraint
 
     public static function fromData(ConstraintData $data): PropertyConstraint
     {
-        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+        return new self(
+            $data->getArgument('decimal'),
+            $data->getArgument('point'),
+            $data->getArgument('thousands_separator')
+        );
     }
 }

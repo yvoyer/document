@@ -9,22 +9,22 @@ use Star\Component\Document\Design\Domain\Structure\OutputDocument;
 require __DIR__ . '/../../vendor/autoload.php';
 
 $document = DocumentBuilder::createDocument('All lists')
-    ->createCustomList('Required')->required()->endProperty()
-    ->createCustomList('Allow multi-option')->allowMultiple()->endProperty()
+    ->createCustomList('Optional', 'option 1')->endProperty()
+    ->createCustomList('Required', 'option 1')->required()->endProperty()
+    ->createCustomList('Allow multi-option', 'option 2')->allowMultiOption()->endProperty()
     ->getDocument();
 $document->acceptDocumentVisitor(new OutputDocument())
 ?>
 --EXPECTF--
-Document: "All dates"
-Property: Format (date)
+Document: "All lists"
+Property: Optional (list)
   Constraints:
-    - date-format({"format":"y-m-d"})
-Property: Required (date)
+  Parameters:
+Property: Required (list)
   Constraints:
-    - required([])
-Property: Past (date)
+    - required-count({"count":1})
+  Parameters:
+Property: Allow multi-option (list)
   Constraints:
-    - past-date({"target":"2000-12-31"})
-Property: Future (date)
-  Constraints:
-    - future-date({"target":"1999-01-01"})
+  Parameters:
+    - allow-multiple([])

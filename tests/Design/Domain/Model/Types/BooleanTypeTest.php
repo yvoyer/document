@@ -89,4 +89,9 @@ final class BooleanTypeTest extends BaseTestType
         );
         $this->assertSame('false', $value->toString());
     }
+
+    public function test_it_should_return_default_value_representation(): void
+    {
+        $this->assertSame('boolean(false)', $this->getType()->createDefaultValue()->toTypedString());
+    }
 }

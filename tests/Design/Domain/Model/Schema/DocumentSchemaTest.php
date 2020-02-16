@@ -4,6 +4,7 @@ namespace Star\Component\Document\Design\Domain\Model\Schema;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\Constraints\All;
 use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
 use Star\Component\Document\Design\Domain\Model\Parameters\NullParameter;
 use Star\Component\Document\Design\Domain\Model\Types;
@@ -70,7 +71,7 @@ final class DocumentSchemaTest extends TestCase
         $constraint = 'const';
 
         $this->schema->addProperty($property, new Types\NullType());
-        $this->schema->addConstraint($property, new NoConstraint($constraint));
+        $this->schema->addConstraint($property, new All($constraint, new NoConstraint()));
         $this->assertArrayIsJson(
             [
                 'id' => 'd-id',
@@ -101,7 +102,7 @@ final class DocumentSchemaTest extends TestCase
         $constraint = 'const';
 
         $this->schema->addProperty($property, new Types\NullType());
-        $this->schema->addConstraint($property, new NoConstraint($constraint));
+        $this->schema->addConstraint($property, new All($constraint, new NoConstraint()));
         $this->assertArrayIsJson(
             [
                 'id' => 'd-id',
@@ -172,6 +173,7 @@ final class DocumentSchemaTest extends TestCase
                                 'arguments' => [],
                             ],
                             'constraints' => [],
+                            'parameters' => [],
                         ],
                     ],
                 ]
@@ -194,9 +196,10 @@ final class DocumentSchemaTest extends TestCase
                             'constraints' => [],
                             'parameters' => [
                                 'param' => [
-                                    'name' => 'param',
                                     'class' => NullParameter::class,
-                                    'arguments' => [],
+                                    'arguments' => [
+                                        'name' => 'param',
+                                    ],
                                 ],
                             ],
                         ],
@@ -220,4 +223,3 @@ final class DocumentSchemaTest extends TestCase
         $this->assertTrue($this->schema->getDefinition('prop')->hasParameter('param'));
     }
 }
-

@@ -3,9 +3,9 @@
 namespace Star\Component\Document\DataEntry\Domain\Model;
 
 use PHPUnit\Framework\TestCase;
-use Star\Component\Document\DataEntry\Domain\Exception\UndefinedProperty;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleValidationErrors;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ValidationFailedForProperty;
+use Star\Component\Document\Design\Domain\Model\Schema\ReferencePropertyNotFound;
 use Star\Component\Document\Design\Domain\Model\Schema\SchemaBuilder;
 
 final class RecordAggregateTest extends TestCase
@@ -33,8 +33,8 @@ final class RecordAggregateTest extends TestCase
             SchemaBuilder::create()->getSchema()
         );
 
-        $this->expectException(UndefinedProperty::class);
-        $this->expectExceptionMessage('Property with name "name" is not defined on record.');
+        $this->expectException(ReferencePropertyNotFound::class);
+        $this->expectExceptionMessage('The property with name "name" could not be found.');
         $record->getValue('name');
     }
 
@@ -55,5 +55,16 @@ final class RecordAggregateTest extends TestCase
                 'text' => '',
             ]
         );
+    }
+
+    public function test_it_should_return_empty_value_when_not_set(): void
+    {
+        $schema = SchemaBuilder::create()
+            ->addText('optional')->endProperty()
+            ->getSchema();
+
+        $record = RecordAggregate::withoutValues(RecordId::random(), $schema);
+        $this->assertSame('', $record->getValue('optional')->toString());
+        $this->assertTrue($record->getValue('optional')->isEmpty());
     }
 }
