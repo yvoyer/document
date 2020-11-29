@@ -2,6 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Schema;
 
+use Star\Component\Document\DataEntry\Domain\Model\PropertyMetadata;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
@@ -10,8 +11,13 @@ use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyParameter;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
+use Star\Component\Document\Design\Domain\Model\Types\InvalidPropertyValue;
+use Star\Component\Document\Design\Domain\Model\Types\NotSupportedTypeForValue;
+use function array_key_exists;
+use function array_keys;
+use function array_merge;
 
-final class PropertyDefinition
+final class PropertyDefinition implements PropertyMetadata
 {
     /**
      * @var PropertyName
@@ -44,9 +50,14 @@ final class PropertyDefinition
         return $this->name;
     }
 
-    public function getType(): PropertyType
+    public function toTypedString(): string
     {
-        return $this->type;
+        return $this->type->toHumanReadableString();
+    }
+
+    public function typeIs(string $type): bool
+    {
+        return $this->type->toHumanReadableString() === $type;
     }
 
     public function acceptDocumentVisitor(DocumentVisitor $visitor): void
@@ -55,28 +66,31 @@ final class PropertyDefinition
             return;
         }
 
-        $visitor->enterConstraints($this->name);
+        $visitor->enterPropertyConstraints($this->name);
         foreach ($this->constraints as $name => $constraint) {
             $visitor->visitPropertyConstraint($this->name, $name, $constraint);
         }
 
-        $visitor->enterParameters($this->name);
-        foreach ($this->parameters as $parameter) {
-            $visitor->visitParameter($this->name, $parameter);
+        $visitor->enterPropertyParameters($this->name);
+        foreach ($this->parameters as $parameterName => $parameter) {
+            $visitor->visitPropertyParameter($this->name, $parameterName, $parameter);
         }
     }
 
-    public function addConstraint(PropertyConstraint $constraint): PropertyDefinition
+    public function addConstraint(string $name, PropertyConstraint $constraint): PropertyDefinition
     {
         $new = $this->merge($this);
-        $new->constraints[$constraint->getName()] = $constraint;
+        $new->constraints[$name] = $constraint;
 
         return $new;
     }
 
     public function removeConstraint(string $name): PropertyDefinition
     {
-        $new = new self($this->getName(), $this->getType());
+        $new = new self($this->getName(), $this->type);
+        $new->constraints = $this->constraints;
+        $new->parameters = $this->parameters;
+
         unset($new->constraints[$name]);
 
         return $new;
@@ -101,30 +115,67 @@ final class PropertyDefinition
      */
     public function getConstraints(): array
     {
-        return \array_keys($this->constraints);
+        return array_keys($this->constraints);
     }
 
-    public function addParameter(PropertyParameter $parameter): PropertyDefinition
+    public function addParameter(string $parameterName, PropertyParameter $parameter): PropertyDefinition
     {
         $new = $this->merge(new PropertyDefinition($this->name, $this->type));
-        $new->parameters[$parameter->getName()] = $parameter;
+        $new->parameters[$parameterName] = $parameter;
 
         return $new;
     }
 
     public function hasParameter(string $name): bool
     {
-        return \array_key_exists($name, $this->parameters);
+        return array_key_exists($name, $this->parameters);
     }
 
-    public function createDefaultValue(): RecordValue
+    public function toWriteFormat(RecordValue $value): RecordValue
     {
-        $default = $this->type->createDefaultValue();
+        $value = $this->type->toWriteFormat($value);
         foreach ($this->parameters as $parameterName => $parameter) {
-            $default = $parameter->onCreateDefaultValue($default);
+            $value = $parameter->toWriteFormat($value);
         }
 
-        return $default;
+        return $value;
+    }
+
+    public function toReadFormat(RecordValue $value): RecordValue
+    {
+        $value = $this->type->toReadFormat($value);
+        foreach ($this->parameters as $parameterName => $parameter) {
+            $value = $parameter->toReadFormat($value);
+        }
+
+        return $value;
+    }
+
+    public function doBehavior(RecordValue $value): RecordValue
+    {
+        return $this->type->doBehavior($this->name->toString(), $value);
+    }
+
+    public function supportsType(RecordValue $value): bool
+    {
+        return $this->type->supportsType($value);
+    }
+
+    public function supportsValue(RecordValue $value): bool
+    {
+        return $this->type->supportsValue($value);
+    }
+
+    public function generateExceptionForNotSupportedTypeForValue(
+        string $property,
+        RecordValue $value
+    ): NotSupportedTypeForValue {
+        return $this->type->generateExceptionForNotSupportedTypeForValue($property, $value);
+    }
+
+    public function generateExceptionForNotSupportedValue(string $property, RecordValue $value): InvalidPropertyValue
+    {
+        return $this->type->generateExceptionForNotSupportedValue($property, $value);
     }
 
     public function validateValue(RecordValue $value, ErrorList $errors): void
@@ -147,8 +198,8 @@ final class PropertyDefinition
     public function merge(PropertyDefinition $definition): PropertyDefinition
     {
         $new = new self($this->name, $this->type);
-        $new->constraints = \array_merge($this->constraints, $definition->constraints);
-        $new->parameters = \array_merge($this->parameters, $definition->parameters);
+        $new->constraints = array_merge($this->constraints, $definition->constraints);
+        $new->parameters = array_merge($this->parameters, $definition->parameters);
 
         return $new;
     }

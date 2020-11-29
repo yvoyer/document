@@ -2,7 +2,11 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Model\Validation;
 
-final class ErrorList implements \Countable
+use Countable;
+use function array_merge;
+use function count;
+
+final class ErrorList implements Countable
 {
     /**
      * @var string[][][]
@@ -16,7 +20,7 @@ final class ErrorList implements \Countable
 
     public function hasErrors(): bool
     {
-        return \count($this->errors) > 0;
+        return count($this->errors) > 0;
     }
 
     /**
@@ -39,7 +43,7 @@ final class ErrorList implements \Countable
         foreach ($this->errors as $property => $localizedMessages) {
             foreach ($localizedMessages as $_locale => $message) {
                 if ($_locale === $locale) {
-                    $messages = \array_merge($messages, $message);
+                    $messages = array_merge($messages, $message);
                 }
             }
         }
@@ -49,6 +53,6 @@ final class ErrorList implements \Countable
 
     public function count(): int
     {
-        return \count($this->errors);
+        return count($this->errors);
     }
 }

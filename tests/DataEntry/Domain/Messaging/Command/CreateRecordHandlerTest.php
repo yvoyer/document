@@ -1,13 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\DataEntry\Domain\Messaging\Command;
+namespace Star\Component\Document\Tests\DataEntry\Domain\Messaging\Command;
 
 use PHPUnit\Framework\TestCase;
-use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\DataEntry\Domain\Messaging\Command\CreateRecord;
+use Star\Component\Document\DataEntry\Domain\Messaging\Command\CreateRecordHandler;
 use Star\Component\Document\DataEntry\Domain\Model\AlwaysReturnSchema;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+use Star\Component\Document\DataEntry\Domain\Model\Values\StringValue;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
-use Star\Component\Document\Design\Domain\Model\Schema\SchemaBuilder;
+use Star\Component\Document\Design\Builder\DocumentBuilder;
+use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
 
 final class CreateRecordHandlerTest extends TestCase
@@ -17,7 +21,7 @@ final class CreateRecordHandlerTest extends TestCase
         $handler = new CreateRecordHandler(
             $records = new RecordCollection(),
             new DocumentCollection(),
-            new AlwaysReturnSchema(SchemaBuilder::create()->getSchema())
+            new AlwaysReturnSchema(DocumentBuilder::createDocument()->getSchema())
         );
         $this->assertCount(0, $records);
 
@@ -32,8 +36,8 @@ final class CreateRecordHandlerTest extends TestCase
             $records = new RecordCollection(),
             new DocumentCollection(),
             new AlwaysReturnSchema(
-                SchemaBuilder::create()
-                    ->addText('key')->endProperty()
+                DocumentBuilder::createDocument()
+                    ->createText('key')->endProperty()
                     ->getSchema()
             )
         );
@@ -43,7 +47,7 @@ final class CreateRecordHandlerTest extends TestCase
             DocumentId::random(),
             $recordId = RecordId::random(),
             [
-                'key' => 'value',
+                'key' => StringValue::fromString('value'),
             ]
         ));
 
@@ -66,7 +70,12 @@ final class CreateRecordHandlerTest extends TestCase
     public function test_it_should_throw_exception_when_value_not_scalar(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Values of value map "stdClass" is expected to be a scalar.');
+        $this->expectExceptionMessage(
+            \sprintf(
+                'Value in value map "stdClass" was expected to be an instances of "%s".',
+                RecordValue::class
+            )
+        );
         new CreateRecord(DocumentId::random(), RecordId::random(), ['property' => new \stdClass()]);
     }
 }

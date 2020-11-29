@@ -1,17 +1,18 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Design\Domain\Model\Schema;
+namespace Star\Component\Document\Tests\Design\Domain\Model\Schema;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
+use Star\Component\Document\DataEntry\Domain\Model\Values\EmptyValue;
 use Star\Component\Document\Design\Domain\Model\Constraints\ClosureConstraint;
 use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\Parameters\NullParameter;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
+use Star\Component\Document\Design\Domain\Model\Schema\PropertyDefinition;
 use Star\Component\Document\Design\Domain\Model\Types\NullType;
-use Star\Component\Document\Design\Domain\Model\Values\EmptyValue;
 
 final class PropertyDefinitionTest extends TestCase
 {
@@ -19,16 +20,15 @@ final class PropertyDefinitionTest extends TestCase
     {
         $definition = new PropertyDefinition(PropertyName::fromString('name'), new NullType());
         $this->assertSame('name', $definition->getName()->toString());
-        $this->assertInstanceOf(PropertyType::class, $definition->getType());
-        $this->assertInstanceOf(NullType::class, $definition->getType());
+        $this->assertSame('null', $definition->toTypedString());
     }
 
     public function test_it_should_add_constraint(): void
     {
         $definition = new PropertyDefinition(PropertyName::fromString('name'), new NullType());
         $new = $definition->addConstraint(
+            'const',
             new ClosureConstraint(
-                'const',
                 function ($name, $value, ErrorList $errors) {
                     $errors->addError($name, 'en', 'bad value');
                 }
@@ -62,13 +62,13 @@ final class PropertyDefinitionTest extends TestCase
         $new = $callee->merge($argument);
 
         $this->assertInstanceOf(PropertyDefinition::class, $new);
-        $this->assertInstanceOf(NullType::class, $new->getType()->toData()->createType());
+        $this->assertSame('null', $new->toTypedString());
     }
 
     public function test_it_should_merge_constraints_when_merging_definitions(): void
     {
         $callee = (new PropertyDefinition(PropertyName::fromString('callee'), new NullType()))
-            ->addConstraint($constraint = ClosureConstraint::nullConstraint('const'));
+            ->addConstraint('const', $constraint = ClosureConstraint::nullConstraint());
         $argument = new PropertyDefinition(
             PropertyName::fromString('argument'),
             new NullType()
@@ -85,9 +85,9 @@ final class PropertyDefinitionTest extends TestCase
     public function test_it_should_use_the_given_definition_when_overriding_a_constraint_on_merge(): void
     {
         $callee = (new PropertyDefinition(PropertyName::fromString('callee'), new NullType()))
-            ->addConstraint($calleeConstraint = ClosureConstraint::nullConstraint('const'));
+            ->addConstraint('const', $calleeConstraint = ClosureConstraint::nullConstraint());
         $definition = new PropertyDefinition(PropertyName::fromString('argument'), new NullType());
-        $argument = $definition->addConstraint($argumentConstraint = ClosureConstraint::nullConstraint('const'));
+        $argument = $definition->addConstraint('const', $argumentConstraint = ClosureConstraint::nullConstraint());
 
         $this->assertTrue($callee->hasConstraint('const'));
         $this->assertTrue($argument->hasConstraint('const'));
@@ -104,7 +104,7 @@ final class PropertyDefinitionTest extends TestCase
         /**
          * @var PropertyDefinition $definition
          */
-        $definition = $definition->addConstraint(new NoConstraint());
+        $definition = $definition->addConstraint('const', new NoConstraint());
 
         $visitor = $this->createMock(DocumentVisitor::class);
         $visitor
@@ -120,11 +120,11 @@ final class PropertyDefinitionTest extends TestCase
     public function test_it_should_add_parameter(): void
     {
         $definition = new PropertyDefinition(PropertyName::fixture(), new NullType());
-        $this->assertFalse($definition->hasParameter('name'));
+        $this->assertFalse($definition->hasParameter('param'));
 
-        $new = $definition->addParameter(new NullParameter('name'));
+        $new = $definition->addParameter('param', new NullParameter());
 
-        $this->assertTrue($new->hasParameter('name'));
-        $this->assertFalse($definition->hasParameter('name'));
+        $this->assertTrue($new->hasParameter('param'));
+        $this->assertFalse($definition->hasParameter('param'));
     }
 }

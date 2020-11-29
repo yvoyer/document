@@ -2,13 +2,6 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
-use Star\Component\Document\Design\Domain\Model\Constraints\ConstraintData;
-
-interface PropertyConstraint extends CanBeValidated
+interface PropertyConstraint extends CanBeValidated, Constraint
 {
-    public function getName(): string;
-
-    public function toData(): ConstraintData;
-
-    public static function fromData(ConstraintData $data): PropertyConstraint;
 }

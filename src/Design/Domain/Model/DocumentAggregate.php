@@ -2,14 +2,14 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
-use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
+use RuntimeException;
+use Star\Component\Document\DataEntry\Domain\Model\SchemaMetadata;
+use Star\Component\Document\Design\Domain\Model\Behavior\BehaviorSubject;
 use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
-use Star\Component\Document\Design\Domain\Model\Schema\PropertyDefinition;
 use Star\Component\Document\Design\Domain\Model\Events;
 use Star\Component\DomainEvent\AggregateRoot;
 
-final class DocumentAggregate extends AggregateRoot implements DocumentDesigner
+class DocumentAggregate extends AggregateRoot implements DocumentDesigner, BehaviorSubject
 {
     /**
      * @var DocumentSchema
@@ -17,16 +17,11 @@ final class DocumentAggregate extends AggregateRoot implements DocumentDesigner
     private $schema;
 
     /**
-     * @var DocumentState
+     * @var DocumentConstraint[]
      */
-    private $state;
+    private $constraints = [];
 
-    /**
-     * @var DocumentConstraint
-     */
-    private $constraint;
-
-    public function getSchema(): DocumentSchema
+    public function getSchema(): SchemaMetadata
     {
         return $this->schema;
     }
@@ -36,97 +31,109 @@ final class DocumentAggregate extends AggregateRoot implements DocumentDesigner
         return $this->schema->getIdentity();
     }
 
-    public function publish(): void
+    public function addProperty(PropertyName $name, PropertyType $type): void
     {
-        $this->mutate(new Events\DocumentPublished($this->getIdentity()));
+        $this->mutate(new Events\PropertyAdded($this->getIdentity(), $name, $type));
     }
 
-    public function addProperty(
+    public function addPropertyConstraint(
         PropertyName $name,
-        PropertyType $type,
-        PropertyConstraint $constraint = null,
-        PropertyParameter $parameter = null
+        string $constraintName,
+        PropertyConstraint $constraint
     ): void {
-        $this->mutate(new Events\PropertyAdded($name, $type));
-        if ($constraint instanceof PropertyConstraint) {
-            $this->addPropertyConstraint($name, $constraint);
-        }
-
-        if ($parameter instanceof PropertyParameter) {
-            $this->addPropertyParameter($name, $parameter);
-        }
+        $this->mutate(
+            new Events\PropertyConstraintWasAdded($this->getIdentity(), $name, $constraintName, $constraint)
+        );
     }
 
-    public function addPropertyConstraint(PropertyName $name, PropertyConstraint $constraint): void
+    public function removePropertyConstraint(PropertyName $name, string $constraintName): void
     {
-        $this->schema->addConstraint($name->toString(), $constraint);
+        $this->mutate(
+            new Events\PropertyConstraintWasRemoved($this->getIdentity(), $name, $constraintName)
+        );
     }
 
-    public function addPropertyParameter(PropertyName $name, PropertyParameter $parameter): void
-    {
-        $this->mutate(new Events\PropertyParameterAdded($this->getIdentity(), $name, $parameter));
+    public function addPropertyParameter(
+        PropertyName $name,
+        string $parameterName,
+        PropertyParameter $parameter
+    ): void {
+        $this->mutate(new Events\PropertyParameterAdded($this->getIdentity(), $name, $parameterName, $parameter));
     }
 
-    public function setDocumentConstraint(DocumentConstraint $constraint): void
+    public function addDocumentConstraint(string $name, DocumentConstraint $constraint): void
     {
-        $this->mutate(new Events\DocumentConstraintRegistered($this->getIdentity(), $constraint));
-    }
-
-    public function removeConstraint(PropertyName $name, string $constraintName): void
-    {
-        $this->schema->removeConstraint($name->toString(), $constraintName);
-    }
-
-    public function isPublished(): bool
-    {
-        return $this->state->isPublished();
-    }
-
-    public function getConstraint(): DocumentConstraint
-    {
-        return $this->constraint;
-    }
-
-    public function getPropertyDefinition(PropertyName $name): PropertyDefinition
-    {
-        return $this->schema->getDefinition($name->toString());
+        $this->mutate(
+            new Events\DocumentConstraintRegistered($this->getIdentity(), $name, $constraint)
+        );
     }
 
     public function acceptDocumentVisitor(DocumentVisitor $visitor): void
     {
         $this->schema->acceptDocumentVisitor($visitor);
+
+        foreach ($this->constraints as $name => $constraint) {
+            $visitor->visitDocumentConstraint($name, $constraint);
+        }
     }
 
     protected function onDocumentCreated(Events\DocumentCreated $event): void
     {
         $this->schema = new DocumentSchema($event->documentId());
-        $this->state = new DocumentState();
-        $this->constraint = new NoConstraint();
-    }
-
-    protected function onDocumentPublished(Events\DocumentPublished $event): void
-    {
-        $this->state = $this->state->publish();
-# todo        $this->constraints->onPublish($this);
     }
 
     protected function onPropertyAdded(Events\PropertyAdded $event): void
     {
-        $this->schema->addProperty($event->name()->toString(), $event->type());
+        $type = $event->type();
+
+        $this->schema->addProperty($event->name()->toString(), $type);
     }
 
     protected function onDocumentConstraintRegistered(Events\DocumentConstraintRegistered $event): void
     {
-        $this->constraint = $event->constraint();
+        $constraint = $event->constraint();
+        $constraint->onRegistered($this);
+        $this->constraints[$event->constraintName()] = $constraint;
     }
 
     protected function onPropertyParameterAdded(Events\PropertyParameterAdded $event): void
     {
-        $this->schema->addParameter($event->property()->toString(), $event->parameter());
+        $this->schema->addParameter(
+            $event->property()->toString(),
+            $event->parameterName(),
+            $event->parameter()
+        );
     }
 
-    public static function draft(DocumentId $id): self
+    protected function onPropertyConstraintWasAdded(Events\PropertyConstraintWasAdded $event): void
     {
-        return self::fromStream([new Events\DocumentCreated($id)]);
+        $this->schema->addPropertyConstraint(
+            $event->propertyName()->toString(),
+            $event->constraintName(),
+            $event->constraint()
+        );
+    }
+
+    protected function onPropertyConstraintWasRemoved(Events\PropertyConstraintWasRemoved $event): void
+    {
+        $this->schema->removePropertyConstraint($event->propertyName()->toString(), $event->constraintName());
+    }
+
+    /**
+     * @param DocumentId $id
+     * @return DocumentAggregate
+     */
+    public static function draft(DocumentId $id): DocumentAggregate
+    {
+        /**
+         * @var DocumentAggregate $aggregate
+         */
+        $aggregate = static::fromStream(
+            [
+                new Events\DocumentCreated($id),
+            ]
+        );
+
+        return $aggregate;
     }
 }

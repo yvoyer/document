@@ -1,10 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Design\Domain\Model\Constraints;
+namespace Star\Component\Document\Tests\Design\Domain\Model\Constraints;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
-use Star\Component\Document\Design\Domain\Model\Values\EmptyValue;
+use Star\Component\Document\DataEntry\Domain\Model\Values\EmptyValue;
+use Star\Component\Document\Design\Domain\Model\Constraints\RequiresValue;
 
 final class RequiredValueTest extends TestCase
 {

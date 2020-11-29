@@ -2,10 +2,9 @@
 
 namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
-use Star\Component\Document\Common\Domain\Messaging\Command;
-use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
+use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\DomainEvent\Messaging\Command;
 
 final class AddPropertyConstraint implements Command
 {
@@ -20,18 +19,31 @@ final class AddPropertyConstraint implements Command
     private $name;
 
     /**
-     * @var PropertyConstraint
+     * @var string
      */
-    private $constraint;
+    private $constraintName;
 
+    /**
+     * @var mixed[]
+     */
+    private $constraintData;
+
+    /**
+     * @param DocumentId $documentId
+     * @param PropertyName $name
+     * @param string $constraintName
+     * @param mixed[] $constraintData
+     */
     public function __construct(
         DocumentId $documentId,
         PropertyName $name,
-        PropertyConstraint $constraint
+        string $constraintName,
+        array $constraintData
     ) {
         $this->documentId = $documentId;
         $this->name = $name;
-        $this->constraint = $constraint;
+        $this->constraintName = $constraintName;
+        $this->constraintData = $constraintData;
     }
 
     public function documentId(): DocumentId
@@ -44,8 +56,16 @@ final class AddPropertyConstraint implements Command
         return $this->name;
     }
 
-    public function constraint(): PropertyConstraint
+    public function constraintName(): string
     {
-        return $this->constraint;
+        return $this->constraintName;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function constraintData(): array
+    {
+        return $this->constraintData;
     }
 }

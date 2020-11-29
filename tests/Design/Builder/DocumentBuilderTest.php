@@ -1,14 +1,20 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Design\Builder;
+namespace Star\Component\Document\Tests\Design\Builder;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ValidationFailedForProperty;
-use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
+use Star\Component\Document\DataEntry\Domain\Model\Values\ArrayOfInteger;
+use Star\Component\Document\DataEntry\Domain\Model\Values\BooleanValue;
+use Star\Component\Document\DataEntry\Domain\Model\Values\DateValue;
+use Star\Component\Document\DataEntry\Domain\Model\Values\EmptyValue;
+use Star\Component\Document\DataEntry\Domain\Model\Values\FloatValue;
+use Star\Component\Document\DataEntry\Domain\Model\Values\IntegerValue;
+use Star\Component\Document\DataEntry\Domain\Model\Values\OptionListValue;
+use Star\Component\Document\DataEntry\Domain\Model\Values\StringValue;
+use Star\Component\Document\Design\Builder\DocumentBuilder;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
-use Star\Component\Document\Design\Domain\Model\ReadOnlyDocument;
-use Star\Component\Document\Design\Domain\Model\Types;
 
 final class DocumentBuilderTest extends TestCase
 {
@@ -16,15 +22,11 @@ final class DocumentBuilderTest extends TestCase
     {
         $document = DocumentBuilder::createDocument('id')
             ->createText('name')->endProperty()
-            ->getDocument();
+            ->getSchema();
 
-        $this->assertInstanceOf(ReadOnlyDocument::class, $document);
-        $this->assertInstanceOf(DocumentDesigner::class, $document);
-
-        $this->assertFalse($document->isPublished());
-        $this->assertInstanceOf(
-            Types\StringType::class,
-            $document->getPropertyDefinition(PropertyName::fromString('name'))->getType()
+        $this->assertSame(
+            'string',
+            $document->getPropertyMetadata('name')->toTypedString()
         );
     }
 
@@ -32,10 +34,10 @@ final class DocumentBuilderTest extends TestCase
     {
         $document = DocumentBuilder::createDocument('id')
             ->createBoolean('bool')->endProperty()
-            ->getDocument();
-        $this->assertInstanceOf(
-            Types\BooleanType::class,
-            $document->getPropertyDefinition(PropertyName::fromString('bool'))->getType()
+            ->getSchema();
+        $this->assertSame(
+            'boolean',
+            $document->getPropertyMetadata('bool')->toTypedString()
         );
     }
 
@@ -43,10 +45,10 @@ final class DocumentBuilderTest extends TestCase
     {
         $document = DocumentBuilder::createDocument('id')
             ->createDate('date')->endProperty()
-            ->getDocument();
-        $this->assertInstanceOf(
-            Types\DateType::class,
-            $document->getPropertyDefinition(PropertyName::fromString('date'))->getType()
+            ->getSchema();
+        $this->assertSame(
+            'date',
+            $document->getPropertyMetadata('date')->toTypedString()
         );
     }
 
@@ -54,10 +56,10 @@ final class DocumentBuilderTest extends TestCase
     {
         $document = DocumentBuilder::createDocument('id')
             ->createNumber('number')->endProperty()
-            ->getDocument();
-        $this->assertInstanceOf(
-            Types\NumberType::class,
-            $document->getPropertyDefinition(PropertyName::fromString('number'))->getType()
+            ->getSchema();
+        $this->assertSame(
+            'number',
+            $document->getPropertyMetadata('number')->toTypedString()
         );
     }
 
@@ -65,95 +67,98 @@ final class DocumentBuilderTest extends TestCase
     {
         $name = $name = PropertyName::fromString('name');
         $document = DocumentBuilder::createDocument('id')
-            ->createCustomList($name->toString(), 'option')->endProperty()
-            ->getDocument();
-        $this->assertInstanceOf(
-            Types\CustomListType::class,
-            $document->getPropertyDefinition($name)->getType()
+            ->createListOfOptions($name->toString(), OptionListValue::withElements(3))->endProperty()
+            ->getSchema();
+        $this->assertSame(
+            'list',
+            $document->getPropertyMetadata('name')->toTypedString()
         );
     }
 
     public function test_it_should_throw_exception_when_setting_empty_on_required_text_property(): void
     {
         $builder = DocumentBuilder::createDocument('id')
-            ->createText('name')->required()->endProperty()
-            ->startRecord(RecordId::random());
+            ->createText('name')->required()->endProperty();
 
         $this->expectException(ValidationFailedForProperty::class);
         $this->expectExceptionMessage('Validation error: [Property named "name" is required, but "empty()" given.]');
-        $builder->setValue('name', '');
+        $builder->startRecord(RecordId::random());
     }
 
     public function test_it_should_throw_exception_when_setting_empty_on_required_boolean_property(): void
     {
         $builder = DocumentBuilder::createDocument('id')
-            ->createBoolean('name')->required()->endProperty()
-            ->startRecord(RecordId::random());
+            ->createBoolean('name')->required()->endProperty();
 
         $this->expectException(ValidationFailedForProperty::class);
         $this->expectExceptionMessage('Validation error: [Property named "name" is required, but "empty()" given.]');
-        $builder->setValue('name', '');
+        $builder->startRecord(
+            RecordId::random(),
+            [
+                'name' => new EmptyValue(),
+            ]
+        );
     }
 
     public function test_it_should_throw_exception_when_setting_empty_on_required_date_property(): void
     {
         $builder = DocumentBuilder::createDocument('id')
-            ->createDate('name')->required()->endProperty()
-            ->startRecord(RecordId::random());
+            ->createDate('name')->required()->endProperty();
 
         $this->expectException(ValidationFailedForProperty::class);
         $this->expectExceptionMessage('Validation error: [Property named "name" is required, but "empty()" given.]');
-        $builder->setValue('name', '');
+        $builder->startRecord(RecordId::random());
     }
 
     public function test_it_should_throw_exception_when_setting_empty_on_required_number_property(): void
     {
         $builder = DocumentBuilder::createDocument('id')
-            ->createNumber('name')->required()->endProperty()
-            ->startRecord(RecordId::random());
+            ->createNumber('name')->required()->endProperty();
 
         $this->expectException(ValidationFailedForProperty::class);
         $this->expectExceptionMessage('Validation error: [Property named "name" is required, but "empty()" given.]');
-        $builder->setValue('name', '');
+        $builder->startRecord(RecordId::random());
     }
 
     public function test_it_should_throw_exception_when_setting_empty_on_required_list_property(): void
     {
         $builder = DocumentBuilder::createDocument('id')
-            ->createCustomList('name', 'option')->required()->endProperty()
-            ->startRecord(RecordId::random());
+            ->createListOfOptions('name', OptionListValue::withElements(1))->required()->endProperty();
 
         $this->expectException(ValidationFailedForProperty::class);
         $this->expectExceptionMessage(
-            'Validation error: [Property named "name" allows only "1" option(s), "empty()" given.]'
+            'Validation error: [Property named "name" requires at least 1 option(s), "empty()" given.]'
         );
-        $builder->setValue('name', '');
+        $builder->startRecord(RecordId::random());
     }
 
     public function test_it_should_throw_exception_when_setting_more_than_one_value_on_single_value_property(): void
     {
         $builder = DocumentBuilder::createDocument('id')
-            ->createCustomList('name', 'option 1', 'option 2', 'option 3')->required()->endProperty()
+            ->createListOfOptions('name', OptionListValue::withElements(3))->singleOption()->endProperty()
             ->startRecord(RecordId::random());
 
         $this->expectException(ValidationFailedForProperty::class);
         $this->expectExceptionMessage(
-            'Validation error: [Property named "name" allows only "1" option(s), "list([option 1;option 2])" given.]'
+            'Validation error: [Property named "name" allows only 1 option, "list(1;2)" given.]'
         );
-        $builder->setValue('name', [1, "2"]);
+        $builder->setValue('name', ArrayOfInteger::withValues(1, 2));
     }
 
     public function test_it_should_build_a_record_with_text_property(): void
     {
-        $builder = DocumentBuilder::createDocument('doc')
+        $record = DocumentBuilder::createDocument('doc')
             ->createText('optional')->endProperty()
             ->createText('regex')->matchesRegex('/\w+/')->endProperty()
             ->createText('required')->required()->endProperty()
-            ->startRecord(RecordId::random())
-            ->setValue('regex', 'Text')
-            ->setValue('required', 'My required value')
-        ;
-        $record = $builder->getRecord();
+            ->startRecord(
+                RecordId::random(),
+                [
+                    'regex' => StringValue::fromString('Text'),
+                    'required' => StringValue::fromString('My required value'),
+                ]
+            )
+            ->getRecord();
 
         $this->assertSame('', $record->getValue('optional')->toString());
         $this->assertSame('Text', $record->getValue('regex')->toString());
@@ -162,18 +167,21 @@ final class DocumentBuilderTest extends TestCase
 
     public function test_it_should_build_a_record_with_boolean_property(): void
     {
-        $builder = DocumentBuilder::createDocument('doc')
+        $record = DocumentBuilder::createDocument('doc')
             ->createBoolean('optional')->endProperty()
             ->createBoolean('required')->required()->endProperty()
             ->createBoolean('default')->defaultValue(true)->endProperty()
             ->createBoolean('label')->labeled('Vrai', 'Faux')->endProperty()
-            ->startRecord(RecordId::random())
-            ->setValue('required', true)
-            ->setValue('label', false)
-        ;
-        $record = $builder->getRecord();
+            ->startRecord(
+                RecordId::random(),
+                [
+                    'required' => BooleanValue::trueValue(),
+                    'label' => BooleanValue::falseValue(),
+                ]
+            )
+            ->getRecord();
 
-        $this->assertSame('false', $record->getValue('optional')->toString());
+        $this->assertSame('', $record->getValue('optional')->toString());
         $this->assertSame('true', $record->getValue('required')->toString());
         $this->assertSame('true', $record->getValue('default')->toString());
         $this->assertSame('false', $record->getValue('label')->toString());
@@ -186,15 +194,18 @@ final class DocumentBuilderTest extends TestCase
             ->createDate('required')->required()->endProperty()
             ->createDate('before')->beforeDate('2000-01-01')->endProperty()
             ->createDate('after')->afterDate('2000-01-01')->endProperty()
-            ->createDate('format')->requireFormat('Y')->endProperty()
+            ->createDate('format')->outputAsFormat('Y')->endProperty()
             ->createDate('between')->betweenDate('2000-01-01', '2000-12-31')->endProperty()
-            ->startRecord(RecordId::random())
-            ->setValue('required', '2010-01-02')
-            ->setValue('before', '1999-12-31')
-            ->setValue('after', '2000-01-02')
-            ->setValue('format', '2000')
-            ->setValue('between', '2000-07-01')
-        ;
+            ->startRecord(
+                RecordId::random(),
+                [
+                    'required' => DateValue::fromString('2010-01-02'),
+                    'before' => DateValue::fromString('1999-12-31'),
+                    'after' => DateValue::fromString('2000-01-02'),
+                    'format' => DateValue::fromString('2000-01-02'),
+                    'between' => DateValue::fromString('2000-07-01'),
+                ]
+            );
         $record = $builder->getRecord();
 
         $this->assertSame('', $record->getValue('optional')->toString());
@@ -207,15 +218,18 @@ final class DocumentBuilderTest extends TestCase
 
     public function test_it_should_build_a_record_with_all_number_property(): void
     {
-        $builder = DocumentBuilder::createDocument('doc')
+        $record = DocumentBuilder::createDocument('doc')
             ->createNumber('optional')->endProperty()
             ->createNumber('required')->required()->endProperty()
             ->createNumber('float')->asFloat()->endProperty()
-            ->startRecord(RecordId::random())
-            ->setValue('required', 1234)
-            ->setValue('float', 12.34)
-        ;
-        $record = $builder->getRecord();
+            ->startRecord(
+                RecordId::random(),
+                [
+                    'required' => IntegerValue::fromInt(1234),
+                    'float' => FloatValue::fromFloat(12.34),
+                ]
+            )
+            ->getRecord();
 
         $this->assertSame('', $record->getValue('optional')->toString());
         $this->assertSame('1234', $record->getValue('required')->toString());
@@ -224,22 +238,26 @@ final class DocumentBuilderTest extends TestCase
 
     public function test_it_should_build_a_record_with_custom_list_property(): void
     {
-        $builder = DocumentBuilder::createDocument('doc')
-            ->createCustomList('optional', 'option 1')->endProperty()
-            ->createCustomList('required-single', 'option 2', 'option 3')
-            ->required()
-            ->endProperty()
-            ->createCustomList('required-multi', 'option 4', 'option 5', 'option 6')
-            ->allowMultiOption()
-            ->endProperty()
-            ->startRecord(RecordId::random())
-            ->setValue('required-single', ['2'])
-            ->setValue('required-multi', [1, '3'])
-        ;
-        $record = $builder->getRecord();
+        $record = DocumentBuilder::createDocument('doc')
+            ->createListOfOptions('optional', OptionListValue::withElements(3))->endProperty()
+            ->createListOfOptions('required', OptionListValue::withElements(3))->required()->endProperty()
+            ->createListOfOptions('single', OptionListValue::withElements(3))->singleOption()->endProperty()
+            ->createListOfOptions('multi', OptionListValue::withElements(3))->endProperty()
+            ->startRecord(
+                RecordId::random(),
+                [
+                    'required' => ArrayOfInteger::withValues(1, 3),
+                    'single' => ArrayOfInteger::withValues(2),
+                    'multi' => ArrayOfInteger::withValues(1, 3),
+                ]
+            )->getRecord();
 
         $this->assertSame('', $record->getValue('optional')->toString());
-        $this->assertSame('2', $record->getValue('required-single')->toString());
-        $this->assertSame('1;3', $record->getValue('required-multi')->toString());
+        $this->assertSame(
+            '[{"id":1,"value":"Option 1","label":"Label 1"},'
+            . '{"id":3,"value":"Option 3","label":"Label 3"}]',
+            $record->getValue('required')->toString()
+        );
+        $this->assertSame('options(Label 2)', $record->getValue('single')->toTypedString());
     }
 }

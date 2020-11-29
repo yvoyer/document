@@ -1,12 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Design\Domain\Model\Constraints;
+namespace Star\Component\Document\Tests\Design\Domain\Model\Constraints;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
-use Star\Component\Document\Design\Domain\Model\Values\DateValue;
-use Star\Component\Document\Design\Domain\Model\Values\EmptyValue;
+use Star\Component\Document\DataEntry\Domain\Model\Values\DateValue;
+use Star\Component\Document\DataEntry\Domain\Model\Values\EmptyValue;
+use Star\Component\Document\Design\Domain\Model\Constraints\AfterDate;
 
 final class AfterDateTest extends TestCase
 {
@@ -52,9 +53,9 @@ final class AfterDateTest extends TestCase
     public static function provideInvalidValues(): array
     {
         return [
-            'future hour' => [DateValue::fromString('2000-05-05 03:03:04')],
-            'future minute' => [DateValue::fromString('2000-05-05 02:04:04')],
-            'future second' => [DateValue::fromString('2000-05-05 02:03:05')],
+            'future hour' => [DateValue::fromString('2000-05-05 03:03:04', 'Y-m-d H:i:s')],
+            'future minute' => [DateValue::fromString('2000-05-05 02:04:04', 'Y-m-d H:i:s')],
+            'future second' => [DateValue::fromString('2000-05-05 02:03:05', 'Y-m-d H:i:s')],
             'past day' => [DateValue::fromString('2000-05-04')],
         ];
     }

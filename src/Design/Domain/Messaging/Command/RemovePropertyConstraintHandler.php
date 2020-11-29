@@ -19,8 +19,8 @@ final class RemovePropertyConstraintHandler
     public function __invoke(RemovePropertyConstraint $command): void
     {
         $document = $this->documents->getDocumentByIdentity($command->documentId());
-        $document->removeConstraint($command->name(), $command->constraintName());
+        $document->removePropertyConstraint($command->name(), $command->constraintName());
 
-        $this->documents->saveDocument($command->documentId(), $document);
+        $this->documents->saveDocument($document);
     }
 }

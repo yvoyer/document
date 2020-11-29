@@ -4,7 +4,12 @@ namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
+use Star\Component\Document\Design\Domain\Model\Constraint;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
+use function floatval;
+use function number_format;
+use function sprintf;
+use function str_repeat;
 
 final class NumberFormat implements PropertyConstraint
 {
@@ -33,11 +38,6 @@ final class NumberFormat implements PropertyConstraint
         $this->thousandSeparator = $thousandSeparator;
     }
 
-    public function getName(): string
-    {
-        return 'number-format';
-    }
-
     /**
      * @param string $propertyName
      * @param RecordValue $value
@@ -45,8 +45,8 @@ final class NumberFormat implements PropertyConstraint
      */
     public function validate(string $propertyName, RecordValue $value, ErrorList $errors): void
     {
-        $expected = \number_format(
-            \floatval($value->toString()),
+        $expected = number_format(
+            floatval($value->toString()),
             $this->decimal,
             $this->decimalPoint,
             $this->thousandSeparator
@@ -56,14 +56,14 @@ final class NumberFormat implements PropertyConstraint
             $errors->addError(
                 $propertyName,
                 'en',
-                \sprintf(
+                sprintf(
                     'Property "%s" expects a number of format "%s", "%s" given.',
                     $propertyName,
-                    \sprintf(
+                    sprintf(
                         'TTT%sCCC%s%s',
                         $this->thousandSeparator,
                         $this->decimalPoint,
-                        \str_repeat('D', $this->decimal)
+                        str_repeat('D', $this->decimal)
                     ),
                     $value->toTypedString()
                 )
@@ -83,9 +83,9 @@ final class NumberFormat implements PropertyConstraint
         );
     }
 
-    public static function fromData(ConstraintData $data): PropertyConstraint
+    public static function fromData(ConstraintData $data): Constraint
     {
-        return new self(
+        return new static(
             $data->getArgument('decimal'),
             $data->getArgument('point'),
             $data->getArgument('thousands_separator')

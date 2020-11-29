@@ -4,23 +4,18 @@ namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
+use Star\Component\Document\Design\Domain\Model\Constraint;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 
 final class ClosureConstraint implements PropertyConstraint
 {
     /**
-     * @var string
-     */
-    private $name;
-
-    /**
      * @var \Closure
      */
     private $closure;
 
-    public function __construct(string $name, \Closure $closure)
+    public function __construct(\Closure $closure)
     {
-        $this->name = $name;
         $this->closure = $closure;
     }
 
@@ -30,25 +25,19 @@ final class ClosureConstraint implements PropertyConstraint
         $closure($propertyName, $value, $errors);
     }
 
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
     public function toData(): ConstraintData
     {
         throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
     }
 
-    public static function fromData(ConstraintData $data): PropertyConstraint
+    public static function fromData(ConstraintData $data): Constraint
     {
         throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
     }
 
-    public static function nullConstraint(string $name = 'closure'): self
+    public static function nullConstraint(): self
     {
         return new self(
-            $name,
             function () {
             }
         );

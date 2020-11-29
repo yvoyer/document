@@ -2,11 +2,11 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
-use Star\Component\Document\Common\Domain\Model\DocumentId;
-
 interface DocumentVisitor
 {
     public function visitDocument(DocumentId $id): void;
+
+    public function visitDocumentConstraint(string $name, DocumentConstraint $constraint): void;
 
     /**
      * @param PropertyName $name
@@ -15,7 +15,12 @@ interface DocumentVisitor
      */
     public function visitProperty(PropertyName $name, PropertyType $type): bool;
 
-    public function enterConstraints(PropertyName $propertyName): void;
+    /**
+     * Executed before iteration on property constraints
+     *
+     * @param PropertyName $propertyName
+     */
+    public function enterPropertyConstraints(PropertyName $propertyName): void;
 
     public function visitPropertyConstraint(
         PropertyName $propertyName,
@@ -23,7 +28,16 @@ interface DocumentVisitor
         PropertyConstraint $constraint
     ): void;
 
-    public function enterParameters(PropertyName $propertyName): void;
+    /**
+     * Executed before iteration on property parameters
+     *
+     * @param PropertyName $propertyName
+     */
+    public function enterPropertyParameters(PropertyName $propertyName): void;
 
-    public function visitParameter(PropertyName $propertyName, PropertyParameter $parameter): void;
+    public function visitPropertyParameter(
+        PropertyName $propertyName,
+        string $parameterName,
+        PropertyParameter $parameter
+    ): void;
 }

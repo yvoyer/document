@@ -36,17 +36,11 @@ final class CreateRecordHandler
 
     public function __invoke(CreateRecord $command): void
     {
-        $record = RecordAggregate::withoutValues(
+        $record = RecordAggregate::withValues(
             $command->recordId(),
-            $this->factory->createSchema($command->documentId())
+            $this->factory->createSchema($command->documentId()),
+            $command->valueMap()
         );
-        if (\count($command->valueMap()) > 0) {
-            $record = RecordAggregate::withValues(
-                $command->recordId(),
-                $this->factory->createSchema($command->documentId()),
-                $command->valueMap()
-            );
-        }
 
         $this->records->saveRecord($record->getIdentity(), $record);
     }

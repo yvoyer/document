@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Design\Domain\Model\Types;
+namespace Star\Component\Document\Tests\Design\Domain\Model\Types;
 
 use PHPUnit\Framework\TestCase;
-use Star\Component\Document\DataEntry\Domain\Model\RawValue;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 
 abstract class BaseTestType extends TestCase
@@ -13,16 +13,27 @@ abstract class BaseTestType extends TestCase
      */
     abstract protected function getType(): PropertyType;
 
+    abstract public static function provideInvalidValuesExceptions(): array;
+
     /**
-     * @param mixed $value
-     * @param string $message
+     * @param RecordValue $value
      *
      * @dataProvider provideInvalidValuesExceptions
      */
-    final public function test_it_should_throw_exception_when_setting_invalid_value($value, string $message): void
+    final public function test_it_should_throw_exception_when_setting_invalid_value(RecordValue $value): void
     {
-        $this->expectException(InvalidPropertyValue::class);
-        $this->expectExceptionMessage($message);
-        $this->getType()->createValue('name', RawValue::fromMixed($value));
+        $this->assertFalse($this->getType()->supportsValue($value));
+    }
+
+    abstract public static function provideInvalidTypesOfValueExceptions(): array;
+
+    /**
+     * @param RecordValue $value
+     *
+     * @dataProvider provideInvalidTypesOfValueExceptions
+     */
+    final public function test_it_should_throw_exception_when_setting_invalid_type_of_value(RecordValue $value): void
+    {
+        $this->assertFalse($this->getType()->supportsType($value));
     }
 }

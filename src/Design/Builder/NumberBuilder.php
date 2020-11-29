@@ -6,14 +6,17 @@ final class NumberBuilder extends PropertyBuilder
 {
     public function required(): self
     {
-        $this->withConstraint($this->constraints()->required());
+        $this->withConstraint('required', $this->constraints()->required());
 
         return $this;
     }
 
     public function asFloat(int $decimal = 2, string $point = '.', string $thousandsSeparator = ','): self
     {
-        $this->withConstraint($this->constraints()->numberFormat($decimal, $point, $thousandsSeparator));
+        $this->withConstraint(
+            'number-format',
+            $this->constraints()->numberFormat($decimal, $point, $thousandsSeparator)
+        );
 
         return $this;
     }

@@ -2,7 +2,8 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Schema;
 
-use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
+use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
@@ -36,6 +37,11 @@ final class SchemaDumper implements DocumentVisitor
         $this->data[self::INDEX_PROPERTIES] = [];
     }
 
+    public function visitDocumentConstraint(string $name, DocumentConstraint $constraint): void
+    {
+        throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
+    }
+
     public function visitProperty(PropertyName $name, PropertyType $type): bool
     {
         $this->data[self::INDEX_PROPERTIES][$name->toString()][self::INDEX_TYPE] = $type->toData()->toArray();
@@ -43,7 +49,7 @@ final class SchemaDumper implements DocumentVisitor
         return false;
     }
 
-    public function enterConstraints(PropertyName $propertyName): void
+    public function enterPropertyConstraints(PropertyName $propertyName): void
     {
         $this->data[self::INDEX_PROPERTIES][$propertyName->toString()][self::INDEX_CONSTRAINTS] = [];
     }
@@ -58,15 +64,18 @@ final class SchemaDumper implements DocumentVisitor
         $this->data[self::INDEX_PROPERTIES][$property][self::INDEX_CONSTRAINTS][$constraintName] = $constraintData;
     }
 
-    public function enterParameters(PropertyName $propertyName): void
+    public function enterPropertyParameters(PropertyName $propertyName): void
     {
         $this->data[self::INDEX_PROPERTIES][$propertyName->toString()][self::INDEX_PARAMETERS] = [];
     }
 
-    public function visitParameter(PropertyName $propertyName, PropertyParameter $parameter): void
-    {
+    public function visitPropertyParameter(
+        PropertyName $propertyName,
+        string $parameterName,
+        PropertyParameter $parameter
+    ): void {
         $parameterData = $parameter->toParameterData()->toArray();
-        $this->data[self::INDEX_PROPERTIES][$propertyName->toString()][self::INDEX_PARAMETERS][$parameter->getName()]
+        $this->data[self::INDEX_PROPERTIES][$propertyName->toString()][self::INDEX_PARAMETERS][$parameterName]
             = $parameterData;
     }
 }

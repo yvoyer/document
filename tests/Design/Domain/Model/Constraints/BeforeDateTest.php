@@ -1,10 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Design\Domain\Model\Constraints;
+namespace Star\Component\Document\Tests\Design\Domain\Model\Constraints;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
-use Star\Component\Document\Design\Domain\Model\Values\DateValue;
+use Star\Component\Document\DataEntry\Domain\Model\Values\DateValue;
+use Star\Component\Document\Design\Domain\Model\Constraints\BeforeDate;
 
 final class BeforeDateTest extends TestCase
 {
@@ -39,13 +40,14 @@ final class BeforeDateTest extends TestCase
      * @dataProvider provideInvalidValues
      *
      * @param string $value
+     * @param string $format
      */
-    public function test_it_should_be_invalid(string $value): void
+    public function test_it_should_be_invalid(string $value, string $format): void
     {
         $constraint = new BeforeDate('2000-05-05 02:03:04');
         $constraint->validate(
             $name = 'prop',
-            DateValue::fromString($value),
+            DateValue::fromString($value, $format),
             $errors = new ErrorList()
         );
         $this->assertCount(1, $errors);
@@ -59,10 +61,10 @@ final class BeforeDateTest extends TestCase
     public static function provideInvalidValues(): array
     {
         return [
-            'past hour' => ['2000-05-05 01:03:04'],
-            'past minute' => ['2000-05-05 02:02:04'],
-            'past second' => ['2000-05-05 02:03:03'],
-            'greater day' => ['2000-05-06'],
+            'past hour' => ['2000-05-05 01:03:04', 'Y-m-d H:i:s'],
+            'past minute' => ['2000-05-05 02:02:04', 'Y-m-d H:i:s'],
+            'past second' => ['2000-05-05 02:03:03', 'Y-m-d H:i:s'],
+            'greater day' => ['2000-05-06', 'Y-m-d'],
         ];
     }
 

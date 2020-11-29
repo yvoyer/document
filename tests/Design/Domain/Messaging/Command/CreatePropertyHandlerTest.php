@@ -1,14 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Design\Domain\Messaging\Command;
+namespace Star\Component\Document\Tests\Design\Domain\Messaging\Command;
 
 use PHPUnit\Framework\TestCase;
-use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Builder\DocumentBuilder;
-use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
+use Star\Component\Document\Design\Domain\Messaging\Command\CreateProperty;
+use Star\Component\Document\Design\Domain\Messaging\Command\CreatePropertyHandler;
+use Star\Component\Document\Design\Domain\Model\DocumentAggregate;
+use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\Schema\PropertyDefinition;
 use Star\Component\Document\Design\Domain\Model\Types\StringType;
+use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
 use Star\Component\Identity\Exception\EntityNotFoundException;
 
@@ -25,7 +28,7 @@ final class CreatePropertyHandlerTest extends TestCase
     private $documents;
 
     /**
-     * @var DocumentDesigner
+     * @var DocumentAggregate
      */
     private $document;
 
@@ -39,17 +42,19 @@ final class CreatePropertyHandlerTest extends TestCase
 
     public function test_it_should_create_a_property(): void
     {
-        $this->documents->saveDocument($id = DocumentId::fromString('id'), $this->document);
+        $id = $this->document->getIdentity();
+        $this->documents->saveDocument($this->document);
 
         $this->handler->__invoke(
             new CreateProperty(
                 $id,
-                $name = PropertyName::fromString('name'),
+                PropertyName::fromString($name = 'name'),
                 new StringType()
             )
         );
 
-        $this->assertInstanceOf(PropertyDefinition::class, $this->document->getPropertyDefinition($name));
+        $this->document->acceptDocumentVisitor($visitor = new PropertyExtractor());
+        $this->assertInstanceOf(PropertyDefinition::class, $visitor->getProperty($name));
     }
 
     public function test_it_should_throw_exception_when_document_not_found(): void

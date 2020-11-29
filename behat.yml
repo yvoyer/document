@@ -2,4 +2,4 @@ default:
     suites:
         default:
             paths: ["%paths.base%/features"]
-            contexts: [Star\Component\Document\FeatureContext]
+            contexts: [Star\Component\Document\Tests\FeatureContext]

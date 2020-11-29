@@ -4,29 +4,23 @@ namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
+use Star\Component\Document\Design\Domain\Model\Constraint;
+use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
+use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
+use function array_map;
+use function array_merge;
 
-final class All implements PropertyConstraint
+final class All implements PropertyConstraint, DocumentConstraint
 {
-    /**
-     * @var string
-     */
-    private $name;
-
     /**
      * @var PropertyConstraint[]
      */
     private $constraints;
 
-    public function __construct(string $name, PropertyConstraint $first, PropertyConstraint ...$constraints)
+    public function __construct(PropertyConstraint $first, PropertyConstraint ...$constraints)
     {
-        $this->name = $name;
-        $this->constraints = \array_merge([$first], $constraints);
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
+        $this->constraints = array_merge([$first], $constraints);
     }
 
     public function validate(string $propertyName, RecordValue $value, ErrorList $errors): void
@@ -36,13 +30,17 @@ final class All implements PropertyConstraint
         }
     }
 
+    public function onRegistered(DocumentDesigner $document): void
+    {
+        throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
+    }
+
     public function toData(): ConstraintData
     {
         return new ConstraintData(
             self::class,
             [
-                'name' => $this->name,
-                'constraints' => \array_map(
+                'constraints' => array_map(
                     function (PropertyConstraint $constraint) {
                         return $constraint->toData()->toArray();
                     },
@@ -52,11 +50,10 @@ final class All implements PropertyConstraint
         );
     }
 
-    public static function fromData(ConstraintData $data): PropertyConstraint
+    public static function fromData(ConstraintData $data): Constraint
     {
-        return new self(
-            $data->getArgument('name'),
-            ...\array_map(
+        return new static(
+            ...array_map(
                 function (array $constraint) {
                     /**
                      * @var PropertyConstraint $class

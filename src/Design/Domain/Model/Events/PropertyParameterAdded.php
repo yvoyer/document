@@ -2,12 +2,11 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Events;
 
-use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyParameter;
-use Star\Component\DomainEvent\DomainEvent;
 
-final class PropertyParameterAdded implements DomainEvent
+final class PropertyParameterAdded implements DocumentEvent
 {
     /**
      * @var DocumentId
@@ -20,6 +19,11 @@ final class PropertyParameterAdded implements DomainEvent
     private $property;
 
     /**
+     * @var string
+     */
+    private $parameterName;
+
+    /**
      * @var PropertyParameter
      */
     private $parameter;
@@ -27,10 +31,12 @@ final class PropertyParameterAdded implements DomainEvent
     public function __construct(
         DocumentId $documentId,
         PropertyName $property,
+        string $parameterName,
         PropertyParameter $parameter
     ) {
         $this->documentId = $documentId;
         $this->property = $property;
+        $this->parameterName = $parameterName;
         $this->parameter = $parameter;
     }
 
@@ -42,6 +48,11 @@ final class PropertyParameterAdded implements DomainEvent
     public function property(): PropertyName
     {
         return $this->property;
+    }
+
+    public function parameterName(): string
+    {
+        return $this->parameterName;
     }
 
     public function parameter(): PropertyParameter

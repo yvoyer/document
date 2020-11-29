@@ -1,10 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Design\Infrastructure\Persistence\InMemory;
+namespace Star\Component\Document\Tests\Design\Infrastructure\Persistence\InMemory;
 
 use PHPUnit\Framework\TestCase;
-use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
+use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
+use Star\Component\Document\Tests\Design\Domain\Model\TestDocument;
 use Star\Component\Identity\Exception\EntityNotFoundException;
 
 final class DocumentCollectionTest extends TestCase
@@ -23,10 +24,9 @@ final class DocumentCollectionTest extends TestCase
     {
         $this->assertCount(0, $this->collection);
 
-        $this->collection->saveDocument(
-            $id = DocumentId::fromString('d1'),
-            $document = $this->createMock(DocumentDesigner::class)
-        );
+        $document = TestDocument::fixture();
+        $id = $document->getIdentity();
+        $this->collection->saveDocument($document);
 
         $this->assertCount(1, $this->collection);
         $this->assertSame($document, $this->collection->getDocumentByIdentity($id));

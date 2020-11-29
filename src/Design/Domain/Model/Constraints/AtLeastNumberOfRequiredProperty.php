@@ -3,14 +3,17 @@
 namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
 use Assert\Assertion;
-use Star\Component\Document\Common\Domain\Model\DocumentId;
+use RuntimeException;
+use Star\Component\Document\Design\Domain\Model\Constraint;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
+use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyParameter;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
+use function sprintf;
 
 final class AtLeastNumberOfRequiredProperty implements DocumentVisitor, DocumentConstraint
 {
@@ -34,6 +37,11 @@ final class AtLeastNumberOfRequiredProperty implements DocumentVisitor, Document
     {
     }
 
+    public function visitDocumentConstraint(string $name, DocumentConstraint $constraint): void
+    {
+        throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
+    }
+
     public function visitProperty(PropertyName $name, PropertyType $type): bool
     {
         $this->count ++;
@@ -41,9 +49,9 @@ final class AtLeastNumberOfRequiredProperty implements DocumentVisitor, Document
         return false;
     }
 
-    public function enterConstraints(PropertyName $propertyName): void
+    public function enterPropertyConstraints(PropertyName $propertyName): void
     {
-        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+        throw new RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
     }
 
     public function visitPropertyConstraint(
@@ -53,27 +61,40 @@ final class AtLeastNumberOfRequiredProperty implements DocumentVisitor, Document
     ): void {
     }
 
-    public function enterParameters(PropertyName $propertyName): void
+    public function enterPropertyParameters(PropertyName $propertyName): void
     {
-        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+        throw new RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
     }
 
-    public function visitParameter(PropertyName $propertyName, PropertyParameter $parameter): void
-    {
-        throw new \RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+    public function visitPropertyParameter(
+        PropertyName $propertyName,
+        string $parameterName,
+        PropertyParameter $parameter
+    ): void {
+        throw new RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
     }
 
-    public function onPublish(DocumentDesigner $document): void
+    public function onRegistered(DocumentDesigner $document): void
     {
         $document->acceptDocumentVisitor($this);
         if ($this->count < $this->number) {
             throw new MissingRequiredProperty(
-                \sprintf(
+                sprintf(
                     'Document must have at least "%s" required property, got "%s".',
                     $this->number,
                     $this->count
                 )
             );
         }
+    }
+
+    public function toData(): ConstraintData
+    {
+        throw new RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
+    }
+
+    public static function fromData(ConstraintData $data): Constraint
+    {
+        throw new RuntimeException('Method ' . __METHOD__ . ' not implemented yet.');
     }
 }

@@ -2,8 +2,10 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Schema;
 
-use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\DataEntry\Domain\Model\PropertyMetadata;
+use Star\Component\Document\DataEntry\Domain\Model\SchemaMetadata;
 use Star\Component\Document\Design\Domain\Model\Constraints\ConstraintData;
+use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\Parameters\ParameterData;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
@@ -11,8 +13,11 @@ use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyParameter;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Types\TypeData;
+use function array_key_exists;
+use function json_decode;
+use function json_encode;
 
-final class DocumentSchema
+final class DocumentSchema implements SchemaMetadata
 {
     /**
      * @var DocumentId
@@ -39,28 +44,39 @@ final class DocumentSchema
         $this->properties[$property] = new PropertyDefinition(PropertyName::fromString($property), $type);
     }
 
-    public function removeConstraint(string $property, string $constraint): void
+    public function hasProperty(string $property): bool
     {
-        $this->properties[$property] = $this->getDefinition($property)->removeConstraint($constraint);
+        return array_key_exists($property, $this->properties);
     }
 
-    public function addConstraint(string $property, PropertyConstraint $constraint): void
+    public function getPropertyMetadata(string $property): PropertyMetadata
     {
-        $this->properties[$property] = $this->getDefinition($property)->addConstraint($constraint);
+        return $this->getPropertyDefinition($property);
     }
 
-    public function addParameter(string $property, PropertyParameter $parameter): void
+    public function removePropertyConstraint(string $property, string $constraint): void
     {
-        $this->properties[$property] = $this->getDefinition($property)->addParameter($parameter);
+        $this->properties[$property] = $this->getPropertyDefinition($property)->removeConstraint($constraint);
     }
 
-    public function getDefinition(string $property): PropertyDefinition
-    {
-        if (!\array_key_exists($property, $this->properties)) {
-            throw new ReferencePropertyNotFound(PropertyName::fromString($property));
-        }
+    public function addPropertyConstraint(
+        string $property,
+        string $constraintName,
+        PropertyConstraint $constraint
+    ): void {
+        $this->properties[$property] = $this
+            ->getPropertyDefinition($property)
+            ->addConstraint($constraintName, $constraint);
+    }
 
-        return $this->properties[$property];
+    public function addParameter(
+        string $property,
+        string $parameterName,
+        PropertyParameter $parameter
+    ): void {
+        $this->properties[$property] = $this
+            ->getPropertyDefinition($property)
+            ->addParameter($parameterName, $parameter);
     }
 
     public function acceptDocumentVisitor(DocumentVisitor $visitor): void
@@ -82,12 +98,21 @@ final class DocumentSchema
     {
         $this->acceptDocumentVisitor($dumper = new SchemaDumper());
 
-        return (string) \json_encode($dumper->toArray());
+        return (string) json_encode($dumper->toArray());
     }
 
-    public static function fromString(string $string): DocumentSchema
+    private function getPropertyDefinition(string $property): PropertyDefinition
     {
-        $data = \json_decode($string, true);
+        if (!$this->hasProperty($property)) {
+            throw new ReferencePropertyNotFound(PropertyName::fromString($property));
+        }
+
+        return $this->properties[$property];
+    }
+
+    public static function fromJsonString(string $string): DocumentSchema
+    {
+        $data = json_decode($string, true);
         $schema = new DocumentSchema(DocumentId::fromString($data[SchemaDumper::INDEX_ID]));
         foreach ($data[SchemaDumper::INDEX_PROPERTIES] as $propertyName => $propertyData) {
             $schema->addProperty(
@@ -96,19 +121,21 @@ final class DocumentSchema
             );
 
             foreach ($propertyData[SchemaDumper::INDEX_CONSTRAINTS] as $constraintName => $constraintData) {
-                $schema->addConstraint(
+                $schema->addPropertyConstraint(
                     $propertyName,
-                    ConstraintData::fromArray($constraintData)->createConstraint()
+                    $constraintName,
+                    ConstraintData::fromArray($constraintData)->createPropertyConstraint()
                 );
             }
 
-            if (! \array_key_exists(SchemaDumper::INDEX_PARAMETERS, $propertyData)) {
+            if (! array_key_exists(SchemaDumper::INDEX_PARAMETERS, $propertyData)) {
                 $propertyData[SchemaDumper::INDEX_PARAMETERS] = [];
             }
 
             foreach ($propertyData[SchemaDumper::INDEX_PARAMETERS] as $parameterName => $parameterData) {
                 $schema->addParameter(
                     $propertyName,
+                    $parameterName,
                     ParameterData::fromArray($parameterData)->createParameter()
                 );
             }

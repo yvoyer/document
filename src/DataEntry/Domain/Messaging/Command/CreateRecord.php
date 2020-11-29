@@ -3,10 +3,10 @@
 namespace Star\Component\Document\DataEntry\Domain\Messaging\Command;
 
 use Assert\Assertion;
-use Couchbase\DocIdSearchQuery;
-use Star\Component\Document\Common\Domain\Messaging\Command;
-use Star\Component\Document\Common\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\DomainEvent\Messaging\Command;
 
 final class CreateRecord implements Command
 {
@@ -21,14 +21,14 @@ final class CreateRecord implements Command
     private $recordId;
 
     /**
-     * @var mixed[]
+     * @var RecordValue[]
      */
     private $values = [];
 
     /**
      * @param DocumentId $documentId
      * @param RecordId $recordId
-     * @param mixed[] $values
+     * @param RecordValue[] $values
      */
     public function __construct(
         DocumentId $documentId,
@@ -39,7 +39,11 @@ final class CreateRecord implements Command
             \array_keys($values),
             'Keys of value map "%s" is expected to be the name of the property, "%s" given.'
         );
-        Assertion::allScalar($values, 'Values of value map "%s" is expected to be a scalar.');
+        Assertion::allIsInstanceOf(
+            $values,
+            RecordValue::class,
+            'Value in value map "%s" was expected to be an instances of "%s".'
+        );
         $this->documentId = $documentId;
         $this->recordId = $recordId;
         $this->values = $values;
@@ -56,7 +60,7 @@ final class CreateRecord implements Command
     }
 
     /**
-     * @return mixed[]
+     * @return RecordValue[]
      */
     public function valueMap(): array
     {

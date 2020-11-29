@@ -2,7 +2,6 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Messaging\Query;
 
-use React\Promise\Deferred;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
 use Star\Component\Document\DataEntry\Domain\Model\RecordRepository;
 
@@ -18,9 +17,9 @@ final class GetAllRecordsOfDocumentHandler
         $this->records = $records;
     }
 
-    public function __invoke(GetAllRecordsOfDocument $message, Deferred $deferred): void
+    public function __invoke(GetAllRecordsOfDocument $message): void
     {
-        $deferred->resolve(
+        $message(
             array_map(
                 function (DocumentRecord $record) {
                     return new RecordRow($record);

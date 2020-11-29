@@ -2,22 +2,33 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
-interface DocumentDesigner extends ReadOnlyDocument
+interface DocumentDesigner
 {
-    public function publish(): void;
+    /**
+     * @return DocumentId
+     */
+    public function getIdentity(): DocumentId;
 
-    public function addProperty(
+    /**
+     * @param DocumentVisitor $visitor
+     */
+    public function acceptDocumentVisitor(DocumentVisitor $visitor): void;
+
+    public function addProperty(PropertyName $name, PropertyType $type): void;
+
+    public function addPropertyConstraint(
         PropertyName $name,
-        PropertyType $type,
-        PropertyConstraint $constraint = null,
-        PropertyParameter $parameter = null
+        string $constraintName,
+        PropertyConstraint $constraint
     ): void;
 
-    public function addPropertyConstraint(PropertyName $name, PropertyConstraint $constraint): void;
+    public function addPropertyParameter(
+        PropertyName $name,
+        string $parameterName,
+        PropertyParameter $parameter
+    ): void;
 
-    public function addPropertyParameter(PropertyName $name, PropertyParameter $parameter): void;
+    public function addDocumentConstraint(string $name, DocumentConstraint $constraint): void;
 
-    public function setDocumentConstraint(DocumentConstraint $constraint): void;
-
-    public function removeConstraint(PropertyName $name, string $constraintName): void;
+    public function removePropertyConstraint(PropertyName $name, string $constraintName): void;
 }

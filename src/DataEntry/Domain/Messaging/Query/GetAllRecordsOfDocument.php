@@ -2,10 +2,10 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Messaging\Query;
 
-use Star\Component\Document\Common\Domain\Messaging\Query;
-use Star\Component\Document\Common\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\DomainEvent\Messaging\Results\CollectionQuery;
 
-final class GetAllRecordsOfDocument implements Query
+final class GetAllRecordsOfDocument extends CollectionQuery
 {
     /**
      * @var DocumentId

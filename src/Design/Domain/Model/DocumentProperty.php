@@ -7,24 +7,18 @@ use Star\Component\Document\Design\Domain\Model\Schema\PropertyDefinition;
 final class DocumentProperty implements ReadOnlyProperty
 {
     /**
-     * @var DocumentDesigner
-     */
-    private $document;
-
-    /**
      * @var PropertyDefinition
      */
     private $definition;
 
-    public function __construct(DocumentDesigner $document, PropertyDefinition $definition)
+    public function __construct(PropertyDefinition $definition)
     {
-        $this->document = $document;
         $this->definition = $definition;
     }
 
-    public function addConstraint(PropertyConstraint $constraint): void
+    public function addConstraint(string $name, PropertyConstraint $constraint): void
     {
-        $this->definition = $this->definition->addConstraint($constraint);
+        $this->definition = $this->definition->addConstraint($name, $constraint);
     }
 
     public function removeConstraint(string $name): void

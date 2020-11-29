@@ -2,10 +2,9 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Events;
 
-use Star\Component\Document\Common\Domain\Model\DocumentId;
-use Star\Component\DomainEvent\DomainEvent;
+use Star\Component\Document\Design\Domain\Model\DocumentId;
 
-final class DocumentCreated implements DomainEvent
+final class DocumentCreated implements DocumentEvent
 {
     /**
      * @var DocumentId

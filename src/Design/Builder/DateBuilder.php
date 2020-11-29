@@ -6,35 +6,35 @@ final class DateBuilder extends PropertyBuilder
 {
     public function required(): self
     {
-        $this->withConstraint($this->constraints()->required());
+        $this->withConstraint('required', $this->constraints()->required());
 
         return $this;
     }
 
     public function beforeDate(string $date): self
     {
-        $this->withConstraint($this->constraints()->beforeDate($date));
+        $this->withConstraint('before-date', $this->constraints()->beforeDate($date));
 
         return $this;
     }
 
     public function afterDate(string $date): self
     {
-        $this->withConstraint($this->constraints()->afterDate($date));
+        $this->withConstraint('after-date', $this->constraints()->afterDate($date));
 
         return $this;
     }
 
     public function betweenDate(string $start, string $end): self
     {
-        $this->withConstraint($this->constraints()->betweenDate($start, $end));
+        $this->withConstraint('between', $this->constraints()->betweenDate($start, $end));
 
         return $this;
     }
 
-    public function requireFormat(string $format): self
+    public function outputAsFormat(string $format): self
     {
-        $this->withConstraint($this->constraints()->dateFormat($format));
+        $this->withParameter('format', $this->parameters()->dateFormat($format));
 
         return $this;
     }

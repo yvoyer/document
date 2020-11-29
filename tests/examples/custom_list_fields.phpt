@@ -5,13 +5,15 @@ Custom-list fields supported constraints.
 
 use Star\Component\Document\Design\Builder\DocumentBuilder;
 use Star\Component\Document\Design\Domain\Structure\OutputDocument;
+use Star\Component\Document\DataEntry\Domain\Model\Values\OptionListValue;
 
 require __DIR__ . '/../../vendor/autoload.php';
 
 $document = DocumentBuilder::createDocument('All lists')
-    ->createCustomList('Optional', 'option 1')->endProperty()
-    ->createCustomList('Required', 'option 1')->required()->endProperty()
-    ->createCustomList('Allow multi-option', 'option 2')->allowMultiOption()->endProperty()
+    ->createListOfOptions('Optional', OptionListValue::withElements(1))->endProperty()
+    ->createListOfOptions('Required', OptionListValue::withElements(2))->required()->endProperty()
+    ->createListOfOptions('Single option', OptionListValue::withElements(3))->singleOption()->endProperty()
+    ->createListOfOptions('Multi option', OptionListValue::withElements(4))->endProperty()
     ->getDocument();
 $document->acceptDocumentVisitor(new OutputDocument())
 ?>
@@ -22,9 +24,12 @@ Property: Optional (list)
   Parameters:
 Property: Required (list)
   Constraints:
-    - required-count({"count":1})
+    - required({"count":1})
   Parameters:
-Property: Allow multi-option (list)
+Property: Single option (list)
   Constraints:
   Parameters:
-    - allow-multiple([])
+    - single-option([])
+Property: Multi option (list)
+  Constraints:
+  Parameters:

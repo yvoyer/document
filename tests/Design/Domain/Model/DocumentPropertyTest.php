@@ -1,10 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Design\Domain\Model;
+namespace Star\Component\Document\Tests\Design\Domain\Model;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Design\Domain\Model\Constraints\All;
 use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
+use Star\Component\Document\Design\Domain\Model\DocumentProperty;
+use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\Schema\PropertyDefinition;
 use Star\Component\Document\Design\Domain\Model\Types\NullType;
 
@@ -18,7 +20,6 @@ final class DocumentPropertyTest extends TestCase
     public function setUp(): void
     {
         $this->property = new DocumentProperty(
-            $this->createMock(DocumentDesigner::class),
             new PropertyDefinition(PropertyName::fromString('name'), new NullType())
         );
     }
@@ -33,7 +34,7 @@ final class DocumentPropertyTest extends TestCase
     {
         $this->assertFalse($this->property->getDefinition()->hasConstraint('name'));
 
-        $this->property->addConstraint(new All('name', new NoConstraint()));
+        $this->property->addConstraint('name', new All(new NoConstraint()));
 
         $this->assertTrue($this->property->getDefinition()->hasConstraint('name'));
 

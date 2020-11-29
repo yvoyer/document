@@ -2,30 +2,48 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
-use Star\Component\Document\DataEntry\Domain\Model\RawValue;
+use RuntimeException;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
-use Star\Component\Document\Design\Domain\Model\Values\EmptyValue;
-use Star\Component\Document\Design\Domain\Model\Values\StringValue;
+use Star\Component\Document\DataEntry\Domain\Model\Values\StringValue;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 
 final class StringType implements PropertyType
 {
-    public function createValue(string $propertyName, RawValue $rawValue): RecordValue
+    public function toWriteFormat(RecordValue $value): RecordValue
     {
-        if ($rawValue->isEmpty()) {
-            return new EmptyValue();
-        }
-
-        if (!$rawValue->isString()) {
-            throw InvalidPropertyValue::invalidValueForType($propertyName, $this->toString(), $rawValue);
-        }
-
-        return StringValue::fromString($rawValue->toString());
+        return $value;
     }
 
-    public function createDefaultValue(): RecordValue
+    public function toReadFormat(RecordValue $value): RecordValue
     {
-        return StringValue::fromString('');
+        return $value;
+    }
+
+    public function supportsType(RecordValue $value): bool
+    {
+        return $value instanceof StringValue || $value->isEmpty();
+    }
+
+    public function supportsValue(RecordValue $value): bool
+    {
+        return $value->isEmpty() || $value instanceof StringValue;
+    }
+
+    public function generateExceptionForNotSupportedTypeForValue(
+        string $property,
+        RecordValue $value
+    ): NotSupportedTypeForValue {
+        return new NotSupportedTypeForValue($property, $value, $this);
+    }
+
+    public function generateExceptionForNotSupportedValue(string $property, RecordValue $value): InvalidPropertyValue
+    {
+        throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
+    }
+
+    public function doBehavior(string $property, RecordValue $value): RecordValue
+    {
+        throw new RuntimeException(__METHOD__ . ' not implemented yet.');
     }
 
     public function toData(): TypeData
@@ -33,7 +51,7 @@ final class StringType implements PropertyType
         return new TypeData(self::class);
     }
 
-    public function toString(): string
+    public function toHumanReadableString(): string
     {
         return 'string';
     }

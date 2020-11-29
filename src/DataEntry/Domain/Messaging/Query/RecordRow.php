@@ -35,6 +35,6 @@ final class RecordRow
      */
     public function getValue(string $property): string
     {
-        return $this->record->getValue($property)->toReadableString();
+        return $this->record->getValue($property)->toString();
     }
 }

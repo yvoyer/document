@@ -3,7 +3,9 @@
 namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
 use Assert\Assertion;
+use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
+use function json_encode;
 
 final class ConstraintData
 {
@@ -37,10 +39,20 @@ final class ConstraintData
         return $this->arguments[$argument];
     }
 
-    public function createConstraint(): PropertyConstraint
+    public function createPropertyConstraint(): PropertyConstraint
     {
         /**
          * @var PropertyConstraint $class
+         */
+        $class = $this->class;
+
+        return $class::fromData($this);
+    }
+
+    public function createDocumentConstraint(): DocumentConstraint
+    {
+        /**
+         * @var DocumentConstraint $class
          */
         $class = $this->class;
 
@@ -60,7 +72,7 @@ final class ConstraintData
 
     public function toString(): string
     {
-        return (string) \json_encode($this->toArray());
+        return (string) json_encode($this->toArray());
     }
 
     /**

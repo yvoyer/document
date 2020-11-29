@@ -22,8 +22,8 @@ final class CreateDocumentHandler
 
     public function __invoke(CreateDocument $command): void
     {
-        $document = DocumentAggregate::draft($id = $command->documentId());
+        $document = DocumentAggregate::draft($command->documentId());
 
-        $this->documents->saveDocument($id, $document);
+        $this->documents->saveDocument($document);
     }
 }

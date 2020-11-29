@@ -34,16 +34,16 @@ abstract class PropertyBuilder
         $this->builder = $builder;
     }
 
-    public function withConstraint(PropertyConstraint $constraint): self
+    public function withConstraint(string $constraintName, PropertyConstraint $constraint): self
     {
-        $this->document->addPropertyConstraint($this->name, $constraint);
+        $this->document->addPropertyConstraint($this->name, $constraintName, $constraint);
 
         return $this;
     }
 
-    public function withParameter(PropertyParameter $parameter): self
+    public function withParameter(string $parameterName, PropertyParameter $parameter): self
     {
-        $this->document->addPropertyParameter($this->name, $parameter);
+        $this->document->addPropertyParameter($this->name, $parameterName, $parameter);
 
         return $this;
     }
@@ -61,5 +61,10 @@ abstract class PropertyBuilder
     protected function constraints(): ConstraintBuilder
     {
         return $this->builder::constraints();
+    }
+
+    protected function parameters(): ParameterBuilder
+    {
+        return $this->builder::parameters();
     }
 }

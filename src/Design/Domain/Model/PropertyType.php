@@ -2,25 +2,62 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
-use Star\Component\Document\DataEntry\Domain\Model\RawValue;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+use Star\Component\Document\Design\Domain\Model\Types\InvalidPropertyValue;
+use Star\Component\Document\Design\Domain\Model\Types\NotSupportedTypeForValue;
 use Star\Component\Document\Design\Domain\Model\Types\TypeData;
 
 interface PropertyType
 {
     /**
-     * @param string $propertyName // todo Replace to PropertyName
-     * @param RawValue  $rawValue
+     * Convert the $value to a write-only format
      *
+     * @param RecordValue $value
      * @return RecordValue
      */
-    public function createValue(string $propertyName, RawValue $rawValue): RecordValue;
+    public function toWriteFormat(RecordValue $value): RecordValue;
 
-    public function createDefaultValue(): RecordValue;
+    /**
+     * Convert the $value to a read-only format
+     *
+     * @param RecordValue $value
+     * @return RecordValue
+     */
+    public function toReadFormat(RecordValue $value): RecordValue;
+
+    /**
+     * Whether the type of the value is supported by the PropertyType
+     * @param RecordValue $value
+     * @return bool
+     */
+    public function supportsType(RecordValue $value): bool;
+
+    /**
+     * Whether the content of the RecordValue is supported by the PropertyType
+     *
+     * @param RecordValue $value
+     * @return bool
+     */
+    public function supportsValue(RecordValue $value): bool;
+
+    public function generateExceptionForNotSupportedTypeForValue(
+        string $property,
+        RecordValue $value
+    ): NotSupportedTypeForValue;
+
+    public function generateExceptionForNotSupportedValue(
+        string $property,
+        RecordValue $value
+    ): InvalidPropertyValue;
+
+    public function doBehavior(string $property, RecordValue $value): RecordValue;
 
     public function toData(): TypeData;
 
-    public function toString(): string;
+    /**
+     * @return string The human-readable name of the type
+     */
+    public function toHumanReadableString(): string;
 
     /**
      * @param mixed[] $arguments

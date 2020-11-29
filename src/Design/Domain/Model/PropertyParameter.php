@@ -7,11 +7,23 @@ use Star\Component\Document\Design\Domain\Model\Parameters\ParameterData;
 
 interface PropertyParameter extends CanBeValidated
 {
+    /**
+     * Allow execution of a transformation prior to the setting of the value
+     *
+     * @param RecordValue $value
+     * @return RecordValue
+     */
+    public function toWriteFormat(RecordValue $value): RecordValue;
+
+    /**
+     * Allow execution of a transformation prior to the return of the value
+     *
+     * @param RecordValue $value
+     * @return RecordValue
+     */
+    public function toReadFormat(RecordValue $value): RecordValue;
+
     public function toParameterData(): ParameterData;
-
-    public function getName(): string;
-
-    public function onCreateDefaultValue(RecordValue $value): RecordValue;
 
     public static function fromParameterData(ParameterData $data): PropertyParameter;
 }

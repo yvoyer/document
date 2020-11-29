@@ -8,13 +8,13 @@ interface DocumentRecord extends ReadOnlyRecord
 {
     /**
      * @param string $propertyName
-     * @param mixed $rawValue
-     * @param StrategyToHandleValidationErrors $strategy
+     * @param RecordValue $value
+     * @param StrategyToHandleValidationErrors|null $strategy
      */
     public function setValue(
         string $propertyName,
-        $rawValue,
-        StrategyToHandleValidationErrors $strategy
+        RecordValue $value,
+        StrategyToHandleValidationErrors $strategy = null
     ): void;
 
     /**

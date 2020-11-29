@@ -4,6 +4,8 @@ namespace Star\Component\Document\Design\Domain\Model\Parameters;
 
 use Assert\Assertion;
 use Star\Component\Document\Design\Domain\Model\PropertyParameter;
+use function get_class;
+use function json_decode;
 
 final class ParameterData
 {
@@ -90,6 +92,21 @@ final class ParameterData
      */
     public static function fromParameter(PropertyParameter $parameter, array $arguments = []): self
     {
-        return new self(\get_class($parameter), $arguments);
+        return new self(get_class($parameter), $arguments);
+    }
+
+    /**
+     * @param string $class
+     * @param string $argumentsAsJsonString
+     * @return ParameterData
+     */
+    public static function fromJson(string $class, string $argumentsAsJsonString): self
+    {
+        return self::fromArray(
+            [
+                'class' => $class,
+                'arguments' => json_decode($argumentsAsJsonString, true),
+            ]
+        );
     }
 }
