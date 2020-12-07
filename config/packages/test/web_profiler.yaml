@@ -1,0 +1,7 @@
+# todo might be removed, since not loaded in config/bundles.php
+#web_profiler:
+#    toolbar: false
+#    intercept_redirects: false
+#
+#framework:
+#    profiler: { collect: false }

@@ -2,6 +2,16 @@
 /bin
 .idea
 !/bin/build.sh
+!/bin/console
 /infection-log.txt
 /composer.lock
 /.phpunit.result.cache
+
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+###< symfony/framework-bundle ###
