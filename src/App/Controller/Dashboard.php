@@ -2,24 +2,36 @@
 
 namespace App\Controller;
 
-use App\AppRouteStore;
-use App\Installation\InstallationChecker;
+use Star\Component\Document\Design\Domain\Messaging\Query\FindAllMyDocuments;
+use Star\Component\DomainEvent\Messaging\QueryBus;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 final class Dashboard extends AppController
 {
     /**
+     * @var QueryBus
+     */
+    private $queries;
+
+    public function __construct(QueryBus $queries)
+    {
+        $this->queries = $queries;
+    }
+
+    /**
      * @Route(path="/", name="dashboard")
      *
-     * @param InstallationChecker $checker
      * @return Response
      */
-    public function __invoke(InstallationChecker $checker): Response {
-        if (! $checker->isInstalled()) {
-            return $this->redirect($this->generateUrl(AppRouteStore::SETUP));
-        }
-
-        return $this->render('Dashboard\index.html.twig');
+    public function __invoke(): Response {
+        $this->queries->dispatchQuery($query = new FindAllMyDocuments());
+\var_dump($query->getResult());
+        return $this->render(
+            'Dashboard\index.html.twig',
+            [
+                'documents' => $query->getResult(),
+            ]
+        );
     }
 }

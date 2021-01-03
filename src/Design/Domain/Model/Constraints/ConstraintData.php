@@ -5,7 +5,9 @@ namespace Star\Component\Document\Design\Domain\Model\Constraints;
 use Assert\Assertion;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
+use function json_decode;
 use function json_encode;
+use function json_last_error;
 
 final class ConstraintData
 {
@@ -17,7 +19,7 @@ final class ConstraintData
     /**
      * @var mixed[]
      */
-    private $arguments = [];
+    private $arguments;
 
     /**
      * @param string $class
@@ -75,12 +77,37 @@ final class ConstraintData
         return (string) json_encode($this->toArray());
     }
 
+    public static function fromString(string $string): self
+    {
+        Assertion::isJsonString($string);
+        $data = json_decode($string, true);
+
+        return self::fromArray($data);
+    }
+
     /**
      * @param mixed[] $data
      * @return ConstraintData
      */
     public static function fromArray(array $data): self
     {
+        Assertion::keyExists(
+            $data,
+            'class',
+            'Constraint data does not contain an element with key "%s".'
+        );
+        Assertion::keyExists(
+            $data,
+            'arguments',
+            'Constraint data does not contain an element with key "%s".'
+        );
+
         return new self($data['class'], $data['arguments']);
+    }
+
+    public static function isValidString(string $string): bool
+    {
+        json_decode($string);
+        return json_last_error() === JSON_ERROR_NONE;
     }
 }

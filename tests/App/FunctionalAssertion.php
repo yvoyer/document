@@ -8,6 +8,7 @@ use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Response;
 use function json_encode;
 use function sprintf;
+use function str_replace;
 use function var_dump;
 
 final class FunctionalAssertion
@@ -37,7 +38,7 @@ final class FunctionalAssertion
         $this->crawler = $crawler;
     }
 
-    public function assertRedirectingTo(string $location = null, int $code = 302): self
+    public function assertRedirectingTo(string $location, int $code = 302): self
     {
         Assert::assertTrue(
             $this->response->isRedirect($location),
@@ -63,14 +64,13 @@ final class FunctionalAssertion
         return $this->newSelf($this->crawler);
     }
 
-    public function assertCurrentPageIs(string $location, int $code): self
+    public function assertCurrentPageIs(string $location, int $code = 200): self
     {
-        $current = $this->crawler->getUri();
-        Assert::assertSame(
+        $current = str_replace('http://localhost', '', $this->crawler->getUri());
+        Assert::assertStringContainsString(
             $location,
             $current,
-            sprintf(
-                'Current location "%s" is not as expected "%s".', $current, $location)
+            sprintf('Current location "%s" is not as expected "%s".', $current, $location)
         );
 
         return $this->assertStatusCode($code);
@@ -83,6 +83,17 @@ final class FunctionalAssertion
         Assert::assertSame($expected, $flashes->text());
 
         return $this->newSelf($this->crawler);
+    }
+
+    public function assertBodyContains(string $expected, string $message = ''): self
+    {
+        Assert::assertContains(
+            $expected,
+            $this->crawler->filter('body')->text(),
+            $message
+        );
+
+        return $this;
     }
 
     public function followRedirect(): self

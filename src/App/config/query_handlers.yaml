@@ -1,0 +1,10 @@
+services:
+    app.query_bus:
+        alias: Star\Component\DomainEvent\Messaging\QueryBus
+
+    Star\Component\Document\Design\Domain\Messaging\Query\FindAllMyDocumentsHandler:
+        arguments:
+            - '@app.connection'
+        tags:
+            - { name: star.query_handler }
+            - { name: star.event_listener }

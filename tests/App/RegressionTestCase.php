@@ -3,22 +3,20 @@
 namespace Star\Component\Document\Tests\App;
 
 use App\Kernel;
-use org\bovigo\vfs\vfsStream;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 abstract class RegressionTestCase extends WebTestCase
 {
-    protected static function createKernel(array $options = []): Kernel
-    {
-        return new Kernel('test', false);
-    }
+    static $class = Kernel::class;
 
     protected static function createTestClient(): TestClient
     {
-        $root = vfsStream::setup('root');
         $_ENV['APP_ENV'] = 'test';
-        $_ENV['APP_INSTALL_DIR'] = $root->url();
+        $_ENV['APP_DEBUG'] = false;
+        $_ENV['DATABASE_URL'] = 'sqlite:///:memory:';
 
-        return new TestClient(self::createClient());
+        $client = self::createClient();
+
+        return new TestClient($client, $client->getContainer());
     }
 }

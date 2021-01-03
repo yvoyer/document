@@ -1,0 +1,9 @@
+header {
+    background-color: #8E05B8;
+    color: snow;
+}
+
+header a#home {
+    background-color: snow;
+    padding-left: 0.3em;
+}

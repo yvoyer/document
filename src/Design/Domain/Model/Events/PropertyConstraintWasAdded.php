@@ -2,9 +2,11 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Events;
 
+use Star\Component\Document\Design\Domain\Model\Constraints\ConstraintData;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 
 final class PropertyConstraintWasAdded implements DocumentEvent
 {
@@ -34,20 +36,20 @@ final class PropertyConstraintWasAdded implements DocumentEvent
         string $constraintName,
         PropertyConstraint $constraint
     ) {
-        $this->document = $document;
-        $this->propertyName = $propertyName;
+        $this->document = $document->toString();
+        $this->propertyName = $propertyName->toString();
         $this->constraintName = $constraintName;
-        $this->constraint = $constraint;
+        $this->constraint = $constraint->toData()->toString();
     }
 
     public function documentId(): DocumentId
     {
-        return $this->document;
+        return DocumentId::fromString($this->document);
     }
 
     public function propertyName(): PropertyName
     {
-        return $this->propertyName;
+        return PropertyName::fromString($this->propertyName);
     }
 
     public function constraintName(): string
@@ -57,6 +59,12 @@ final class PropertyConstraintWasAdded implements DocumentEvent
 
     public function constraint(): PropertyConstraint
     {
-        return $this->constraint;
+        return ConstraintData::fromString($this->constraint)->createPropertyConstraint();
+    }
+
+    public static function fromPayload(array $payload): CreatedFromPayload
+    {
+        \var_dump($payload);
+        throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
     }
 }

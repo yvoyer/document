@@ -34,6 +34,10 @@ final class ConstraintFactory implements ConstraintRegistry
         );
     }
 
+    /**
+     * @param string $alias
+     * @param class-string $className
+     */
     public function addClassMap(string $alias, string $className): void
     {
         Assertion::subclassOf($className, Constraint::class);

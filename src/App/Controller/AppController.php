@@ -13,12 +13,12 @@ abstract class AppController extends AbstractController
 
     protected function addFlashError(string $message): void
     {
-        $this->addFlash('error', $message);
+        $this->addFlash('danger', $message);
     }
 
     protected function addFlashNotice(string $message): void
     {
-        $this->addFlash('notice', $message);
+        $this->addFlash('info', $message);
     }
 
     protected function addFlashWarning(string $message): void

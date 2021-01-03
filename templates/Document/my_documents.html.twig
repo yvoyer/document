@@ -1,0 +1,20 @@
+{% block body %}
+    <h1>{{ 'header.documents.your_documents'|trans([], 'labels') }}</h1>
+
+    <table>
+        <thead>
+        <tr>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for document in documents %}
+            {% for propertyName in document.properties %}
+                <tr>
+                    <td>{{ document.property(propertyName).toString() }}</td>
+                </tr>
+            {% endfor %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

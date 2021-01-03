@@ -2,9 +2,13 @@
 
 namespace Star\Component\Document\Tests\App;
 
+use PHPUnit\Framework\Assert;
+use Star\Component\Document\Tests\App\Fixtures\ApplicationFixtureBuilder;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelEvents;
+use function sprintf;
 
 final class TestClient
 {
@@ -13,10 +17,16 @@ final class TestClient
      */
     private $client;
 
-    public function __construct(KernelBrowser $client)
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    public function __construct(KernelBrowser $client, ContainerInterface $container)
     {
+        $this->container = $container;
         $this->client = $client;
-        $this->client->getContainer()->get('event_dispatcher')
+        $this->container->get('event_dispatcher')
             ->addListener(
                 KernelEvents::EXCEPTION,
                 function ($event) {
@@ -27,6 +37,11 @@ final class TestClient
                 },
                 -127
             );
+    }
+
+    public function createFixtureBuilder(): ApplicationFixtureBuilder
+    {
+        return $this->container->get('test.service_container')->get(ApplicationFixtureBuilder::class);
     }
 
     public function sendRequest(Request $request): TestClient
@@ -40,6 +55,18 @@ final class TestClient
             $request->getContent(),
             false
         );
+
+        return $this->newClient();
+    }
+
+    public function submitForm(string $submit, array $parameters = []): self
+    {
+        Assert::assertCount(
+            1,
+            $this->client->getCrawler()->selectButton($submit),
+            sprintf('The submit button "%s" could not be found', $submit)
+        );
+        $this->client->submitForm($submit, $parameters);
 
         return $this->newClient();
     }
@@ -62,6 +89,6 @@ final class TestClient
 
     protected function newClient(): TestClient
     {
-        return new TestClient($this->client);
+        return new TestClient($this->client, $this->container);
     }
 }

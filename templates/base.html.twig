@@ -2,19 +2,67 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
+        <link rel="icon" href="{{ asset('images/document.png') }}" type="image/png" sizes="16x16">
+        <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/base.css') }}">
+        {% block stylesheets %}
+        {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
+        <header class="navbar navbar-expand navbar-dark flex-column flex-md-row navbar">
+            <a id="home" class="navbar-brand mr-0 mr-md-2 rounded" href="{{ url('dashboard') }}" aria-label="{{ 'menu.home'|trans }}">
+                <img src="{{ asset('images/document-inverted.png') }}" alt="{{ 'menu.home'|trans }}" title="{{ 'menu.home'|trans }}">
+            </a>
 
-        <div id="flashes">
-            {% for message_type, flash_messages in app.session.flashBag.all %}
-                {% for flash_message in flash_messages %}
-                    <div class="alert alert-{{ message_type }}">{{ flash_message|trans() }}</div>
+            <div class="navbar-nav-scroll">
+                <ul class="navbar-nav navbar-nav flex-row">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url('dashboard') }}">{{ 'menu.home'|trans }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <form class="nav-link" name="document_create" action="{{ url('document_new') }}" method="post" >
+                            <button type="submit" class="btn btn-primary" name="{{ 'form.document_create.submit'|trans }}">
+                                {{ 'form.document_create.submit'|trans }}
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+
+            <ul class="navbar-nav ml-md-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="settings" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ 'menu.settings'|trans }}
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="{{ 'menu.settings'|trans }}">
+                        <a class="dropdown-item" href="#">{{ 'menu.preferences'|trans }}</a>
+                        <a class="dropdown-item" href="#">{{ 'menu.help'|trans }}</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">{{ 'menu.about'|trans }}</a>
+                    </div>
+                </li>
+            </ul>
+        </header>
+
+        <div class="container-fluid">
+            <div id="flashes">
+                {% for message_type, flash_messages in app.session.flashBag.all %}
+                    {% for flash_message in flash_messages %}
+                        <div class="alert alert-{{ message_type }}">{{ flash_message|trans() }}</div>
+                    {% endfor %}
                 {% endfor %}
-            {% endfor %}
+            </div>
+
+            <div class="container">
+                {% block body %}{% endblock %}
+            </div>
         </div>
+
+        <script src="{{ asset('js/jquery.min.js') }}"></script>
+        <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+        {% block javascripts %}
+        {% endblock %}
     </body>
 </html>

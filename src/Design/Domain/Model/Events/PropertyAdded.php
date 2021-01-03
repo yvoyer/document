@@ -5,21 +5,23 @@ namespace Star\Component\Document\Design\Domain\Model\Events;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
+use Star\Component\Document\Design\Domain\Model\Types\TypeData;
+use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 
 final class PropertyAdded implements DocumentEvent
 {
     /**
-     * @var DocumentId
+     * @var string
      */
     private $document;
 
     /**
-     * @var PropertyName
+     * @var string
      */
     private $name;
 
     /**
-     * @var PropertyType
+     * @var string
      */
     private $type;
 
@@ -28,23 +30,32 @@ final class PropertyAdded implements DocumentEvent
         PropertyName $name,
         PropertyType $type
     ) {
-        $this->document = $document;
-        $this->name = $name;
-        $this->type = $type;
+        $this->document = $document->toString();
+        $this->name = $name->toString();
+        $this->type = $type->toData()->toString();
     }
 
     public function documentId(): DocumentId
     {
-        return $this->document;
+        return DocumentId::fromString($this->document);
     }
 
     public function name(): PropertyName
     {
-        return $this->name;
+        return PropertyName::fromString($this->name);
     }
 
     public function type(): PropertyType
     {
-        return $this->type;
+        return TypeData::fromString($this->type)->createType();
+    }
+
+    public static function fromPayload(array $payload): CreatedFromPayload
+    {
+        return new self(
+            DocumentId::fromString($payload['document']),
+            PropertyName::fromString($payload['name']),
+            TypeData::fromString($payload['type'])->createType()
+        );
     }
 }

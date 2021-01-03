@@ -2,7 +2,6 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
-use RuntimeException;
 use Star\Component\Document\DataEntry\Domain\Model\SchemaMetadata;
 use Star\Component\Document\Design\Domain\Model\Behavior\BehaviorSubject;
 use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;

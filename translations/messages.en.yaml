@@ -1,3 +1,14 @@
 app:
     title:
         dashboard_index: Your documents
+
+menu:
+    home: My documents
+    settings: Settings
+    preferences: Preferences
+    help: Help
+    about: About
+
+form:
+    document_create:
+        submit: New document

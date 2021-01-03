@@ -12,8 +12,8 @@ final class AppRouteStore
      */
     const DASHBOARD = 'dashboard';
 
-    /**
-     * @see Setup
-     */
-    const SETUP = 'setup';
+   # /**
+  #   * @see Setup
+ #    */
+#    const SETUP = 'setup';
 }

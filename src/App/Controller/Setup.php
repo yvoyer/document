@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\AppRouteStore;
-use App\Installation\InstallationStep;
+use App\_Installation\InstallationStep;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;

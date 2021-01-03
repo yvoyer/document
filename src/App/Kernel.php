@@ -1,8 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App;
 
-use App\DependencyInjection\Compiler\InstallationCompilerPass;
+use Star\Component\DomainEvent\Ports\Symfony\DependencyInjection\CommandBusPass;
+use Star\Component\DomainEvent\Ports\Symfony\DependencyInjection\EventPublisherPass;
+use Star\Component\DomainEvent\Ports\Symfony\DependencyInjection\QueryBusPass;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -17,7 +19,9 @@ class Kernel extends BaseKernel
     {
         parent::build($container);
 
-        $container->addCompilerPass(new InstallationCompilerPass());
+        $container->addCompilerPass(new CommandBusPass());
+        $container->addCompilerPass(new QueryBusPass());
+        $container->addCompilerPass(new EventPublisherPass());
     }
 
     protected function configureContainer(ContainerConfigurator $container): void

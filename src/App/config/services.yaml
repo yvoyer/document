@@ -1,2 +1,6 @@
 imports:
-    - { resource: 'installation.yaml' }
+    - { resource: 'command_handlers.yaml' }
+    - { resource: 'design.yaml' }
+    - { resource: 'messaging.yaml' }
+    - { resource: 'query_handlers.yaml' }
+    - { resource: 'repositories.yaml' }
