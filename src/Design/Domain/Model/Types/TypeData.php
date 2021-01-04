@@ -46,6 +46,11 @@ final class TypeData
         return $class::fromData($this->arguments);
     }
 
+    public function toString(): string
+    {
+        return json_encode($this->toArray());
+    }
+
     /**
      * @return string[]|mixed[]
      */
@@ -80,5 +85,11 @@ final class TypeData
     public static function fromArray(array $data): self
     {
         return self::fromString((string) json_encode($data));
+    }
+
+    public static function isValidString(string $string): bool
+    {
+        json_decode($string);
+        return json_last_error() === JSON_ERROR_NONE;
     }
 }

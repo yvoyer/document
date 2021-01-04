@@ -1,0 +1,6 @@
+services:
+    Star\Component\Document\Tests\App\Fixtures\ApplicationFixtureBuilder:
+        arguments:
+            - '@Star\Component\DomainEvent\Messaging\CommandBus'
+            - '@Star\Component\DomainEvent\Messaging\QueryBus'
+        public: true

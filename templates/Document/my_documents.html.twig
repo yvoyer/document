@@ -1,0 +1,30 @@
+{% block body %}
+    <h1>{{ 'header.documents.your_documents'|trans([], 'labels') }}</h1>
+
+    <table>
+        <thead>
+        <tr>
+            <th>{{ 'header.my_documents.table.columns.id' }}</th>
+            <th>{{ 'header.my_documents.table.columns.type' }}</th>
+            <th>{{ 'header.my_documents.table.columns.actions' }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for document in documents %}
+            <tr>
+                <td>{{ document.documentId() }}</td>
+                {% set property = document.getPublicProperty('type') %}
+                <td>
+                    <span>{{ property.getLabel() }}</span>
+                    <span>{{ property.getType() }}</span>
+                </td>
+                <td>
+                    <span>
+                        <a href="{{ url('document_design', {'id': document.getDocumentId()}) }}">{{ document.getName() }}</a>
+                    </span>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

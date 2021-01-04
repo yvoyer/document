@@ -1,0 +1,19 @@
+services:
+    Star\Component\Document\Design\Domain\Messaging\Command\CreateDocumentHandler:
+        arguments:
+            - '@app.repository_document'
+        tags:
+            - { name: star.command_handler }
+
+    Star\Component\Document\Design\Domain\Messaging\Command\CreatePropertyHandler:
+        arguments:
+            - '@app.repository_document'
+        tags:
+            - { name: star.command_handler }
+
+    Star\Component\Document\Design\Domain\Messaging\Command\AddPropertyConstraintHandler:
+        arguments:
+            - '@app.repository_document'
+            - '@app.constraint_registry'
+        tags:
+            - { name: star.command_handler }

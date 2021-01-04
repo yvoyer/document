@@ -4,6 +4,7 @@ namespace Star\Component\Document\Design\Domain\Model\Events;
 
 use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 
 final class PropertyConstraintWasRemoved implements DocumentEvent
 {
@@ -45,5 +46,10 @@ final class PropertyConstraintWasRemoved implements DocumentEvent
     public function constraintName(): string
     {
         return $this->constraintName;
+    }
+
+    public static function fromPayload(array $payload): CreatedFromPayload
+    {
+        throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
     }
 }

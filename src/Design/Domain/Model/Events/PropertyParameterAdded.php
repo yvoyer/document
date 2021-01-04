@@ -5,6 +5,7 @@ namespace Star\Component\Document\Design\Domain\Model\Events;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyParameter;
+use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 
 final class PropertyParameterAdded implements DocumentEvent
 {
@@ -58,5 +59,11 @@ final class PropertyParameterAdded implements DocumentEvent
     public function parameter(): PropertyParameter
     {
         return $this->parameter;
+    }
+
+    public static function fromPayload(array $payload): CreatedFromPayload
+    {
+        \var_dump($payload);
+        throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
     }
 }

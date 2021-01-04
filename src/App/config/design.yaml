@@ -1,0 +1,5 @@
+services:
+    app.constraint_registry:
+        class: Star\Component\Document\Design\Infrastructure\Persistence\InMemory\ConstraintFactory
+        calls:
+            - ['addClassMap', ['required', 'Star\Component\Document\Design\Domain\Model\Constraints\RequiresValue']]

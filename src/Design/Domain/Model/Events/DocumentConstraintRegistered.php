@@ -4,6 +4,7 @@ namespace Star\Component\Document\Design\Domain\Model\Events;
 
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 
 final class DocumentConstraintRegistered implements DocumentEvent
 {
@@ -42,5 +43,10 @@ final class DocumentConstraintRegistered implements DocumentEvent
     public function constraint(): DocumentConstraint
     {
         return $this->constraint;
+    }
+
+    public static function fromPayload(array $payload): CreatedFromPayload
+    {
+        throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
     }
 }
