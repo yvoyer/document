@@ -8,3 +8,9 @@ services:
         tags:
             - { name: star.query_handler }
             - { name: star.event_listener }
+
+    Star\Component\Document\Design\Domain\Messaging\Query\FindStructureForDocumentHandler:
+        arguments:
+            - '@app.connection'
+        tags:
+            - { name: star.query_handler }

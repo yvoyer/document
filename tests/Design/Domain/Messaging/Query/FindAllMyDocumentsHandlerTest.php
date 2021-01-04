@@ -2,8 +2,8 @@
 
 namespace Star\Component\Document\Tests\Design\Domain\Messaging\Query;
 
+use Star\Component\Document\Design\Domain\Messaging\Query\DataTransfer\MyReadOnlyDocument;
 use Star\Component\Document\Design\Domain\Messaging\Query\FindAllMyDocuments;
-use Star\Component\Document\Design\Domain\Messaging\Query\MyReadOnlyDocument;
 use Star\Component\Document\Design\Domain\Model\Types\NullType;
 use Star\Component\Document\Design\Domain\Model\Types\StringType;
 use Star\Component\Document\Tests\App\RegressionTestCase;
@@ -25,9 +25,9 @@ final class FindAllMyDocumentsHandlerTest extends RegressionTestCase
 
         $row = $result[0];
         self::assertSame($document->toString(), $row->getDocumentId());
-        self::assertSame(['id'], $row->getProperties());
-        self::assertSame((new NullType())->toData()->toString(), $row->getProperty('id')->toString());
-        self::assertSame((new NullType())->toData()->toString(), $row->getProperty('name')->toString());
+        self::assertSame(['id'], $row->getPublicProperties());
+        self::assertSame((new NullType())->toData()->toString(), $row->getPublicProperty('id')->toString());
+        self::assertSame((new NullType())->toData()->toString(), $row->getPublicProperty('name')->toString());
     }
 
     public function test_it_should_fetch_documents_with_properties(): void
@@ -44,8 +44,8 @@ final class FindAllMyDocumentsHandlerTest extends RegressionTestCase
         self::assertContainsOnlyInstancesOf(MyReadOnlyDocument::class, $result);
 
         $row = $result[0];
-        self::assertSame(['id', 'name'], $row->getProperties());
-        self::assertSame(StringType::fromData([])->toData()->toString(), $row->getProperty('name')->toString());
+        self::assertSame(['id', 'name'], $row->getPublicProperties());
+        self::assertSame(StringType::fromData([])->toData()->toString(), $row->getPublicProperty('name')->toString());
     }
 
     public function test_it_should_fetch_documents_with_properties_having_constraint(): void
@@ -62,7 +62,7 @@ final class FindAllMyDocumentsHandlerTest extends RegressionTestCase
         self::assertContainsOnlyInstancesOf(MyReadOnlyDocument::class, $result);
 
         $row = $result[0];
-        self::assertSame(['id', 'name'], $row->getProperties());
-        self::assertSame(StringType::fromData([])->toData()->toString(), $row->getProperty('name')->toString());
+        self::assertSame(['id', 'name'], $row->getPublicProperties());
+        self::assertSame(StringType::fromData([])->toData()->toString(), $row->getPublicProperty('name')->toString());
     }
 }

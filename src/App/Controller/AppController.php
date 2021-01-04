@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Throwable;
 
 abstract class AppController extends AbstractController
 {
@@ -24,5 +25,11 @@ abstract class AppController extends AbstractController
     protected function addFlashWarning(string $message): void
     {
         $this->addFlash('warning', $message);
+    }
+
+    protected function addFlashException(string $message, Throwable $exception): void
+    {
+        // log exception
+        $this->addFlashError($message);
     }
 }

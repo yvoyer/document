@@ -45,6 +45,7 @@ final class DBALProjectionPlatform implements ProjectionPlatform
 
         $values = [];
         foreach ($columns as $i => $column) {
+            $this->assertColumnExists($metadata, $column);
             $values[$column->getName()] = '?';
             $qb->setParameter($i, $column->getValue());
         }

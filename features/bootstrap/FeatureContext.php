@@ -197,7 +197,9 @@ class FeatureContext implements Context
      */
     public function iCreateADocumentNamed(string $documentId)
     {
-        $this->bus->dispatchCommand(new CreateDocument($id = DocumentId::fromString($documentId)));
+        $this->bus->dispatchCommand(
+            new CreateDocument($id = DocumentId::fromString($documentId))
+        );
     }
 
     /**

@@ -14,9 +14,12 @@ use Star\Component\Document\Design\Domain\Model\Behavior\DocumentBehavior;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentAggregate;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentType;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
+use Star\Component\Document\Design\Domain\Model\Schema\StringDocumentType;
 use Star\Component\Document\Design\Domain\Model\Types;
+use function uniqid;
 
 final class DocumentBuilder
 {
@@ -35,10 +38,10 @@ final class DocumentBuilder
      */
     private $strategy;
 
-    private function __construct(DocumentId $id)
+    private function __construct(DocumentId $id, DocumentType $type)
     {
         $this->id = $id;
-        $this->document = DocumentAggregate::draft($id);
+        $this->document = DocumentAggregate::draft($id, $type);
         $this->strategy = new AlwaysThrowExceptionOnValidationErrors();
     }
 
@@ -141,12 +144,16 @@ final class DocumentBuilder
         return new ParameterBuilder();
     }
 
-    public static function createDocument(string $id = null): self
+    public static function createDocument(string $id = null, string $type = null): self
     {
         if (null === $id) {
             $id = DocumentId::random()->toString();
         }
 
-        return new self(DocumentId::fromString($id));
+        if (null === $type) {
+            $type = uniqid('type-');
+        }
+
+        return new self(DocumentId::fromString($id), new StringDocumentType($type));
     }
 }

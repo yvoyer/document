@@ -21,8 +21,8 @@ final class AppUris extends RequestFactory
         return self::get(\sprintf('/documents/%s', $id->toString()));
     }
 
-    public static function documentCreate(): RequestFactory
+    public static function documentTypeCreate(): RequestFactory
     {
-        return self::post('/documents');
+        return self::post('/document-types');
     }
 }

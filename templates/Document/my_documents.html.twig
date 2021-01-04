@@ -4,16 +4,26 @@
     <table>
         <thead>
         <tr>
-            <th></th>
+            <th>{{ 'header.my_documents.table.columns.id' }}</th>
+            <th>{{ 'header.my_documents.table.columns.type' }}</th>
+            <th>{{ 'header.my_documents.table.columns.actions' }}</th>
         </tr>
         </thead>
         <tbody>
         {% for document in documents %}
-            {% for propertyName in document.properties %}
-                <tr>
-                    <td>{{ document.property(propertyName).toString() }}</td>
-                </tr>
-            {% endfor %}
+            <tr>
+                <td>{{ document.documentId() }}</td>
+                {% set property = document.getPublicProperty('type') %}
+                <td>
+                    <span>{{ property.getLabel() }}</span>
+                    <span>{{ property.getType() }}</span>
+                </td>
+                <td>
+                    <span>
+                        <a href="{{ url('document_design', {'id': document.getDocumentId()}) }}">{{ document.getName() }}</a>
+                    </span>
+                </td>
+            </tr>
         {% endfor %}
         </tbody>
     </table>

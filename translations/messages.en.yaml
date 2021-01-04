@@ -10,5 +10,10 @@ menu:
     about: About
 
 form:
-    document_create:
-        submit: New document
+    create:
+        document_type:
+            name:
+                label: Name
+                placeholder: Enter the document type name
+                description: This name will be used for listing
+                submit: New document

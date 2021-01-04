@@ -19,6 +19,11 @@ final class InsertBuilder
      */
     private $metadata;
 
+    /**
+     * @var ColumnMetadata[]
+     */
+    private $otherFields = [];
+
     public function __construct(
         string $identifier,
         ProjectionPlatform $platform,
@@ -29,12 +34,20 @@ final class InsertBuilder
         $this->metadata = $metadata;
     }
 
+    public function withValue(ColumnMetadata $metadata): self
+    {
+        $this->otherFields[] = $metadata;
+
+        return $this;
+    }
+
     public function execute(): void
     {
         $this->platform
             ->createInsertQuery(
                 $this->metadata,
-                ColumnMetadata::stringColumn($this->metadata->getIdentifier(), $this->identifier)
+                ColumnMetadata::stringColumn($this->metadata->getIdentifier(), $this->identifier),
+                ...$this->otherFields
             );
     }
 }

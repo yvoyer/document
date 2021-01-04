@@ -23,7 +23,7 @@ final class DocumentEventStore extends DBALEventStore implements DocumentReposit
 
     protected function tableName(): string
     {
-        return 'documents';
+        return '_events_documents';
     }
 
     protected function createAggregateFromStream(array $events): AggregateRoot

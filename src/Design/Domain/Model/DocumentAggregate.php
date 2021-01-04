@@ -11,6 +11,11 @@ use Star\Component\DomainEvent\AggregateRoot;
 class DocumentAggregate extends AggregateRoot implements DocumentDesigner, BehaviorSubject
 {
     /**
+     * @var DocumentType
+     */
+    private $type;
+
+    /**
      * @var DocumentSchema
      */
     private $schema;
@@ -79,6 +84,7 @@ class DocumentAggregate extends AggregateRoot implements DocumentDesigner, Behav
     protected function onDocumentCreated(Events\DocumentCreated $event): void
     {
         $this->schema = new DocumentSchema($event->documentId());
+        $this->type = $event->documentType();
     }
 
     protected function onPropertyAdded(Events\PropertyAdded $event): void
@@ -120,16 +126,17 @@ class DocumentAggregate extends AggregateRoot implements DocumentDesigner, Behav
 
     /**
      * @param DocumentId $id
-     * @return DocumentAggregate
+     * @param DocumentType $type
+     * @return static
      */
-    public static function draft(DocumentId $id): DocumentAggregate
+    public static function draft(DocumentId $id, DocumentType $type): DocumentAggregate
     {
         /**
          * @var DocumentAggregate $aggregate
          */
         $aggregate = static::fromStream(
             [
-                new Events\DocumentCreated($id),
+                new Events\DocumentCreated($id, $type),
             ]
         );
 

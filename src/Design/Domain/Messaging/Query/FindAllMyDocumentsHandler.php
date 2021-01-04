@@ -7,6 +7,7 @@ use Star\Component\Document\Bridge\Projection\ColumnMetadata;
 use Star\Component\Document\Bridge\Projection\Port\Doctrine\DBAL\DBALProjectionPlatform;
 use Star\Component\Document\Bridge\Projection\ProjectionMetadata;
 use Star\Component\Document\Bridge\Projection\Projector;
+use Star\Component\Document\Design\Domain\Messaging\Query\DataTransfer\MyReadOnlyDocument;
 use Star\Component\Document\Design\Domain\Model\Events\DocumentCreated;
 use Star\Component\Document\Design\Domain\Model\Events\PropertyAdded;
 use Star\Component\DomainEvent\EventListener;
@@ -51,6 +52,7 @@ final class FindAllMyDocumentsHandler implements EventListener
     {
         $this->projector
             ->insert($event->documentId()->toString())
+            ->withValue(ColumnMetadata::stringColumn('type', $event->documentType()->toString()))
             ->execute();
     }
 

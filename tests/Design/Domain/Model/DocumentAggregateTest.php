@@ -7,11 +7,13 @@ use Star\Component\Document\Design\Domain\Model\Constraints;
 use Star\Component\Document\Design\Domain\Model\DocumentAggregate;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
+use Star\Component\Document\Design\Domain\Model\Events\DocumentCreated;
 use Star\Component\Document\Design\Domain\Model\Events\PropertyConstraintWasAdded;
 use Star\Component\Document\Design\Domain\Model\Events\PropertyConstraintWasRemoved;
 use Star\Component\Document\Design\Domain\Model\Parameters\NullParameter;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\Schema\ReferencePropertyNotFound;
+use Star\Component\Document\Design\Domain\Model\Schema\StringDocumentType;
 use Star\Component\Document\Design\Domain\Model\Types\NullType;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
 
@@ -24,7 +26,10 @@ final class DocumentAggregateTest extends TestCase
 
     public function setUp(): void
     {
-        $this->document = DocumentAggregate::draft(DocumentId::fromString('id'));
+        $this->document = DocumentAggregate::draft(
+            DocumentId::fromString('id'),
+            new StringDocumentType('type')
+        );
     }
 
     public function test_it_should_create_property(): void
@@ -157,5 +162,18 @@ final class DocumentAggregateTest extends TestCase
     {
         $document->acceptDocumentVisitor($visitor = new PropertyExtractor());
         return $visitor;
+    }
+
+    public function test_it_should_have_a_type(): void
+    {
+        /**
+         * @var DocumentCreated[] $events
+         */
+        $events = $this->document->uncommitedEvents();
+        self::assertCount(1, $events);
+        $event = $events[0];
+        self::assertInstanceOf(DocumentCreated::class, $event);
+        self::assertSame($this->document->getIdentity()->toString(), $event->documentId()->toString());
+        self::assertSame('type', $event->documentType()->toString());
     }
 }

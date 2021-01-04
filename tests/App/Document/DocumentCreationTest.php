@@ -19,8 +19,8 @@ final class DocumentCreationTest extends RegressionTestCase
             ->then()
             ->assertStatusCode(Response::HTTP_FOUND)
             ->followRedirect()
-            ->dumpResponse()
             ->assertCurrentPageIs('/documents/document-')
+            ->dumpResponse()
             ->assertBodyContains('dasdsa')
         ;
     }

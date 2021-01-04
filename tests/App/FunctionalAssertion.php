@@ -85,12 +85,12 @@ final class FunctionalAssertion
         return $this->newSelf($this->crawler);
     }
 
-    public function assertBodyContains(string $expected, string $message = ''): self
+    public function assertBodyContains(string $expected): self
     {
         Assert::assertContains(
             $expected,
             $this->crawler->filter('body')->text(),
-            $message
+            'Body of response did not contains expected text.'
         );
 
         return $this;
