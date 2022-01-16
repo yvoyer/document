@@ -2,6 +2,8 @@
 
 namespace Star\Component\Document\Design\Builder;
 
+use DateTimeImmutable;
+use DateTimeInterface;
 use Star\Component\Document\DataEntry\Builder\RecordBuilder;
 use Star\Component\Document\DataEntry\Domain\Model\RecordAggregate;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
@@ -14,34 +16,28 @@ use Star\Component\Document\Design\Domain\Model\Behavior\DocumentBehavior;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentAggregate;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\DocumentType;
+use Star\Component\Document\Design\Domain\Model\DocumentOwner;
+use Star\Component\Document\Design\Domain\Model\DocumentName;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\Schema\StringDocumentType;
+use Star\Component\Document\Design\Domain\Model\Templating\NotNamedDocument;
+use Star\Component\Document\Design\Domain\Model\Test\NullOwner;
 use Star\Component\Document\Design\Domain\Model\Types;
-use function uniqid;
 
 final class DocumentBuilder
 {
-    /**
-     * @var DocumentId
-     */
-    private $id;
+    private DocumentId $id;
+    private DocumentAggregate $document;
+    private StrategyToHandleValidationErrors $strategy;
 
-    /**
-     * @var DocumentAggregate
-     */
-    private $document;
-
-    /**
-     * @var StrategyToHandleValidationErrors
-     */
-    private $strategy;
-
-    private function __construct(DocumentId $id, DocumentType $type)
-    {
+    private function __construct(
+        DocumentId        $id,
+        DocumentName      $type,
+        DocumentOwner     $owner,
+        DateTimeInterface $createdAt
+    ) {
         $this->id = $id;
-        $this->document = DocumentAggregate::draft($id, $type);
+        $this->document = DocumentAggregate::draft($id, $type, $owner, $createdAt);
         $this->strategy = new AlwaysThrowExceptionOnValidationErrors();
     }
 
@@ -144,16 +140,12 @@ final class DocumentBuilder
         return new ParameterBuilder();
     }
 
-    public static function createDocument(string $id = null, string $type = null): self
+    public static function createDocument(string $id = null): self
     {
         if (null === $id) {
             $id = DocumentId::random()->toString();
         }
 
-        if (null === $type) {
-            $type = uniqid('type-');
-        }
-
-        return new self(DocumentId::fromString($id), new StringDocumentType($type));
+        return new self(DocumentId::fromString($id), new NotNamedDocument(), new NullOwner(), new DateTimeImmutable());
     }
 }

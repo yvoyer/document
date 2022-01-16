@@ -2,15 +2,45 @@
 
 namespace Star\Component\Document\Design\Domain\Messaging\Query;
 
-use Star\Component\DomainEvent\Messaging\Results\CollectionQuery;
+use Closure;
+use Star\Component\Document\Design\Domain\Messaging\Query\DataTransfer\ReadOnlyDocument;
+use Star\Component\Document\Design\Domain\Model\DocumentOwner;
+use Star\Component\DomainEvent\Messaging\Query;
+use Traversable;
 
-final class FindAllMyDocuments extends CollectionQuery
+final class FindAllMyDocuments implements Query
 {
-    /**
-     * @return MyReadOnlyDocument[]
-     */
-    public function getResult(): array
+    private DocumentOwner $owner;
+    private Closure $result;
+
+    public function __construct(DocumentOwner $owner)
     {
-        return parent::getResult();
+        $this->owner = $owner;
+    }
+
+    final public function owner(): DocumentOwner
+    {
+        return $this->owner;
+    }
+
+    public function __invoke($result): void
+    {
+        $this->result = $result;
+    }
+
+    /**
+     * @return ReadOnlyDocument[]|Traversable
+     */
+    public function getResult(): Traversable
+    {
+        return \call_user_func($this->result);
+    }
+
+    /**
+     * @return ReadOnlyDocument[]
+     */
+    public function getResultArray(): array
+    {
+        return \iterator_to_array($this->getResult());
     }
 }

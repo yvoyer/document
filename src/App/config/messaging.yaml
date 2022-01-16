@@ -1,6 +1,0 @@
-services:
-    app.event_publisher:
-        alias: Star\Component\DomainEvent\EventPublisher
-
-    app.event_serializer:
-        class: Star\Component\DomainEvent\Serialization\PayloadFromReflection

@@ -2,6 +2,7 @@
 
 namespace Star\Component\Document\Tests\Design\Domain\Model;
 
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Design\Domain\Model\Constraints;
 use Star\Component\Document\Design\Domain\Model\DocumentAggregate;
@@ -13,22 +14,22 @@ use Star\Component\Document\Design\Domain\Model\Events\PropertyConstraintWasRemo
 use Star\Component\Document\Design\Domain\Model\Parameters\NullParameter;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\Schema\ReferencePropertyNotFound;
-use Star\Component\Document\Design\Domain\Model\Schema\StringDocumentType;
+use Star\Component\Document\Design\Domain\Model\Templating\NotNamedDocument;
+use Star\Component\Document\Design\Domain\Model\Test\NullOwner;
 use Star\Component\Document\Design\Domain\Model\Types\NullType;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
 
 final class DocumentAggregateTest extends TestCase
 {
-    /**
-     * @var DocumentAggregate
-     */
-    private $document;
+    private DocumentAggregate $document;
 
     public function setUp(): void
     {
         $this->document = DocumentAggregate::draft(
             DocumentId::fromString('id'),
-            new StringDocumentType('type')
+            new NotNamedDocument(),
+            new NullOwner(),
+            new DateTimeImmutable()
         );
     }
 
@@ -174,6 +175,6 @@ final class DocumentAggregateTest extends TestCase
         $event = $events[0];
         self::assertInstanceOf(DocumentCreated::class, $event);
         self::assertSame($this->document->getIdentity()->toString(), $event->documentId()->toString());
-        self::assertSame('type', $event->documentType()->toString());
+        self::assertSame('default-name', $event->name()->toSerializableString());
     }
 }

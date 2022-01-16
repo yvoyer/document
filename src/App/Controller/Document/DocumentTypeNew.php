@@ -2,10 +2,11 @@
 
 namespace App\Controller\Document;
 
+use App\Authentication\AuthenticationContext;
 use App\Controller\AppController;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocument;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\Schema\StringDocumentType;
+use Star\Component\Document\Design\Domain\Model\Templating\NamedDocument;
 use Star\Component\DomainEvent\Messaging\CommandBus;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,15 +22,17 @@ final class DocumentTypeNew extends AppController
      * @param Request $request
      * @param CommandBus $bus
      * @param TranslatorInterface $translator
+     * @param AuthenticationContext $context
      * @return Response
      */
     public function __invoke(
         Request $request,
         CommandBus $bus,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        AuthenticationContext $context
     ): Response {
         try {
-            $type = new StringDocumentType($request->get('document_type_name'));
+            $type = new NamedDocument($request->get('document_type_name'));
         } catch (Throwable $throwable) {
             $this->addFlashException(
                 $translator->trans('flash.document_type_name.invalid', [], 'flash'),
@@ -39,12 +42,12 @@ final class DocumentTypeNew extends AppController
         }
 
         $documentId = DocumentId::random();
-        $bus->dispatchCommand(new CreateDocument($documentId, $type));
+        $bus->dispatchCommand(new CreateDocument($documentId, $type, $context->getLoggedMember()));
 
         $this->addFlashSuccess(
             $translator->trans(
                 'flash.success.document_type_created',
-                ['%type%' => $type->toString()],
+                ['%template%' => $type->toSerializableString()],
                 'flash'
             )
         );

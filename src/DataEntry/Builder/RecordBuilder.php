@@ -8,15 +8,8 @@ use Star\Component\Document\Design\Builder\DocumentBuilder;
 
 final class RecordBuilder
 {
-    /**
-     * @var DocumentRecord
-     */
-    private $record;
-
-    /**
-     * @var DocumentBuilder
-     */
-    private $builder;
+    private DocumentRecord $record;
+    private DocumentBuilder $builder;
 
     public function __construct(
         DocumentRecord $record,

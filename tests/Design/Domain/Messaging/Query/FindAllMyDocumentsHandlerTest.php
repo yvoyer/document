@@ -2,67 +2,35 @@
 
 namespace Star\Component\Document\Tests\Design\Domain\Messaging\Query;
 
-use Star\Component\Document\Design\Domain\Messaging\Query\DataTransfer\MyReadOnlyDocument;
+use Star\Component\Document\Design\Domain\Messaging\Query\DataTransfer\ReadOnlyDocument;
 use Star\Component\Document\Design\Domain\Messaging\Query\FindAllMyDocuments;
-use Star\Component\Document\Design\Domain\Model\Types\NullType;
-use Star\Component\Document\Design\Domain\Model\Types\StringType;
 use Star\Component\Document\Tests\App\RegressionTestCase;
 
+/**
+ * @group functional
+ */
 final class FindAllMyDocumentsHandlerTest extends RegressionTestCase
 {
     public function test_it_should_fetch_documents_without_properties(): void
     {
         $client = self::createTestClient();
         $fixtures = $client->createFixtureBuilder();
+        $memberId = $fixtures->newMember()->getMemberId();
 
         $document = $fixtures
-            ->newDocument()
+            ->newDocument($memberId)
             ->getDocumentId();
 
-        $fixtures->dispatchQuery($query = new FindAllMyDocuments());
-        self::assertCount(1, $result = $query->getResult());
-        self::assertContainsOnlyInstancesOf(MyReadOnlyDocument::class, $result);
+        $fixtures->dispatchQuery($query = new FindAllMyDocuments($memberId));
+        self::assertCount(1, $result = $query->getResultArray());
+        self::assertContainsOnlyInstancesOf(ReadOnlyDocument::class, $result);
 
         $row = $result[0];
-        self::assertSame($document->toString(), $row->getDocumentId());
-        self::assertSame(['id'], $row->getPublicProperties());
-        self::assertSame((new NullType())->toData()->toString(), $row->getPublicProperty('id')->toString());
-        self::assertSame((new NullType())->toData()->toString(), $row->getPublicProperty('name')->toString());
-    }
-
-    public function test_it_should_fetch_documents_with_properties(): void
-    {
-        $client = self::createTestClient();
-        $fixtures = $client->createFixtureBuilder();
-        $fixtures
-            ->newDocument()
-            ->withTextProperty('name')->endProperty()
-            ->getDocumentId();
-
-        $fixtures->dispatchQuery($query = new FindAllMyDocuments());
-        self::assertCount(1, $result = $query->getResult());
-        self::assertContainsOnlyInstancesOf(MyReadOnlyDocument::class, $result);
-
-        $row = $result[0];
-        self::assertSame(['id', 'name'], $row->getPublicProperties());
-        self::assertSame(StringType::fromData([])->toData()->toString(), $row->getPublicProperty('name')->toString());
-    }
-
-    public function test_it_should_fetch_documents_with_properties_having_constraint(): void
-    {
-        $client = self::createTestClient();
-        $fixtures = $client->createFixtureBuilder();
-        $fixtures
-            ->newDocument()
-            ->withTextProperty('name')->required()->endProperty()
-            ->getDocumentId();
-
-        $fixtures->dispatchQuery($query = new FindAllMyDocuments());
-        self::assertCount(1, $result = $query->getResult());
-        self::assertContainsOnlyInstancesOf(MyReadOnlyDocument::class, $result);
-
-        $row = $result[0];
-        self::assertSame(['id', 'name'], $row->getPublicProperties());
-        self::assertSame(StringType::fromData([])->toData()->toString(), $row->getPublicProperty('name')->toString());
+        self::assertSame($document->toString(), $row->getDocumentId()->toString());
+        self::assertSame('default-name', $row->getDocumentName('en'));
+        self::assertSame($memberId->toString(), $row->getOwnerId());
+        self::assertStringContainsString('username-', $row->getOwnerName());
+        self::assertSame(date('Y-m-d'), $row->getCreatedAt()->format('Y-m-d'));
+        self::assertSame(date('Y-m-d'), $row->getUpdatedAt()->format('Y-m-d'));
     }
 }

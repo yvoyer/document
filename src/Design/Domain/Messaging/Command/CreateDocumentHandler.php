@@ -7,14 +7,8 @@ use Star\Component\Document\Design\Domain\Model\DocumentRepository;
 
 final class CreateDocumentHandler
 {
-    /**
-     * @var DocumentRepository
-     */
-    private $documents;
+    private DocumentRepository $documents;
 
-    /**
-     * @param DocumentRepository $documents
-     */
     public function __construct(DocumentRepository $documents)
     {
         $this->documents = $documents;
@@ -22,7 +16,12 @@ final class CreateDocumentHandler
 
     public function __invoke(CreateDocument $command): void
     {
-        $document = DocumentAggregate::draft($command->documentId(), $command->type());
+        $document = DocumentAggregate::draft(
+            $command->documentId(),
+            $command->name(),
+            $command->owner(),
+            $command->createdAt()
+        );
 
         $this->documents->saveDocument($document);
     }

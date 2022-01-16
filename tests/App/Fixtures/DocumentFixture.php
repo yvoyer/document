@@ -10,15 +10,8 @@ use Star\Component\Document\Design\Domain\Model\Types\StringType;
 
 final class DocumentFixture
 {
-    /**
-     * @var DocumentId
-     */
-    private $documentId;
-
-    /**
-     * @var ApplicationFixtureBuilder
-     */
-    private $builder;
+    private DocumentId $documentId;
+    private ApplicationFixtureBuilder $builder;
 
     public function __construct(DocumentId $documentId, ApplicationFixtureBuilder $builder)
     {

@@ -43,6 +43,8 @@ use Star\Component\Document\Design\Domain\Model\Parameters\DateFormat;
 use Star\Component\Document\Design\Domain\Model\Parameters\DefaultValue;
 use Star\Component\Document\Design\Domain\Model\Parameters\ParameterData;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\Templating\NamedDocument;
+use Star\Component\Document\Design\Domain\Model\Test\NullOwner;
 use Star\Component\Document\Design\Domain\Model\Types;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\ConstraintFactory;
@@ -198,7 +200,11 @@ class FeatureContext implements Context
     public function iCreateADocumentNamed(string $documentId)
     {
         $this->bus->dispatchCommand(
-            new CreateDocument($id = DocumentId::fromString($documentId))
+            new CreateDocument(
+                $id = DocumentId::fromString($documentId),
+                new NamedDocument($documentId),
+                new NullOwner()
+            )
         );
     }
 

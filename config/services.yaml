@@ -1,9 +1,6 @@
 # This file is the entry point to configure your own services.
 # Files in the packages/ subdirectory configure your dependencies.
 
-imports:
-    - { resource: '../src/App/config/services.yaml' }
-
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
@@ -20,6 +17,57 @@ services:
         resource: '../src/App/Controller/'
         tags: ['controller.service_arguments']
 
+    App\SchemaManager:
+
+    App\Authentication\AuthenticationContext:
+        class: App\Authentication\Port\InMemory\NullObjectContext
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    # DomainEvent component
+    Star\Component\DomainEvent\Serialization\PayloadSerializer:
+        class: Star\Component\DomainEvent\Serialization\PayloadFromReflection
+    # End DomainEvent component
+
+    # Design context
+    Star\Component\Document\Design\Domain\Messaging\Command\:
+        resource: '../src/Design/Domain/Messaging/Command/*{Handler}.php'
+        tags:
+            - { name: star.command_handler }
+
+    Star\Component\Document\Design\Domain\Model\DocumentRepository:
+        class: Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBAL\DocumentEventStore
+
+    Star\Component\Document\Design\Domain\Model\Constraints\ConstraintRegistry:
+        class: Star\Component\Document\Design\Infrastructure\Persistence\InMemory\ConstraintFactory
+        calls:
+            - ['addClassMap', ['required', 'Star\Component\Document\Design\Domain\Model\Constraints\RequiresValue']]
+
+    Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBAL\DocumentSchemaManager:
+        tags:
+            - { name: star.event_listener }
+
+    Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBAL\FindAllMyDocumentsHandler:
+        tags:
+            - { name: star.query_handler, message: Star\Component\Document\Design\Domain\Messaging\Query\FindAllMyDocuments }
+
+    Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBAL\FindSchemaForDocumentsHandler:
+        tags:
+            - { name: star.query_handler, message: Star\Component\Document\Design\Domain\Messaging\Query\FindSchemaForDocuments }
+    # End Design context
+
+    # Membership context
+    Star\Component\Document\Membership\Domain\Model\MemberRepository:
+        class: Star\Component\Document\Membership\Infrastructure\Persistence\Doctrine\MemberDBALEventStore
+
+    Star\Component\Document\Membership\Domain\Messaging\Command\:
+        resource: '../src/Membership/Domain/Messaging/Command/*{Handler}.php'
+        tags:
+            - { name: star.command_handler }
+
+    Star\Component\Document\Membership\Infrastructure\Persistence\Doctrine\DBAL\MemberSchemaManager:
+        tags:
+            - { name: star.event_listener }
+    # End Membership context
 

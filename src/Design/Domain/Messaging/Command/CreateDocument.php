@@ -2,35 +2,57 @@
 
 namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
+use DateTimeInterface;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\DocumentType;
+use Star\Component\Document\Design\Domain\Model\DocumentOwner;
+use Star\Component\Document\Design\Domain\Model\DocumentName;
+use Star\Component\Document\Design\Domain\Model\Templating\NotNamedDocument;
 use Star\Component\DomainEvent\Messaging\Command;
 
 final class CreateDocument implements Command
 {
-    /**
-     * @var DocumentId
-     */
-    private $id;
+    private DocumentId $id;
+    private DocumentName $name;
+    private DocumentOwner $owner;
+    private DateTimeInterface $createdAt;
 
-    /**
-     * @var DocumentType
-     */
-    private $type;
-
-    public function __construct(DocumentId $id, DocumentType $type)
-    {
+    public function __construct(
+        DocumentId $id,
+        DocumentName $name,
+        DocumentOwner $owner,
+        DateTimeInterface $createdAt
+    ) {
         $this->id = $id;
-        $this->type = $type;
+        $this->name = $name;
+        $this->owner = $owner;
+        $this->createdAt = $createdAt;
     }
 
-    public function documentId(): DocumentId
+    final public function documentId(): DocumentId
     {
         return $this->id;
     }
 
-    public function type(): DocumentType
+    final public function name(): DocumentName
     {
-        return $this->type;
+        return $this->name;
+    }
+
+    final public function owner(): DocumentOwner
+    {
+        return $this->owner;
+    }
+
+    final public function createdAt(): DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    final public static function emptyDocument(
+        DocumentId $id,
+        DocumentOwner $owner,
+        DateTimeInterface $createdAt
+    ): self {
+        return new self($id, new NotNamedDocument(), $owner, $createdAt);
     }
 }

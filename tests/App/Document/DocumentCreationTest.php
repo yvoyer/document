@@ -15,10 +15,11 @@ final class DocumentCreationTest extends RegressionTestCase
     {
         $client = self::createTestClient();
         $client->sendRequest(AppUris::dashboard()->createRequest())
-            ->submitForm('New document')
+            ->userSubmitNewDocument('New document')
             ->then()
             ->assertStatusCode(Response::HTTP_FOUND)
             ->followRedirect()
+            ->dumpResponse()
             ->assertCurrentPageIs('/documents/document-')
             ->dumpResponse()
             ->assertBodyContains('dasdsa')

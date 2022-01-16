@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Authentication\AuthenticationContext;
 use Star\Component\Document\Design\Domain\Messaging\Query\FindAllMyDocuments;
 use Star\Component\DomainEvent\Messaging\QueryBus;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,8 +25,8 @@ final class Dashboard extends AppController
      *
      * @return Response
      */
-    public function __invoke(): Response {
-        $this->queries->dispatchQuery($query = new FindAllMyDocuments());
+    public function __invoke(AuthenticationContext $context): Response {
+        $this->queries->dispatchQuery($query = new FindAllMyDocuments($context->getLoggedMember()));
 \var_dump($query->getResult());
         return $this->render(
             'Dashboard\index.html.twig',

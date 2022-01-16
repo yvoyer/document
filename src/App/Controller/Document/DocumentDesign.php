@@ -3,7 +3,7 @@
 namespace App\Controller\Document;
 
 use App\Controller\AppController;
-use Star\Component\Document\Design\Domain\Messaging\Query\FindStructureForDocument;
+use Star\Component\Document\Design\Domain\Messaging\Query\FindSchemaForDocuments;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Infrastructure\Templating\SymfonyForm\DocumentDesignType;
 use Star\Component\DomainEvent\Messaging\QueryBus;
@@ -32,7 +32,7 @@ final class DocumentDesign extends AppController
     public function __invoke(string $id): Response
     {
         $form = $this->createForm(DocumentDesignType::class);
-        $this->queries->dispatchQuery($query = new FindStructureForDocument(DocumentId::fromString($id)));
+        $this->queries->dispatchQuery($query = new FindSchemaForDocuments(DocumentId::fromString($id)));
 
         \var_dump($query->getResult());
         return $this->render(

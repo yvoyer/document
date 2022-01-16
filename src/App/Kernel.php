@@ -15,7 +15,7 @@ class Kernel extends BaseKernel
 {
     use MicroKernelTrait;
 
-    protected function build(ContainerBuilder $container)
+    protected function build(ContainerBuilder $container): void
     {
         parent::build($container);
 
@@ -49,7 +49,7 @@ class Kernel extends BaseKernel
         }
     }
 
-    public function getProjectDir()
+    public function getProjectDir(): string
     {
         return \realpath(__DIR__ . '/../../');
     }

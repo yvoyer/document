@@ -59,6 +59,11 @@ final class TestClient
         return $this->newClient();
     }
 
+    public function userSubmitNewDocument(string $name): self
+    {
+        return $this->submitForm('New document', ['document_type_name' => $name]);
+    }
+
     public function submitForm(string $submit, array $parameters = []): self
     {
         Assert::assertCount(

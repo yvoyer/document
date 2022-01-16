@@ -13,20 +13,9 @@ use function var_dump;
 
 final class FunctionalAssertion
 {
-    /**
-     * @var KernelBrowser
-     */
-    private $client;
-
-    /**
-     * @var Response
-     */
-    private $response;
-
-    /**
-     * @var Crawler
-     */
-    private $crawler;
+    private KernelBrowser $client;
+    private Response $response;
+    private Crawler $crawler;
 
     public function __construct(
         KernelBrowser $client,

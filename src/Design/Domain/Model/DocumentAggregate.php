@@ -2,6 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
+use DateTimeInterface;
 use Star\Component\Document\DataEntry\Domain\Model\SchemaMetadata;
 use Star\Component\Document\Design\Domain\Model\Behavior\BehaviorSubject;
 use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
@@ -10,29 +11,36 @@ use Star\Component\DomainEvent\AggregateRoot;
 
 class DocumentAggregate extends AggregateRoot implements DocumentDesigner, BehaviorSubject
 {
-    /**
-     * @var DocumentType
-     */
-    private $type;
-
-    /**
-     * @var DocumentSchema
-     */
-    private $schema;
+    private DocumentName $name;
+    private DocumentSchema $schema;
 
     /**
      * @var DocumentConstraint[]
      */
-    private $constraints = [];
+    private array $constraints = [];
+
+    public static function draft(
+        DocumentId $id,
+        DocumentName $name,
+        DocumentOwner $owner,
+        DateTimeInterface $created_at
+    ): DocumentAggregate
+    {
+        /**
+         * @var DocumentAggregate $aggregate
+         */
+        $aggregate = static::fromStream(
+            [
+                new Events\DocumentCreated($id, $name, $owner, $created_at),
+            ]
+        );
+
+        return $aggregate;
+    }
 
     public function getSchema(): SchemaMetadata
     {
         return $this->schema;
-    }
-
-    public function getIdentity(): DocumentId
-    {
-        return $this->schema->getIdentity();
     }
 
     public function addProperty(PropertyName $name, PropertyType $type): void
@@ -40,11 +48,17 @@ class DocumentAggregate extends AggregateRoot implements DocumentDesigner, Behav
         $this->mutate(new Events\PropertyAdded($this->getIdentity(), $name, $type));
     }
 
+    public function getIdentity(): DocumentId
+    {
+        return $this->schema->getIdentity();
+    }
+
     public function addPropertyConstraint(
         PropertyName $name,
         string $constraintName,
         PropertyConstraint $constraint
-    ): void {
+    ): void
+    {
         $this->mutate(
             new Events\PropertyConstraintWasAdded($this->getIdentity(), $name, $constraintName, $constraint)
         );
@@ -61,7 +75,8 @@ class DocumentAggregate extends AggregateRoot implements DocumentDesigner, Behav
         PropertyName $name,
         string $parameterName,
         PropertyParameter $parameter
-    ): void {
+    ): void
+    {
         $this->mutate(new Events\PropertyParameterAdded($this->getIdentity(), $name, $parameterName, $parameter));
     }
 
@@ -84,7 +99,7 @@ class DocumentAggregate extends AggregateRoot implements DocumentDesigner, Behav
     protected function onDocumentCreated(Events\DocumentCreated $event): void
     {
         $this->schema = new DocumentSchema($event->documentId());
-        $this->type = $event->documentType();
+        $this->name = $event->name();
     }
 
     protected function onPropertyAdded(Events\PropertyAdded $event): void
@@ -122,24 +137,5 @@ class DocumentAggregate extends AggregateRoot implements DocumentDesigner, Behav
     protected function onPropertyConstraintWasRemoved(Events\PropertyConstraintWasRemoved $event): void
     {
         $this->schema->removePropertyConstraint($event->propertyName()->toString(), $event->constraintName());
-    }
-
-    /**
-     * @param DocumentId $id
-     * @param DocumentType $type
-     * @return static
-     */
-    public static function draft(DocumentId $id, DocumentType $type): DocumentAggregate
-    {
-        /**
-         * @var DocumentAggregate $aggregate
-         */
-        $aggregate = static::fromStream(
-            [
-                new Events\DocumentCreated($id, $type),
-            ]
-        );
-
-        return $aggregate;
     }
 }
