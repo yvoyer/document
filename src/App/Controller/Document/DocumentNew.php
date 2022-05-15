@@ -4,9 +4,10 @@ namespace App\Controller\Document;
 
 use App\Authentication\AuthenticationContext;
 use App\Controller\AppController;
+use DateTimeImmutable;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocument;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\Templating\NamedDocument;
+use Star\Component\Document\Design\Domain\Model\DocumentName;
 use Star\Component\DomainEvent\Messaging\CommandBus;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,10 +15,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Throwable;
 
-final class DocumentTypeNew extends AppController
+final class DocumentNew extends AppController
 {
     /**
-     * @Route(name="document_type_new", path="/document-types", methods={"POST"})
+     * @Route(name="document_new", path="/documents", methods={"POST"})
      *
      * @param Request $request
      * @param CommandBus $bus
@@ -32,7 +33,7 @@ final class DocumentTypeNew extends AppController
         AuthenticationContext $context
     ): Response {
         try {
-            $type = new NamedDocument($request->get('document_type_name'));
+            $name = new DocumentName($request->get('document_type_name'));
         } catch (Throwable $throwable) {
             $this->addFlashException(
                 $translator->trans('flash.document_type_name.invalid', [], 'flash'),
@@ -42,12 +43,19 @@ final class DocumentTypeNew extends AppController
         }
 
         $documentId = DocumentId::random();
-        $bus->dispatchCommand(new CreateDocument($documentId, $type, $context->getLoggedMember()));
+        $bus->dispatchCommand(
+            new CreateDocument(
+                $documentId,
+                $name,
+                $context->getLoggedMember(),
+                new DateTimeImmutable()
+            )
+        );
 
         $this->addFlashSuccess(
             $translator->trans(
                 'flash.success.document_type_created',
-                ['%template%' => $type->toSerializableString()],
+                ['%template%' => $name->toSerializableString()],
                 'flash'
             )
         );

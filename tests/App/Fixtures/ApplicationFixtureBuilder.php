@@ -2,8 +2,10 @@
 
 namespace Star\Component\Document\Tests\App\Fixtures;
 
+use App\Tests\Assertions\Design\DocumentDesignAssertion;
 use DateTimeImmutable;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocument;
+use Star\Component\Document\Design\Domain\Messaging\Query\FindSchemaForDocuments;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\Document\Membership\Domain\Messaging\Command\RegisterMember;
@@ -26,6 +28,13 @@ final class ApplicationFixtureBuilder
         $this->queryBus = $queryBus;
     }
 
+    public function assertDocument(DocumentId $id, string $locale): DocumentDesignAssertion
+    {
+        $this->queryBus->dispatchQuery($query = new FindSchemaForDocuments($locale, $id));
+
+        return new DocumentDesignAssertion($query->getSingleSchema($id));
+    }
+
     public function doCommand(Command $command): void
     {
         $this->commandBus->dispatchCommand($command);
@@ -46,7 +55,7 @@ final class ApplicationFixtureBuilder
             )
         );
 
-        return new DocumentFixture($id, $this);
+        return new DocumentFixture($id, $this, $owner);
     }
 
     public function newMember(): MembershipFixture

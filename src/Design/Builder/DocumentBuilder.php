@@ -13,14 +13,13 @@ use Star\Component\Document\DataEntry\Domain\Model\Validation\AlwaysThrowExcepti
 use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleValidationErrors;
 use Star\Component\Document\DataEntry\Domain\Model\Values\OptionListValue;
 use Star\Component\Document\Design\Domain\Model\Behavior\DocumentBehavior;
-use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentAggregate;
+use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\Document\Design\Domain\Model\DocumentName;
+use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use Star\Component\Document\Design\Domain\Model\Templating\NotNamedDocument;
 use Star\Component\Document\Design\Domain\Model\Test\NullOwner;
 use Star\Component\Document\Design\Domain\Model\Types;
 
@@ -29,11 +28,12 @@ final class DocumentBuilder
     private DocumentId $id;
     private DocumentAggregate $document;
     private StrategyToHandleValidationErrors $strategy;
+    private const DEFAULT_LOCALE = 'en';
 
     private function __construct(
-        DocumentId        $id,
-        DocumentName      $type,
-        DocumentOwner     $owner,
+        DocumentId $id,
+        DocumentName $type,
+        DocumentOwner $owner,
         DateTimeInterface $createdAt
     ) {
         $this->id = $id;
@@ -45,28 +45,28 @@ final class DocumentBuilder
     {
         $this->createProperty($name, new Types\StringType());
 
-        return new StringBuilder(PropertyName::fromString($name), $this->document, $this);
+        return new StringBuilder(PropertyName::fromString($name, self::DEFAULT_LOCALE), $this->document, $this);
     }
 
     public function createBoolean(string $name): BooleanBuilder
     {
         $this->createProperty($name, new Types\BooleanType());
 
-        return new BooleanBuilder(PropertyName::fromString($name), $this->document, $this);
+        return new BooleanBuilder(PropertyName::fromString($name, self::DEFAULT_LOCALE), $this->document, $this);
     }
 
     public function createDate(string $name): DateBuilder
     {
         $this->createProperty($name, new Types\DateType());
 
-        return new DateBuilder(PropertyName::fromString($name), $this->document, $this);
+        return new DateBuilder(PropertyName::fromString($name, self::DEFAULT_LOCALE), $this->document, $this);
     }
 
     public function createNumber(string $name): NumberBuilder
     {
         $this->createProperty($name, new Types\NumberType());
 
-        return new NumberBuilder(PropertyName::fromString($name), $this->document, $this);
+        return new NumberBuilder(PropertyName::fromString($name, self::DEFAULT_LOCALE), $this->document, $this);
     }
 
     public function attachBehavior(string $name, DocumentBehavior $behavior): DocumentBuilder
@@ -83,7 +83,11 @@ final class DocumentBuilder
             new Types\ListOfOptionsType('list', $options)
         );
 
-        return new CustomListBuilder(PropertyName::fromString($name), $this->document, $this);
+        return new CustomListBuilder(
+            PropertyName::fromString($name, self::DEFAULT_LOCALE),
+            $this->document,
+            $this
+        );
     }
 
     /**
@@ -127,7 +131,11 @@ final class DocumentBuilder
 
     public function createProperty(string $name, PropertyType $type): void
     {
-        $this->document->addProperty($name = PropertyName::fromString($name), $type);
+        $this->document->addProperty(
+            PropertyName::fromString($name, self::DEFAULT_LOCALE),
+            $type,
+            new DateTimeImmutable()
+        );
     }
 
     public static function constraints(): ConstraintBuilder
@@ -146,6 +154,11 @@ final class DocumentBuilder
             $id = DocumentId::random()->toString();
         }
 
-        return new self(DocumentId::fromString($id), new NotNamedDocument(), new NullOwner(), new DateTimeImmutable());
+        return new self(
+            DocumentId::fromString($id),
+            DocumentName::defaultName(),
+            new NullOwner(),
+            new DateTimeImmutable()
+        );
     }
 }

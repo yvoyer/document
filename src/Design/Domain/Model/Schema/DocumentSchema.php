@@ -16,18 +16,16 @@ use Star\Component\Document\Design\Domain\Model\Types\TypeData;
 use function array_key_exists;
 use function json_decode;
 use function json_encode;
+use function var_dump;
 
 final class DocumentSchema implements SchemaMetadata
 {
-    /**
-     * @var DocumentId
-     */
-    private $documentId;
+    private DocumentId $documentId;
 
     /**
      * @var PropertyDefinition[]
      */
-    private $properties = [];
+    private array $properties = [];
 
     public function __construct(DocumentId $documentId)
     {
@@ -39,9 +37,9 @@ final class DocumentSchema implements SchemaMetadata
         return $this->documentId;
     }
 
-    public function addProperty(string $property, PropertyType $type): void
+    public function addProperty(PropertyName $property, PropertyType $type): void
     {
-        $this->properties[$property] = new PropertyDefinition(PropertyName::fromString($property), $type);
+        $this->properties[$property->toString()] = new PropertyDefinition($property, $type);
     }
 
     public function hasProperty(string $property): bool
@@ -116,7 +114,7 @@ final class DocumentSchema implements SchemaMetadata
         $schema = new DocumentSchema(DocumentId::fromString($data[SchemaDumper::INDEX_ID]));
         foreach ($data[SchemaDumper::INDEX_PROPERTIES] as $propertyName => $propertyData) {
             $schema->addProperty(
-                $propertyName,
+                PropertyName::fromString($propertyName, 'LOCALE_TODO'),
                 TypeData::fromArray($propertyData[SchemaDumper::INDEX_TYPE])->createType()
             );
 
@@ -142,5 +140,10 @@ final class DocumentSchema implements SchemaMetadata
         }
 
         return $schema;
+    }
+
+    public static function baseSchema(DocumentId $documentId): self
+    {
+        return new self($documentId);
     }
 }

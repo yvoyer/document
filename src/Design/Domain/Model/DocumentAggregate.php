@@ -13,6 +13,7 @@ class DocumentAggregate extends AggregateRoot implements DocumentDesigner, Behav
 {
     private DocumentName $name;
     private DocumentSchema $schema;
+    private DocumentOwner $owner;
 
     /**
      * @var DocumentConstraint[]
@@ -43,9 +44,20 @@ class DocumentAggregate extends AggregateRoot implements DocumentDesigner, Behav
         return $this->schema;
     }
 
-    public function addProperty(PropertyName $name, PropertyType $type): void
-    {
-        $this->mutate(new Events\PropertyAdded($this->getIdentity(), $name, $type));
+    public function addProperty(
+        PropertyName $name,
+        PropertyType $type,
+        DateTimeInterface $addedAt
+    ): void {
+        $this->mutate(
+            new Events\PropertyAdded(
+                $this->getIdentity(),
+                $name,
+                $type,
+                $this->owner,
+                $addedAt
+            )
+        );
     }
 
     public function getIdentity(): DocumentId
@@ -56,16 +68,26 @@ class DocumentAggregate extends AggregateRoot implements DocumentDesigner, Behav
     public function addPropertyConstraint(
         PropertyName $name,
         string $constraintName,
-        PropertyConstraint $constraint
+        PropertyConstraint $constraint,
+        DateTimeInterface $addedAt
     ): void
     {
         $this->mutate(
-            new Events\PropertyConstraintWasAdded($this->getIdentity(), $name, $constraintName, $constraint)
+            new Events\PropertyConstraintWasAdded(
+                $this->getIdentity(),
+                $name,
+                $constraintName,
+                $constraint,
+                $this->owner,
+                $addedAt
+            )
         );
     }
 
-    public function removePropertyConstraint(PropertyName $name, string $constraintName): void
-    {
+    public function removePropertyConstraint(
+        PropertyName $name,
+        string $constraintName
+    ): void {
         $this->mutate(
             new Events\PropertyConstraintWasRemoved($this->getIdentity(), $name, $constraintName)
         );
@@ -74,10 +96,19 @@ class DocumentAggregate extends AggregateRoot implements DocumentDesigner, Behav
     public function addPropertyParameter(
         PropertyName $name,
         string $parameterName,
-        PropertyParameter $parameter
-    ): void
-    {
-        $this->mutate(new Events\PropertyParameterAdded($this->getIdentity(), $name, $parameterName, $parameter));
+        PropertyParameter $parameter,
+        DateTimeInterface $addedAt
+    ): void {
+        $this->mutate(
+            new Events\PropertyParameterAdded(
+                $this->getIdentity(),
+                $name,
+                $parameterName,
+                $parameter,
+                $this->owner,
+                $addedAt
+            )
+        );
     }
 
     public function addDocumentConstraint(string $name, DocumentConstraint $constraint): void
@@ -100,13 +131,14 @@ class DocumentAggregate extends AggregateRoot implements DocumentDesigner, Behav
     {
         $this->schema = new DocumentSchema($event->documentId());
         $this->name = $event->name();
+        $this->owner = $event->updatedBy();
     }
 
     protected function onPropertyAdded(Events\PropertyAdded $event): void
     {
         $type = $event->type();
 
-        $this->schema->addProperty($event->name()->toString(), $type);
+        $this->schema->addProperty($event->name(), $type);
     }
 
     protected function onDocumentConstraintRegistered(Events\DocumentConstraintRegistered $event): void

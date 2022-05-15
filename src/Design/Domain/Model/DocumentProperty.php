@@ -33,7 +33,7 @@ final class DocumentProperty implements ReadOnlyProperty
 
     public function matchName(PropertyName $name): bool
     {
-        return $name->matchName($this->definition->getName());
+        return $name->matchCode($this->definition->getName());
     }
 
     public function getDefinition(): PropertyDefinition

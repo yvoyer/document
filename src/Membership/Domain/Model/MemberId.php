@@ -13,6 +13,11 @@ final class MemberId extends StringIdentity implements DocumentOwner
         return parent::toString();
     }
 
+    public function toSerializableString(): string
+    {
+        return $this->toString();
+    }
+
     public static function asUUid(): self
     {
         return self::fromString(Uuid::uuid4()->toString());

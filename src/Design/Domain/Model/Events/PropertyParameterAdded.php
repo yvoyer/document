@@ -2,43 +2,36 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Events;
 
+use DateTimeInterface;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyParameter;
 use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 
 final class PropertyParameterAdded implements DocumentEvent
 {
-    /**
-     * @var DocumentId
-     */
-    private $documentId;
-
-    /**
-     * @var PropertyName
-     */
-    private $property;
-
-    /**
-     * @var string
-     */
-    private $parameterName;
-
-    /**
-     * @var PropertyParameter
-     */
-    private $parameter;
+    private DocumentId $documentId;
+    private PropertyName $property;
+    private string $parameterName;
+    private PropertyParameter $parameter;
+    private DocumentOwner $addedBy;
+    private DateTimeInterface $addedAt;
 
     public function __construct(
         DocumentId $documentId,
         PropertyName $property,
         string $parameterName,
-        PropertyParameter $parameter
+        PropertyParameter $parameter,
+        DocumentOwner $addedBy,
+        DateTimeInterface $addedAt
     ) {
         $this->documentId = $documentId;
         $this->property = $property;
         $this->parameterName = $parameterName;
         $this->parameter = $parameter;
+        $this->addedBy = $addedBy;
+        $this->addedAt = $addedAt;
     }
 
     public function documentId(): DocumentId
@@ -59,6 +52,16 @@ final class PropertyParameterAdded implements DocumentEvent
     public function parameter(): PropertyParameter
     {
         return $this->parameter;
+    }
+
+    final public function updatedBy(): DocumentOwner
+    {
+        return $this->addedBy;
+    }
+
+    final public function updatedAt(): DateTimeInterface
+    {
+        return $this->addedAt;
     }
 
     public static function fromPayload(array $payload): CreatedFromPayload

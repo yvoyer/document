@@ -13,14 +13,15 @@
         {% for document in documents %}
             <tr>
                 <td>{{ document.documentId() }}</td>
-                {% set property = document.getPublicProperty('type') %}
+                {{ dump(document) }}
+                {# set property = document.getPublicProperty('type') #}
                 <td>
-                    <span>{{ property.getLabel() }}</span>
-                    <span>{{ property.getType() }}</span>
+{#                    <span>{{ property.getLabel() }}</span>#}
+{#                    <span>{{ property.getType() }}</span>#}
                 </td>
                 <td>
                     <span>
-                        <a href="{{ url('document_design', {'id': document.getDocumentId()}) }}">{{ document.getName() }}</a>
+{#                        <a href="{{ url('document_design', {'id': document.getDocumentId()}) }}">{{ document.getName() }}</a>#}
                     </span>
                 </td>
             </tr>

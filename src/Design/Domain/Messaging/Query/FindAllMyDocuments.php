@@ -12,15 +12,22 @@ final class FindAllMyDocuments implements Query
 {
     private DocumentOwner $owner;
     private Closure $result;
+    private string $locale;
 
-    public function __construct(DocumentOwner $owner)
+    public function __construct(DocumentOwner $owner, string $locale)
     {
         $this->owner = $owner;
+        $this->locale = $locale;
     }
 
     final public function owner(): DocumentOwner
     {
         return $this->owner;
+    }
+
+    final public function locale(): string
+    {
+        return $this->locale;
     }
 
     public function __invoke($result): void

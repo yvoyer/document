@@ -11,10 +11,10 @@ use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
 use Star\Component\Document\Design\Domain\Model\Events\DocumentCreated;
 use Star\Component\Document\Design\Domain\Model\Events\PropertyConstraintWasAdded;
 use Star\Component\Document\Design\Domain\Model\Events\PropertyConstraintWasRemoved;
+use Star\Component\Document\Design\Domain\Model\DocumentName;
 use Star\Component\Document\Design\Domain\Model\Parameters\NullParameter;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\Schema\ReferencePropertyNotFound;
-use Star\Component\Document\Design\Domain\Model\Templating\NotNamedDocument;
 use Star\Component\Document\Design\Domain\Model\Test\NullOwner;
 use Star\Component\Document\Design\Domain\Model\Types\NullType;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
@@ -27,7 +27,7 @@ final class DocumentAggregateTest extends TestCase
     {
         $this->document = DocumentAggregate::draft(
             DocumentId::fromString('id'),
-            new NotNamedDocument(),
+            DocumentName::defaultName(),
             new NullOwner(),
             new DateTimeImmutable()
         );
@@ -176,5 +176,6 @@ final class DocumentAggregateTest extends TestCase
         self::assertInstanceOf(DocumentCreated::class, $event);
         self::assertSame($this->document->getIdentity()->toString(), $event->documentId()->toString());
         self::assertSame('default-name', $event->name()->toSerializableString());
+        self::assertSame('en', $event->name()->locale());
     }
 }

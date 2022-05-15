@@ -4,8 +4,8 @@ namespace Star\Component\Document\Tests;
 
 use Assert\Assertion;
 use Behat\Behat\Context\Context;
-use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
+use DateTimeImmutable;
 use PHPUnit\Framework\Assert;
 use Star\Component\Document\DataEntry\Domain\Messaging\Command\CreateRecord;
 use Star\Component\Document\DataEntry\Domain\Messaging\Command\CreateRecordHandler;
@@ -39,11 +39,11 @@ use Star\Component\Document\Design\Domain\Model\Constraints\RequiresOptionCount;
 use Star\Component\Document\Design\Domain\Model\Constraints\RequiresValue;
 use Star\Component\Document\Design\Domain\Model\DocumentAggregate;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentName;
 use Star\Component\Document\Design\Domain\Model\Parameters\DateFormat;
 use Star\Component\Document\Design\Domain\Model\Parameters\DefaultValue;
 use Star\Component\Document\Design\Domain\Model\Parameters\ParameterData;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
-use Star\Component\Document\Design\Domain\Model\Templating\NamedDocument;
 use Star\Component\Document\Design\Domain\Model\Test\NullOwner;
 use Star\Component\Document\Design\Domain\Model\Types;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
@@ -202,7 +202,7 @@ class FeatureContext implements Context
         $this->bus->dispatchCommand(
             new CreateDocument(
                 $id = DocumentId::fromString($documentId),
-                new NamedDocument($documentId),
+                new DocumentName($documentId),
                 new NullOwner()
             )
         );
@@ -216,8 +216,10 @@ class FeatureContext implements Context
         $this->bus->dispatchCommand(
             new CreateProperty(
                 DocumentId::fromString($documentId),
-                PropertyName::fromString($property),
-                new Types\StringType()
+                PropertyName::fromString($property, 'en'),
+                new Types\StringType(),
+                new NullOwner(),
+                new DateTimeImmutable()
             )
         );
     }
@@ -230,8 +232,10 @@ class FeatureContext implements Context
         $this->bus->dispatchCommand(
             new CreateProperty(
                 DocumentId::fromString($documentId),
-                PropertyName::fromString($property),
-                new Types\BooleanType()
+                PropertyName::fromString($property, 'en'),
+                new Types\BooleanType(),
+                new NullOwner(),
+                new DateTimeImmutable()
             )
         );
     }
@@ -244,8 +248,10 @@ class FeatureContext implements Context
         $this->bus->dispatchCommand(
             new CreateProperty(
                 DocumentId::fromString($documentId),
-                PropertyName::fromString($property),
-                new Types\DateType()
+                PropertyName::fromString($property, 'en'),
+                new Types\DateType(),
+                new NullOwner(),
+                new DateTimeImmutable()
             )
         );
     }
@@ -258,8 +264,10 @@ class FeatureContext implements Context
         $this->bus->dispatchCommand(
             new CreateProperty(
                 DocumentId::fromString($documentId),
-                PropertyName::fromString($property),
-                new Types\NumberType()
+                PropertyName::fromString($property, 'en'),
+                new Types\NumberType(),
+                new NullOwner(),
+                new DateTimeImmutable()
             )
         );
     }
@@ -290,7 +298,7 @@ class FeatureContext implements Context
         $this->bus->dispatchCommand(
             new CreateProperty(
                 DocumentId::fromString($documentId),
-                PropertyName::fromString($property),
+                PropertyName::fromString($property, 'en'),
                 new Types\ListOfOptionsType(
                     'custom-list',
                     OptionListValue::fromArray(
@@ -301,7 +309,9 @@ class FeatureContext implements Context
                             array_keys($allowed)
                         )
                     )
-                )
+                ),
+                new NullOwner(),
+                new DateTimeImmutable()
             )
         );
     }

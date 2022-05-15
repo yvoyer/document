@@ -10,4 +10,9 @@ final class NullOwner implements DocumentOwner
     {
         return 'null-owner';
     }
+
+    public function toSerializableString(): string
+    {
+        return $this->toString();
+    }
 }

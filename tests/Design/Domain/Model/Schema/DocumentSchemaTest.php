@@ -8,6 +8,7 @@ use Star\Component\Document\Design\Domain\Model\Constraints\All;
 use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\Parameters\NullParameter;
+use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 use Star\Component\Document\Design\Domain\Model\Types;
 use function get_class;
@@ -48,7 +49,7 @@ final class DocumentSchemaTest extends TestCase
     public function test_it_should_add_property(): void
     {
         $type = new Types\NullType();
-        $this->schema->addProperty('name', $type);
+        $this->schema->addProperty(PropertyName::fromString('name', 'en'), $type);
         $this->assertArrayIsJson(
             [
                 'id' => 'd-id',
@@ -75,7 +76,7 @@ final class DocumentSchemaTest extends TestCase
         $property = 'prop';
         $constraint = 'const';
 
-        $this->schema->addProperty($property, new Types\NullType());
+        $this->schema->addProperty(PropertyName::fromString($property, 'en'), new Types\NullType());
         $this->schema->addPropertyConstraint($property, $constraint, new All(new NoConstraint()));
         $this->assertArrayIsJson(
             [
@@ -106,7 +107,7 @@ final class DocumentSchemaTest extends TestCase
         $property = 'prop';
         $constraint = 'const';
 
-        $this->schema->addProperty($property, new Types\NullType());
+        $this->schema->addProperty(PropertyName::fromString($property, 'en'), new Types\NullType());
         $this->schema->addPropertyConstraint($property, $constraint, new All(new NoConstraint()));
         $this->assertArrayIsJson(
             [
@@ -153,8 +154,8 @@ final class DocumentSchemaTest extends TestCase
 
     public function test_it_should_clone_schema(): void
     {
-        $this->schema->addProperty('empty', new Types\NullType());
-        $this->schema->addProperty('with-constraint', new Types\NullType());
+        $this->schema->addProperty(PropertyName::fromString('empty', 'en'), new Types\NullType());
+        $this->schema->addProperty(PropertyName::fromString('with-constraint', 'en'), new Types\NullType());
         $this->schema->addPropertyConstraint('with-constraint', 'const', new NoConstraint());
 
         $duplicate = $this->schema->clone(DocumentId::fromString('new-id'));
@@ -166,7 +167,7 @@ final class DocumentSchemaTest extends TestCase
 
     public function test_add_parameter(): void
     {
-        $this->schema->addProperty('prop', new Types\NullType());
+        $this->schema->addProperty(PropertyName::fromString('prop', 'en'), new Types\NullType());
         $this->assertSame(
             json_encode(
                 [
@@ -215,7 +216,7 @@ final class DocumentSchemaTest extends TestCase
 
     public function test_parameters_should_be_cloned(): void
     {
-        $this->schema->addProperty('prop', new Types\NullType());
+        $this->schema->addProperty(PropertyName::fromString('prop', 'en'), new Types\NullType());
         $this->schema->addParameter('prop', 'param', new NullParameter());
 
         $this->assertTrue($this->schema->getPropertyMetadata('prop')->hasParameter('param'));

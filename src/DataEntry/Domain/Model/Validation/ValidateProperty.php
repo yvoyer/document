@@ -2,6 +2,7 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Model\Validation;
 
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
@@ -13,27 +14,16 @@ use Star\Component\Document\Design\Domain\Model\PropertyType;
 
 final class ValidateProperty implements DocumentVisitor
 {
-    /**
-     * @var PropertyName
-     */
-    private $property;
-
-    /**
-     * @var RecordValue
-     */
-    private $value;
-
-    /**
-     * @var ErrorList
-     */
-    private $errors;
+    private PropertyCode $property;
+    private RecordValue $value;
+    private ErrorList $errors;
 
     public function __construct(
-        string $property,
+        PropertyCode $property,
         RecordValue $value,
         ErrorList $errors
     ) {
-        $this->property = PropertyName::fromString($property);
+        $this->property = $property;
         $this->value = $value;
         $this->errors = $errors;
     }
@@ -49,7 +39,7 @@ final class ValidateProperty implements DocumentVisitor
 
     public function visitProperty(PropertyName $name, PropertyType $type): bool
     {
-        return ! $name->matchName($this->property);
+        return ! $name->matchCode($this->property);
     }
 
     public function enterPropertyConstraints(PropertyName $propertyName): void

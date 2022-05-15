@@ -2,6 +2,8 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
+use DateTimeInterface;
+
 interface DocumentDesigner
 {
     /**
@@ -14,18 +16,24 @@ interface DocumentDesigner
      */
     public function acceptDocumentVisitor(DocumentVisitor $visitor): void;
 
-    public function addProperty(PropertyName $name, PropertyType $type): void;
+    public function addProperty(
+        PropertyName $name,
+        PropertyType $type,
+        DateTimeInterface $addedAt
+    ): void;
 
     public function addPropertyConstraint(
         PropertyName $name,
         string $constraintName,
-        PropertyConstraint $constraint
+        PropertyConstraint $constraint,
+        DateTimeInterface $addedAt
     ): void;
 
     public function addPropertyParameter(
         PropertyName $name,
         string $parameterName,
-        PropertyParameter $parameter
+        PropertyParameter $parameter,
+        DateTimeInterface $addedAt
     ): void;
 
     public function addDocumentConstraint(string $name, DocumentConstraint $constraint): void;

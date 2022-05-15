@@ -2,8 +2,11 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Events;
 
+use DateTimeInterface;
+use Star\Component\Document\Audit\Domain\Model\UpdatedBy;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 
 final class DocumentConstraintRegistered implements DocumentEvent
@@ -43,6 +46,16 @@ final class DocumentConstraintRegistered implements DocumentEvent
     public function constraint(): DocumentConstraint
     {
         return $this->constraint;
+    }
+
+    public function updatedAt(): DateTimeInterface
+    {
+        throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
+    }
+
+    public function updatedBy(): DocumentOwner
+    {
+        throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
     }
 
     public static function fromPayload(array $payload): CreatedFromPayload

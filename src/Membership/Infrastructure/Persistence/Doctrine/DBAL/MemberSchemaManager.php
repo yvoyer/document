@@ -4,7 +4,6 @@ namespace Star\Component\Document\Membership\Infrastructure\Persistence\Doctrine
 
 use Doctrine\DBAL\Connection;
 use Star\Component\Document\Membership\Domain\Model\Events\MemberWasRegistered;
-use Star\Component\Document\Membership\Infrastructure\Persistence\Doctrine\MembershipTableStore;
 use Star\Component\DomainEvent\EventListener;
 
 final class MemberSchemaManager implements EventListener
@@ -19,7 +18,7 @@ final class MemberSchemaManager implements EventListener
     public function onMemberRegistered(MemberWasRegistered $event): void
     {
         $this->connection->insert(
-            MembershipTableStore::MEMBER,
+            'member',
             [
                 'id' => $event->memberId()->toString(),
                 'name' => $event->username()->toString(),

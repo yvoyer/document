@@ -5,9 +5,8 @@ namespace Star\Component\Document\Design\Domain\Model\Events;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\Document\Design\Domain\Model\DocumentName;
-use Star\Component\Document\Design\Domain\Model\Templating\NamedDocument;
+use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\Document\Membership\Domain\Model\MemberId;
 use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 
@@ -40,12 +39,12 @@ final class DocumentCreated implements DocumentEvent
         return $this->name;
     }
 
-    final public function createdBy(): DocumentOwner
+    final public function updatedBy(): DocumentOwner
     {
         return MemberId::fromString($this->createdBy);
     }
 
-    final public function createdAt(): DateTimeInterface
+    final public function updatedAt(): DateTimeInterface
     {
         return new DateTimeImmutable($this->createdAt);
     }
@@ -54,7 +53,7 @@ final class DocumentCreated implements DocumentEvent
     {
         return new self(
             DocumentId::fromString($payload['id']),
-            new NamedDocument($payload['name']),
+            DocumentName::fromSerializedString($payload['name']),
             MemberId::fromString($payload['createdBy']),
             new DateTimeImmutable($payload['createdAt'])
         );

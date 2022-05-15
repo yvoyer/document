@@ -25,6 +25,19 @@ final class MemberDBALEventStore extends DBALEventStore implements MemberReposit
         throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
     }
 
+    public function isRegistered(MemberId $id): bool
+    {
+        $qb = $this->connection->createQueryBuilder();
+        $result = $qb->select('COUNT(*)')
+            ->from('member')
+            ->where($qb->expr()->eq('id', ':id'))
+            ->setParameter('id', $id->toString())
+            ->executeQuery()
+            ->fetchFirstColumn();
+
+        return $result[0] === '1';
+    }
+
     public function getMemberWithId(MemberId $id): MemberAggregate
     {
         throw new \RuntimeException(__METHOD__ . ' not implemented yet.');

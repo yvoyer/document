@@ -2,8 +2,7 @@
 
 namespace Star\Component\Document\Tests\Design\Infrastructure\Persistence\Doctrine\DBAL;
 
-use Star\Component\Document\Design\Domain\Messaging\Query\DataTransfer\ReadOnlyDocument;
-use Star\Component\Document\Design\Domain\Messaging\Query\FindAllMyDocuments;
+use Star\Component\Document\Design\Domain\Messaging\Query\DataTransfer\SchemaOfDocument;
 use Star\Component\Document\Design\Domain\Messaging\Query\FindSchemaForDocuments;
 use Star\Component\Document\Design\Domain\Model\Types\StringType;
 use Star\Component\Document\Tests\App\RegressionTestCase;
@@ -19,31 +18,21 @@ final class FindSchemaForDocumentsHandlerTest extends RegressionTestCase
         $fixtures = $client->createFixtureBuilder();
         $memberId = $fixtures->newMember()->getMemberId();
 
-        $doc_one = $fixtures
+        $docOneId = $fixtures
             ->newDocument($memberId)
             ->getDocumentId();
-        $doc_two = $fixtures
+        $fixtures
             ->newDocument($memberId)
             ->getDocumentId();
-        $doc_three = $fixtures
+        $docThreeId = $fixtures
             ->newDocument($memberId)
             ->getDocumentId();
 
-        $fixtures->dispatchQuery($query = new FindSchemaForDocuments($doc_one, $doc_three));
-        self::assertCount(2, $result = $query->getFoundSchemas());
-        self::assertContainsOnlyInstancesOf(ReadOnlyDocument::class, $result);
-
-        $row = $result[0];
-        self::assertSame(['text'], $row->getPublicProperties());
-        self::assertSame(
-            StringType::fromData([])->toData()->toString(),
-            $row->getPublicProperty('text')->toString()
-        );
-        \var_dump($row);
-        self::assertSame(
-            StringType::fromData([])->toData()->toString(),
-            $row->getPublicProperty('text')->toString()
-        );
+        $fixtures->dispatchQuery($query = new FindSchemaForDocuments('en', $docOneId, $docThreeId));
+        self::assertCount(2, $result = $query->getAllFoundSchemas());
+        self::assertContainsOnlyInstancesOf(SchemaOfDocument::class, $result);
+        self::assertSame($docOneId->toString(), $query->getSingleSchema($docOneId)->getDocumentId());
+        self::assertSame($docThreeId->toString(), $query->getSingleSchema($docThreeId)->getDocumentId());
     }
 
     public function test_it_should_fetch_documents_with_properties(): void
@@ -52,25 +41,20 @@ final class FindSchemaForDocumentsHandlerTest extends RegressionTestCase
         $fixtures = $client->createFixtureBuilder();
         $memberId = $fixtures->newMember()->getMemberId();
 
-        $fixtures
+        $documentId = $fixtures
             ->newDocument($memberId)
-            ->withTextProperty('text')->endProperty()
+            ->withTextProperty('text', 'en')->endProperty()
             ->getDocumentId();
 
-        $fixtures->dispatchQuery($query = new FindSchemaForDocuments($memberId));
-        self::assertCount(1, $result = $query->getResultArray());
-        self::assertContainsOnlyInstancesOf(ReadOnlyDocument::class, $result);
+        $fixtures->dispatchQuery($query = new FindSchemaForDocuments('en', $documentId));
+        self::assertCount(1, $result = $query->getAllFoundSchemas());
+        self::assertContainsOnlyInstancesOf(SchemaOfDocument::class, $result);
 
-        $row = $result[0];
-        self::assertSame(['text'], $row->getPublicProperties());
+        $document = $query->getSingleSchema($documentId);
+        self::assertSame(['text'], $document->getPublicProperties());
         self::assertSame(
-            StringType::fromData([])->toData()->toString(),
-            $row->getPublicProperty('text')->toString()
-        );
-        \var_dump($row);
-        self::assertSame(
-            StringType::fromData([])->toData()->toString(),
-            $row->getPublicProperty('text')->toString()
+            'todo',
+            $document->getPublicProperty('text')->toTypedString()
         );
     }
 
@@ -80,18 +64,21 @@ final class FindSchemaForDocumentsHandlerTest extends RegressionTestCase
         $fixtures = $client->createFixtureBuilder();
         $memberId = $fixtures->newMember()->getMemberId();
 
-        $fixtures
+        $documentId = $fixtures
             ->newDocument($memberId)
-            ->withTextProperty('text')->required()->endProperty()
+            ->withTextProperty('text', 'en')->required()->endProperty()
             ->getDocumentId();
 
-        $fixtures->dispatchQuery($query = new FindSchemaForDocuments($memberId));
-        self::assertCount(1, $result = $query->getResultArray());
-        self::assertContainsOnlyInstancesOf(ReadOnlyDocument::class, $result);
+        $fixtures->dispatchQuery($query = new FindSchemaForDocuments('en', $documentId));
+        self::assertCount(1, $result = $query->getAllFoundSchemas());
+        self::assertContainsOnlyInstancesOf(SchemaOfDocument::class, $result);
 
-        $row = $result[0];
-        self::assertSame(['text'], $row->getPublicProperties());
-        self::assertSame(StringType::fromData([])->toData()->toString(), $row->getPublicProperty('text')->toString());
+        $document = $query->getSingleSchema($documentId);
+        self::assertSame(['text'], $document->getPublicProperties());
+        self::assertSame(
+            StringType::fromData([])->toData()->toString(),
+            $document->getPublicProperty('text')
+        );
         $this->fail('todo');
     }
 }

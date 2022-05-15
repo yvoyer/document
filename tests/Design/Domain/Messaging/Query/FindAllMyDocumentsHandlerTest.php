@@ -21,13 +21,13 @@ final class FindAllMyDocumentsHandlerTest extends RegressionTestCase
             ->newDocument($memberId)
             ->getDocumentId();
 
-        $fixtures->dispatchQuery($query = new FindAllMyDocuments($memberId));
+        $fixtures->dispatchQuery($query = new FindAllMyDocuments($memberId, 'en'));
         self::assertCount(1, $result = $query->getResultArray());
         self::assertContainsOnlyInstancesOf(ReadOnlyDocument::class, $result);
 
         $row = $result[0];
-        self::assertSame($document->toString(), $row->getDocumentId()->toString());
-        self::assertSame('default-name', $row->getDocumentName('en'));
+        self::assertSame($document->toString(), $row->getDocumentId());
+        self::assertSame('default-name', $row->getDocumentName());
         self::assertSame($memberId->toString(), $row->getOwnerId());
         self::assertStringContainsString('username-', $row->getOwnerName());
         self::assertSame(date('Y-m-d'), $row->getCreatedAt()->format('Y-m-d'));

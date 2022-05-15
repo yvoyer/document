@@ -30,12 +30,12 @@ final class ReadOnlyDocument
         $this->updatedAt = $updatedAt;
     }
 
-    final public function getDocumentId(): DocumentId
+    final public function getDocumentId(): string
     {
-        return $this->documentId;
+        return $this->documentId->toString();
     }
 
-    final public function getDocumentName(string $locale): string
+    final public function getDocumentName(): string
     {
         return $this->documentName;
     }

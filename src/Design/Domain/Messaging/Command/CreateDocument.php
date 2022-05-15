@@ -4,9 +4,8 @@ namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
 use DateTimeInterface;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\Document\Design\Domain\Model\DocumentName;
-use Star\Component\Document\Design\Domain\Model\Templating\NotNamedDocument;
+use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\DomainEvent\Messaging\Command;
 
 final class CreateDocument implements Command
@@ -53,6 +52,6 @@ final class CreateDocument implements Command
         DocumentOwner $owner,
         DateTimeInterface $createdAt
     ): self {
-        return new self($id, new NotNamedDocument(), $owner, $createdAt);
+        return new self($id, DocumentName::defaultName(), $owner, $createdAt);
     }
 }

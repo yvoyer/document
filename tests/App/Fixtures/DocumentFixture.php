@@ -2,8 +2,10 @@
 
 namespace Star\Component\Document\Tests\App\Fixtures;
 
+use DateTimeImmutable;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateProperty;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Types\StringType;
@@ -12,16 +14,21 @@ final class DocumentFixture
 {
     private DocumentId $documentId;
     private ApplicationFixtureBuilder $builder;
+    private DocumentOwner $owner;
 
-    public function __construct(DocumentId $documentId, ApplicationFixtureBuilder $builder)
-    {
+    public function __construct(
+        DocumentId $documentId,
+        ApplicationFixtureBuilder $builder,
+        DocumentOwner $owner
+    ) {
         $this->documentId = $documentId;
         $this->builder = $builder;
+        $this->owner = $owner;
     }
 
-    public function withTextProperty(string $name): PropertyFixture
+    public function withTextProperty(string $name, string $locale): PropertyFixture
     {
-        return $this->withProperty($name, new StringType());
+        return $this->withProperty($name, $locale, new StringType());
     }
 
     public function getDocumentId(): DocumentId
@@ -29,11 +36,17 @@ final class DocumentFixture
         return $this->documentId;
     }
 
-    private function withProperty(string $name, PropertyType $type): PropertyFixture
+    private function withProperty(string $name, string $locale, PropertyType $type): PropertyFixture
     {
-        $command = new CreateProperty($this->documentId, $nameObject = PropertyName::fromString($name), $type);
-
-        $this->builder->doCommand($command);
+        $this->builder->doCommand(
+            new CreateProperty(
+                $this->documentId,
+                $nameObject = PropertyName::fromString($name, $locale),
+                $type,
+                $this->owner,
+                new DateTimeImmutable()
+            )
+        );
 
         return new PropertyFixture($this->documentId, $nameObject, $this, $this->builder);
     }

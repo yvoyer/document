@@ -6,10 +6,11 @@ use Star\Component\Document\DataEntry\Domain\Model\PropertyMetadata;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\DocumentName;
 use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
+use Star\Component\Document\Design\Domain\Model\Schema\ReadOnlySchema;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
 use function array_keys;
 
-final class ReadOnlyDocumentSchema
+final class SchemaOfDocument implements ReadOnlySchema
 {
     private DocumentId $documentId;
     private DocumentName $documentName;

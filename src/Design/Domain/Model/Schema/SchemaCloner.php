@@ -38,7 +38,7 @@ final class SchemaCloner implements DocumentVisitor
 
     public function visitProperty(PropertyName $name, PropertyType $type): bool
     {
-        $this->schema->addProperty($name->toString(), $type);
+        $this->schema->addProperty($name, $type);
 
         return false;
     }

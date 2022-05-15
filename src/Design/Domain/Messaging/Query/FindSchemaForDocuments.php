@@ -4,7 +4,7 @@ namespace Star\Component\Document\Design\Domain\Messaging\Query;
 
 use Assert\Assertion;
 use Closure;
-use Star\Component\Document\Design\Domain\Messaging\Query\DataTransfer\ReadOnlyDocumentSchema;
+use Star\Component\Document\Design\Domain\Messaging\Query\DataTransfer\SchemaOfDocument;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\DomainEvent\Messaging\Query;
 use Traversable;
@@ -15,12 +15,16 @@ final class FindSchemaForDocuments implements Query
      * @var DocumentId[]
      */
     private array $documentIds;
-
+    private string $locale;
     private Closure $schemas;
 
-    public function __construct(DocumentId $first, DocumentId ...$others)
-    {
+    public function __construct(
+        string $locale,
+        DocumentId $first,
+        DocumentId ...$others
+    ) {
         $this->documentIds = \array_merge([$first], $others);
+        $this->locale = $locale;
     }
 
     /**
@@ -29,6 +33,11 @@ final class FindSchemaForDocuments implements Query
     public function documentIdentities(): array
     {
         return $this->documentIds;
+    }
+
+    final public function locale(): string
+    {
+        return $this->locale;
     }
 
     /**
@@ -51,23 +60,26 @@ final class FindSchemaForDocuments implements Query
     }
 
     /**
-     * @return ReadOnlyDocumentSchema[]|Traversable
+     * @return SchemaOfDocument[]|Traversable
      */
     public function getResult(): Traversable
     {
         return \call_user_func($this->schemas);
     }
 
-    /**
-     * @return ReadOnlyDocumentSchema[]
-     */
-    public function getFoundSchemas(): array
+    public function getSingleSchema(DocumentId $id): SchemaOfDocument
     {
-        return \iterator_to_array($this->getResult());
+        $result = $this->getAllFoundSchemas();
+        Assertion::keyExists($result, $id->toString());
+
+        return $result[$id->toString()];
     }
 
-    public function getSchemaWithId(DocumentId $documentId): ReadOnlyDocumentSchema
+    /**
+     * @return SchemaOfDocument[]
+     */
+    public function getAllFoundSchemas(): array
     {
-        return $this->getFoundSchemas()[$documentId->toString()];
+        return \iterator_to_array($this->getResult());
     }
 }

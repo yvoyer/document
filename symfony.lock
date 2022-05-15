@@ -35,6 +35,9 @@
     "doctrine/collections": {
         "version": "1.6.7"
     },
+    "doctrine/common": {
+        "version": "3.3.0"
+    },
     "doctrine/dbal": {
         "version": "2.12.1"
     },
@@ -72,6 +75,9 @@
     "doctrine/event-manager": {
         "version": "1.1.1"
     },
+    "doctrine/inflector": {
+        "version": "2.0.4"
+    },
     "doctrine/instantiator": {
         "version": "1.4.0"
     },
@@ -80,6 +86,9 @@
     },
     "doctrine/migrations": {
         "version": "3.3.2"
+    },
+    "doctrine/orm": {
+        "version": "2.12.2"
     },
     "doctrine/persistence": {
         "version": "2.1.0"
@@ -402,6 +411,9 @@
     },
     "symfony/property-info": {
         "version": "v5.2.1"
+    },
+    "symfony/proxy-manager-bridge": {
+        "version": "v5.2.12"
     },
     "symfony/routing": {
         "version": "5.1",

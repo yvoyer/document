@@ -12,7 +12,7 @@ final class ParameterData
     /**
      * @var string
      */
-    private $class;
+    private string $class;
 
     /**
      * @var mixed[]

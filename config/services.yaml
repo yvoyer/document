@@ -18,6 +18,7 @@ services:
         tags: ['controller.service_arguments']
 
     App\SchemaManager:
+        class: Doctrine\Migrations\Provider\OrmSchemaProvider
 
     App\Authentication\AuthenticationContext:
         class: App\Authentication\Port\InMemory\NullObjectContext
@@ -44,7 +45,8 @@ services:
         calls:
             - ['addClassMap', ['required', 'Star\Component\Document\Design\Domain\Model\Constraints\RequiresValue']]
 
-    Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBAL\DocumentSchemaManager:
+    Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBAL\:
+        resource: '../src/Design/Infrastructure/Persistence/Doctrine/DBAL/*{Projection}.php'
         tags:
             - { name: star.event_listener }
 

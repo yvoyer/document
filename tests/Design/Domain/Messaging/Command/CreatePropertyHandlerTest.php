@@ -2,6 +2,7 @@
 
 namespace Star\Component\Document\Tests\Design\Domain\Messaging\Command;
 
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Design\Builder\DocumentBuilder;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateProperty;
@@ -10,6 +11,7 @@ use Star\Component\Document\Design\Domain\Model\DocumentAggregate;
 use Star\Component\Document\Design\Domain\Model\DocumentId;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\Schema\PropertyDefinition;
+use Star\Component\Document\Design\Domain\Model\Test\NullOwner;
 use Star\Component\Document\Design\Domain\Model\Types\StringType;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
@@ -17,20 +19,9 @@ use Star\Component\Identity\Exception\EntityNotFoundException;
 
 final class CreatePropertyHandlerTest extends TestCase
 {
-    /**
-     * @var CreatePropertyHandler
-     */
-    private $handler;
-
-    /**
-     * @var DocumentCollection
-     */
-    private $documents;
-
-    /**
-     * @var DocumentAggregate
-     */
-    private $document;
+    private CreatePropertyHandler $handler;
+    private DocumentCollection $documents;
+    private DocumentAggregate $document;
 
     public function setUp(): void
     {
@@ -48,8 +39,10 @@ final class CreatePropertyHandlerTest extends TestCase
         $this->handler->__invoke(
             new CreateProperty(
                 $id,
-                PropertyName::fromString($name = 'name'),
-                new StringType()
+                PropertyName::fromString($name = 'name', 'en'),
+                new StringType(),
+                new NullOwner(),
+                new DateTimeImmutable()
             )
         );
 
@@ -66,8 +59,10 @@ final class CreatePropertyHandlerTest extends TestCase
         $handler(
             new CreateProperty(
                 DocumentId::fromString('invalid'),
-                PropertyName::fromString('name'),
-                new StringType()
+                PropertyName::fromString('name', 'en'),
+                new StringType(),
+                new NullOwner(),
+                new DateTimeImmutable()
             )
         );
     }

@@ -65,7 +65,7 @@ final class DocumentBuilderTest extends TestCase
 
     public function test_it_should_create_a_custom_list_property(): void
     {
-        $name = $name = PropertyName::fromString('name');
+        $name = PropertyName::fromString('name', 'en');
         $document = DocumentBuilder::createDocument('id')
             ->createListOfOptions($name->toString(), OptionListValue::withElements(3))->endProperty()
             ->getSchema();

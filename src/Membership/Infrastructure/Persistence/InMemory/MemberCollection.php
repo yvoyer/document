@@ -13,6 +13,11 @@ use Star\Component\DomainEvent\Ports\InMemory\EventStoreCollection;
 
 final class MemberCollection extends EventStoreCollection implements MemberRepository, Countable
 {
+    public function isRegistered(MemberId $id): bool
+    {
+        throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
+    }
+
     public function getMemberWithId(MemberId $id): MemberAggregate
     {
         return $this->loadAggregate($id->toString());

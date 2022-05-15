@@ -2,6 +2,7 @@
 
 namespace Star\Component\Document\Design\Builder;
 
+use DateTimeImmutable;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
@@ -9,20 +10,9 @@ use Star\Component\Document\Design\Domain\Model\PropertyParameter;
 
 abstract class PropertyBuilder
 {
-    /**
-     * @var PropertyName
-     */
-    private $name;
-
-    /**
-     * @var DocumentDesigner
-     */
-    private $document;
-
-    /**
-     * @var DocumentBuilder
-     */
-    private $builder;
+    private PropertyName $name;
+    private DocumentDesigner $document;
+    private DocumentBuilder $builder;
 
     final public function __construct(
         PropertyName $name,
@@ -36,14 +26,14 @@ abstract class PropertyBuilder
 
     public function withConstraint(string $constraintName, PropertyConstraint $constraint): self
     {
-        $this->document->addPropertyConstraint($this->name, $constraintName, $constraint);
+        $this->document->addPropertyConstraint($this->name, $constraintName, $constraint, new DateTimeImmutable());
 
         return $this;
     }
 
     public function withParameter(string $parameterName, PropertyParameter $parameter): self
     {
-        $this->document->addPropertyParameter($this->name, $parameterName, $parameter);
+        $this->document->addPropertyParameter($this->name, $parameterName, $parameter, new DateTimeImmutable());
 
         return $this;
     }
