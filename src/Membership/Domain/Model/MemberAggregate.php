@@ -2,7 +2,7 @@
 
 namespace Star\Component\Document\Membership\Domain\Model;
 
-use DateTimeInterface;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\Membership\Domain\Model\Events\MemberWasRegistered;
 use Star\Component\DomainEvent\AggregateRoot;
 
@@ -23,7 +23,7 @@ final class MemberAggregate extends AggregateRoot
     public static function registered(
         MemberId $id,
         Username $username,
-        DateTimeInterface $registeredAt
+        AuditDateTime $registeredAt
     ): self
     {
         return self::fromStream(

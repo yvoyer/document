@@ -17,14 +17,14 @@ $document->acceptDocumentVisitor(new OutputDocumentType())
 ?>
 --EXPECTF--
 Document: "All num"
-Property: Int (number)
+Property: int (number)
   Constraints:
   Parameters:
-Property: Required (number)
+Property: required (number)
   Constraints:
     - required([])
   Parameters:
-Property: Float (number)
+Property: float (number)
   Constraints:
     - number-format({"decimal":2,"point":".","thousands_separator":","})
   Parameters:

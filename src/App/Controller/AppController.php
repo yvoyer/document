@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Star\Component\Document\Bridge\Validation\FlashableException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Throwable;
 
@@ -27,7 +28,7 @@ abstract class AppController extends AbstractController
         $this->addFlash('warning', $message);
     }
 
-    protected function addFlashException(string $message, Throwable $exception): void
+    protected function addFlashException(string $message, FlashableException $exception): void
     {
         // log exception
         $this->addFlashError($message);

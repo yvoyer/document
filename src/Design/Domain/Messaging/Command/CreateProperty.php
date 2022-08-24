@@ -2,7 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
-use DateTimeInterface;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
@@ -15,14 +15,14 @@ final class CreateProperty implements Command
     private PropertyCode $code;
     private PropertyName $name;
     private PropertyType $type;
-    private DateTimeInterface $createdAt;
+    private AuditDateTime $createdAt;
 
     public function __construct(
         DocumentTypeId $typeId,
         PropertyCode $code,
         PropertyName $name,
         PropertyType $type,
-        DateTimeInterface $createdAt
+        AuditDateTime $createdAt
     ) {
         $this->typeId = $typeId;
         $this->code = $code;
@@ -51,7 +51,7 @@ final class CreateProperty implements Command
         return $this->type;
     }
 
-    final public function createdAt(): DateTimeInterface
+    final public function createdAt(): AuditDateTime
     {
         return $this->createdAt;
     }

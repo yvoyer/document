@@ -2,12 +2,13 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Events;
 
-use DateTimeInterface;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
+use Star\Component\Document\Audit\Domain\Model\UpdatedBy;
 use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 
-final class PropertyConstraintWasRemoved implements DocumentEvent
+final class PropertyConstraintWasRemoved implements DocumentTypeEvent
 {
     private DocumentTypeId $document;
     private PropertyCode $propertyCode;
@@ -23,7 +24,7 @@ final class PropertyConstraintWasRemoved implements DocumentEvent
         $this->constraintName = $constraintName;
     }
 
-    final public function documentId(): DocumentTypeId
+    final public function typeId(): DocumentTypeId
     {
         return $this->document;
     }
@@ -38,12 +39,12 @@ final class PropertyConstraintWasRemoved implements DocumentEvent
         return $this->constraintName;
     }
 
-    final public function updatedAt(): DateTimeInterface
+    final public function updatedAt(): AuditDateTime
     {
         throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
     }
 
-    final public function updatedBy()
+    final public function updatedBy(): UpdatedBy
     {
         throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
     }

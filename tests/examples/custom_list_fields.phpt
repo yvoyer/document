@@ -19,17 +19,17 @@ $document->acceptDocumentVisitor(new OutputDocumentType())
 ?>
 --EXPECTF--
 Document: "All lists"
-Property: Optional (list)
+Property: optional (list)
   Constraints:
   Parameters:
-Property: Required (list)
+Property: required (list)
   Constraints:
     - required({"count":1})
   Parameters:
-Property: Single option (list)
+Property: single-option (list)
   Constraints:
   Parameters:
     - single-option([])
-Property: Multi option (list)
+Property: multi-option (list)
   Constraints:
   Parameters:

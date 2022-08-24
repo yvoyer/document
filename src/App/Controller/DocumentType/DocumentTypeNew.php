@@ -1,10 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller\Document;
+namespace App\Controller\DocumentType;
 
 use App\Authentication\AuthenticationContext;
 use App\Controller\AppController;
-use DateTimeImmutable;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
+use Star\Component\Document\Bridge\Validation\FlashableException;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocumentType;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\DocumentName;
@@ -13,12 +14,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Throwable;
 
-final class DocumentNew extends AppController
+final class DocumentTypeNew extends AppController
 {
     /**
-     * @Route(name="document_new", path="/documents", methods={"POST"})
+     * @Route(name="document_type_new", path="/document-types", methods={"POST"})
      *
      * @param Request $request
      * @param CommandBus $bus
@@ -33,22 +33,26 @@ final class DocumentNew extends AppController
         AuthenticationContext $context
     ): Response {
         try {
-            $name = new DocumentName($request->get('document_type_name'));
-        } catch (Throwable $throwable) {
+            $name = DocumentName::fromLocalizedString(
+                $request->get('document_type_name'),
+                $request->getLocale()
+            );
+        } catch (FlashableException $throwable) {
             $this->addFlashException(
                 $translator->trans('flash.document_type_name.invalid', [], 'flash'),
                 $throwable
             );
+
             return $this->redirect($this->generateUrl('dashboard'));
         }
 
-        $documentId = DocumentTypeId::random();
+        $typeId = DocumentTypeId::random();
         $bus->dispatchCommand(
             new CreateDocumentType(
-                $documentId,
+                $typeId,
                 $name,
                 $context->getLoggedMember(),
-                new DateTimeImmutable()
+                AuditDateTime::fromNow()
             )
         );
 
@@ -60,6 +64,6 @@ final class DocumentNew extends AppController
             )
         );
 
-        return $this->redirect($this->generateUrl('document_design', ['id' => $documentId->toString()]));
+        return $this->redirect($this->generateUrl('document_type_design', ['id' => $typeId->toString()]));
     }
 }

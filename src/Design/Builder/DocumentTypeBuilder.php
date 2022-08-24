@@ -2,8 +2,7 @@
 
 namespace Star\Component\Document\Design\Builder;
 
-use DateTimeImmutable;
-use DateTimeInterface;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\DataEntry\Builder\DocumentBuilder;
 use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentAggregate;
@@ -33,7 +32,7 @@ final class DocumentTypeBuilder
         DocumentTypeId $id,
         DocumentName $type,
         DocumentOwner $owner,
-        DateTimeInterface $createdAt
+        AuditDateTime $createdAt
     ) {
         $this->document = DocumentTypeAggregate::draft(
             $id,
@@ -141,7 +140,7 @@ final class DocumentTypeBuilder
             $code = PropertyCode::fromString($code),
             PropertyName::fromLocalizedString($code->toString(), $this->document->getDefaultLocale()),
             $type,
-            new DateTimeImmutable()
+            AuditDateTime::fromNow()
         );
 
         return $code;
@@ -166,7 +165,7 @@ final class DocumentTypeBuilder
             DocumentTypeId::fromString($id),
             DocumentName::random(),
             new NullOwner(),
-            new DateTimeImmutable()
+            AuditDateTime::fromNow()
         );
     }
 
@@ -174,7 +173,7 @@ final class DocumentTypeBuilder
         DocumentTypeId $id,
         DocumentName $name,
         DocumentOwner $owner,
-        DateTimeInterface $createdAt
+        AuditDateTime $createdAt
     ): self {
         return new self(
             $id,

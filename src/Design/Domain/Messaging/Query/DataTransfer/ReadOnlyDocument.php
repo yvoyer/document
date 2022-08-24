@@ -2,7 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Messaging\Query\DataTransfer;
 
-use DateTimeInterface;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 
 final class ReadOnlyDocument
@@ -11,16 +11,16 @@ final class ReadOnlyDocument
     private string $documentName;
     private string $ownerId;
     private string $ownerName;
-    private DateTimeInterface $createdAt;
-    private DateTimeInterface $updatedAt;
+    private AuditDateTime $createdAt;
+    private AuditDateTime $updatedAt;
 
     public function __construct(
         DocumentTypeId $documentId,
         string $documentName,
         string $ownerId,
         string $ownerName,
-        DateTimeInterface $createdAt,
-        DateTimeInterface $updatedAt
+        AuditDateTime $createdAt,
+        AuditDateTime $updatedAt
     ) {
         $this->documentId = $documentId;
         $this->documentName = $documentName;
@@ -50,12 +50,12 @@ final class ReadOnlyDocument
         return $this->ownerName;
     }
 
-    final public function getCreatedAt(): DateTimeInterface
+    final public function getCreatedAt(): AuditDateTime
     {
         return $this->createdAt;
     }
 
-    final public function getUpdatedAt(): DateTimeInterface
+    final public function getUpdatedAt(): AuditDateTime
     {
         return $this->updatedAt;
     }

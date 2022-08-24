@@ -49,6 +49,6 @@ final class DocumentTypeId implements Identity, SerializableAttribute
 
     public static function random(): self
     {
-        return self::fromString(uniqid('document-'));
+        return self::fromString(uniqid('document-type_'));
     }
 }

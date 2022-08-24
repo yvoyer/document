@@ -2,8 +2,8 @@
 
 namespace Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBAL;
 
-use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\Design\Domain\Messaging\Query\DataTransfer\ReadOnlyDocument;
 use Star\Component\Document\Design\Domain\Messaging\Query\FindAllMyDocumentTypes;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
@@ -68,8 +68,8 @@ final class FindAllMyDocumentTypesHandler
                     $row['document_type_name'],
                     $row['owner_id'],
                     $row['owner_name'],
-                    new DateTimeImmutable($row['created_at']),
-                    new DateTimeImmutable($row['updated_at'])
+                    AuditDateTime::fromString($row['created_at']),
+                    AuditDateTime::fromString($row['updated_at'])
                 );
             }
         };

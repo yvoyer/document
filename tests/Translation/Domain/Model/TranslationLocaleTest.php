@@ -11,7 +11,7 @@ final class TranslationLocaleTest extends TestCase
     public function test_it_should_not_allow_empty_locale(): void
     {
         $this->expectException(InvalidTranslationLocale::class);
-        $this->expectExceptionMessage('dsad');
+        $this->expectExceptionMessage('The locale "" cannot be empty.');
 
         TranslationLocale::fromString('');
     }

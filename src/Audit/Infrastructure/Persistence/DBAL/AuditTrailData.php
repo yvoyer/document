@@ -2,14 +2,14 @@
 
 namespace Star\Component\Document\Audit\Infrastructure\Persistence\DBAL;
 
-use DateTimeInterface;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\Audit\Domain\Model\UpdatedBy;
 
 trait AuditTrailData
 {
     protected function withAuditForInsert(
         array $data,
-        DateTimeInterface $createdAt,
+        AuditDateTime $createdAt,
         UpdatedBy $createdBy
     ): array
     {
@@ -17,23 +17,23 @@ trait AuditTrailData
             $data,
             [
                 'created_by' => $createdBy->toString(),
-                'created_at' => $createdAt->format('Y-m-d H:i:s'),
+                'created_at' => $createdAt->toDateTimeFormat(),
                 'updated_by' => $createdBy->toString(),
-                'updated_at' => $createdAt->format('Y-m-d H:i:s'),
+                'updated_at' => $createdAt->toDateTimeFormat(),
             ]
         );
     }
 
     protected function withAuditForUpdate(
         array $data,
-        DateTimeInterface $updatedAt,
+        AuditDateTime $updatedAt,
         UpdatedBy $updatedBy
     ): array {
         return \array_merge(
             $data,
             [
                 'updated_by' => $updatedBy->toString(),
-                'updated_at' => $updatedAt->format('Y-m-d H:i:s'),
+                'updated_at' => $updatedAt->toDateTimeFormat(),
             ]
         );
     }

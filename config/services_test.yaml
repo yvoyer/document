@@ -3,4 +3,5 @@ services:
         arguments:
             - '@Star\Component\DomainEvent\Messaging\CommandBus'
             - '@Star\Component\DomainEvent\Messaging\QueryBus'
+            - '@doctrine.dbal.default_connection'
         public: true

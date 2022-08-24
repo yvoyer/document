@@ -2,8 +2,8 @@
 
 namespace Star\Component\Document\Tests\Design\Domain\Messaging\Command;
 
-use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Builder\DocumentTypeBuilder;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddPropertyConstraint;
@@ -22,10 +22,7 @@ final class AddPropertyConstraintHandlerTest extends TestCase
     public function setUp(): void
     {
         $this->documents = new DocumentTypeCollection();
-        $this->handler = new AddPropertyConstraintHandler(
-            $this->documents,
-            new ConstraintFactory(['const' => NoConstraint::class])
-        );
+        $this->handler = new AddPropertyConstraintHandler($this->documents);
     }
 
     public function test_it_should_change_the_attribute_of_the_property(): void
@@ -44,8 +41,8 @@ final class AddPropertyConstraintHandlerTest extends TestCase
                 $document->getIdentity(),
                 $code,
                 'const',
-                [],
-                new DateTimeImmutable()
+                new NoConstraint(),
+                AuditDateTime::fromNow()
             )
         );
 
@@ -59,14 +56,14 @@ final class AddPropertyConstraintHandlerTest extends TestCase
         $this->documents->saveDocument($document);
 
         $this->expectException(ReferencePropertyNotFound::class);
-        $this->expectExceptionMessage('The property with code "not found" could not be found.');
+        $this->expectExceptionMessage('The property with code "not-found" could not be found.');
         $this->handler->__invoke(
             new AddPropertyConstraint(
                 $document->getIdentity(),
                 PropertyCode::fromString('not found'),
                 'const',
-                [],
-                new DateTimeImmutable()
+                new NoConstraint(),
+                AuditDateTime::fromNow()
             )
         );
     }

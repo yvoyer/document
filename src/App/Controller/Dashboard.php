@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Authentication\AuthenticationContext;
-use App\Twig\Design\TwigDocumentCollection;
 use Star\Component\Document\Design\Domain\Messaging\Query\FindAllMyDocumentTypes;
 use Star\Component\DomainEvent\Messaging\QueryBus;
 use Symfony\Component\HttpFoundation\Request;

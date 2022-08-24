@@ -35,8 +35,8 @@ final class MemberSchemaManager implements EventListener
             [
                 'id' => $event->memberId()->toString(),
                 'name' => $event->username()->toString(),
-                'created_at' => $event->registeredAt()->format('Y-m-d H:i:s'),
-                'updated_at' => $event->registeredAt()->format('Y-m-d H:i:s'),
+                'created_at' => $event->registeredAt()->toDateTimeFormat(),
+                'updated_at' => $event->registeredAt()->toDateTimeFormat(),
             ]
         );
     }

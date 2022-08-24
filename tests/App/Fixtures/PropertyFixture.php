@@ -2,9 +2,10 @@
 
 namespace Star\Component\Document\Tests\App\Fixtures;
 
-use DateTimeImmutable;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddPropertyConstraint;
+use Star\Component\Document\Design\Domain\Model\Constraints\RequiresValue;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 
 final class PropertyFixture
@@ -33,8 +34,8 @@ final class PropertyFixture
                 $this->typeId,
                 $this->code,
                 'required',
-                [],
-                new DateTimeImmutable()
+                new RequiresValue(),
+                AuditDateTime::fromNow()
             )
         );
 

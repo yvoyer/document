@@ -2,8 +2,8 @@
 
 namespace Star\Component\Document\Tests\Design\Domain\Messaging\Command;
 
-use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocumentType;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocumentTypeHandler;
 use Star\Component\Document\Design\Domain\Model\DocumentName;
@@ -26,7 +26,7 @@ final class CreateDocumentHandlerTest extends TestCase
                 $id,
                 DocumentName::random(),
                 new NullOwner(),
-                new DateTimeImmutable()
+                AuditDateTime::fromNow()
             )
         );
 

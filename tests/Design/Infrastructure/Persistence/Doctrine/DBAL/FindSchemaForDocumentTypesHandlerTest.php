@@ -41,20 +41,20 @@ final class FindSchemaForDocumentTypesHandlerTest extends RegressionTestCase
         $fixtures = $client->createFixtureBuilder();
         $memberId = $fixtures->newMember()->getMemberId();
 
-        $documentId = $fixtures
+        $typeId = $fixtures
             ->newDocumentType('type', 'en', $memberId)
             ->withTextProperty('text', 'en')->endProperty()
             ->getDocumentTypeId();
 
-        $fixtures->dispatchQuery($query = new FindSchemaForDocumentTypes('en', $documentId));
+        $fixtures->dispatchQuery($query = new FindSchemaForDocumentTypes('en', $typeId));
         self::assertCount(1, $result = $query->getAllFoundSchemas());
         self::assertContainsOnlyInstancesOf(SchemaOfDocument::class, $result);
 
-        $document = $query->getSingleSchema($documentId);
-        self::assertSame(['text'], $document->getPublicProperties());
+        $schema = $query->getSingleSchema($typeId);
+        self::assertSame(['text'], $schema->getPublicProperties());
         self::assertSame(
             'todo',
-            $document->getPublicProperty('text')->toTypedString()
+            $schema->getPublicProperty('text')->toTypedString()
         );
     }
 
@@ -73,11 +73,11 @@ final class FindSchemaForDocumentTypesHandlerTest extends RegressionTestCase
         self::assertCount(1, $result = $query->getAllFoundSchemas());
         self::assertContainsOnlyInstancesOf(SchemaOfDocument::class, $result);
 
-        $document = $query->getSingleSchema($documentId);
-        self::assertSame(['text'], $document->getPublicProperties());
+        $schema = $query->getSingleSchema($documentId);
+        self::assertSame(['text'], $schema->getPublicProperties());
         self::assertSame(
             StringType::fromData([])->toData()->toString(),
-            $document->getPublicProperty('text')
+            $schema->getPublicProperty('text')
         );
         $this->fail('todo');
     }

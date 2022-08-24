@@ -2,22 +2,21 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Events;
 
-use DateTimeInterface;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\DocumentOwner;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyParameter;
 use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 
-final class PropertyParameterWasAdded implements DocumentEvent
+final class PropertyParameterWasAdded implements DocumentTypeEvent
 {
     private DocumentTypeId $documentId;
     private PropertyCode $property;
     private string $parameterName;
     private PropertyParameter $parameter;
     private DocumentOwner $addedBy;
-    private DateTimeInterface $addedAt;
+    private AuditDateTime $addedAt;
 
     public function __construct(
         DocumentTypeId $documentId,
@@ -25,7 +24,7 @@ final class PropertyParameterWasAdded implements DocumentEvent
         string $parameterName,
         PropertyParameter $parameter,
         DocumentOwner $addedBy,
-        DateTimeInterface $addedAt
+        AuditDateTime $addedAt
     ) {
         $this->documentId = $documentId;
         $this->property = $property;
@@ -35,7 +34,7 @@ final class PropertyParameterWasAdded implements DocumentEvent
         $this->addedAt = $addedAt;
     }
 
-    public function documentId(): DocumentTypeId
+    public function typeId(): DocumentTypeId
     {
         return $this->documentId;
     }
@@ -60,7 +59,7 @@ final class PropertyParameterWasAdded implements DocumentEvent
         return $this->addedBy;
     }
 
-    final public function updatedAt(): DateTimeInterface
+    final public function updatedAt(): AuditDateTime
     {
         return $this->addedAt;
     }

@@ -18,18 +18,18 @@ $document->acceptDocumentVisitor(new OutputDocumentType())
 ?>
 --EXPECTF--
 Document: "All boolean"
-Property: Optional (boolean)
+Property: optional (boolean)
   Constraints:
   Parameters:
-Property: Required (boolean)
+Property: required (boolean)
   Constraints:
     - required([])
   Parameters:
-Property: Labels (boolean)
+Property: labels (boolean)
   Constraints:
   Parameters:
     - label({"true-label":"True","false-label":"False"})
-Property: Default (boolean)
+Property: default (boolean)
   Constraints:
   Parameters:
     - default-value({"value":"true","value-class":"Star\\Component\\Document\\DataEntry\\Domain\\Model\\Values\\BooleanValue"})

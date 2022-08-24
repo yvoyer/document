@@ -2,7 +2,7 @@
 
 namespace Star\Component\Document\Tests\Membership\Domain\Model;
 
-use DateTimeImmutable;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\Membership\Domain\Model\Events\MemberWasRegistered;
 use Star\Component\Document\Membership\Domain\Model\MemberAggregate;
 use PHPUnit\Framework\TestCase;
@@ -16,7 +16,7 @@ final class MemberAggregateTest extends TestCase
         $member = MemberAggregate::registered(
             MemberId::fromString('mid'),
             Username::fromString('name'),
-            new DateTimeImmutable('2000-01-02 11:22:33')
+            AuditDateTime::fromString('2000-01-02 11:22:33')
         );
 
         $events = $member->uncommitedEvents();
@@ -27,6 +27,6 @@ final class MemberAggregateTest extends TestCase
         $event = $events[0];
         self::assertSame('mid', $event->memberId()->toString());
         self::assertSame('name', $event->username()->toString());
-        self::assertSame('2000-01-02', $event->registeredAt()->format('Y-m-d'));
+        self::assertSame('2000-01-02', $event->registeredAt()->toDateFormat());
     }
 }

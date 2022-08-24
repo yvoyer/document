@@ -23,6 +23,7 @@
             <directory suffix=".php">tests/Design</directory>
             <directory suffix=".php">tests/DataEntry</directory>
             <directory suffix=".php">tests/Membership</directory>
+            <directory suffix=".php">tests/Translation</directory>
             <directory suffix=".php">tests/App</directory>
         </testsuite>
 

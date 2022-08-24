@@ -28,8 +28,8 @@ final class DocumentTypeProjection implements EventListener
             'document_type',
             $this->withAuditForInsert(
                 [
-                    'id' => $event->documentId()->toString(),
-                    'structure' => DocumentSchema::baseSchema($event->documentId())->toString(),
+                    'id' => $event->typeId()->toString(),
+                    'structure' => DocumentSchema::baseSchema($event->typeId())->toString(),
                 ],
                 $event->updatedAt(),
                 $event->updatedBy()
@@ -39,9 +39,9 @@ final class DocumentTypeProjection implements EventListener
             'document_type_translation',
             $this->mergeTranslatableDataForCreation(
                 'name',
-                $event->name()->toSerializableString(),
+                $event->name()->toString(),
                 $event->name()->locale(),
-                $event->documentId()->toString()
+                $event->typeId()->toString()
             )
         );
     }
@@ -56,7 +56,7 @@ final class DocumentTypeProjection implements EventListener
                 $event->updatedBy()
             ),
             [
-                'id' => $event->documentId()->toString(),
+                'id' => $event->typeId()->toString(),
             ]
         );
     }

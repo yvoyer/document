@@ -2,13 +2,13 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Events;
 
-use DateTimeInterface;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 
-final class DocumentConstraintWasRegistered implements DocumentEvent
+final class DocumentTypeConstraintWasRegistered implements DocumentTypeEvent
 {
     private DocumentTypeId $id;
     private string $name; // todo constraint name
@@ -21,7 +21,7 @@ final class DocumentConstraintWasRegistered implements DocumentEvent
         $this->constraint = $constraint;
     }
 
-    public function documentId(): DocumentTypeId
+    public function typeId(): DocumentTypeId
     {
         return $this->id;
     }
@@ -36,7 +36,7 @@ final class DocumentConstraintWasRegistered implements DocumentEvent
         return $this->constraint;
     }
 
-    public function updatedAt(): DateTimeInterface
+    public function updatedAt(): AuditDateTime
     {
         throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
     }

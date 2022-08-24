@@ -2,7 +2,7 @@
 
 namespace Star\Component\Document\Design\Builder;
 
-use DateTimeImmutable;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
@@ -26,14 +26,14 @@ abstract class PropertyBuilder
 
     public function withConstraint(string $constraintName, PropertyConstraint $constraint): self
     {
-        $this->document->addPropertyConstraint($this->code, $constraintName, $constraint, new DateTimeImmutable());
+        $this->document->addPropertyConstraint($this->code, $constraintName, $constraint, AuditDateTime::fromNow());
 
         return $this;
     }
 
     public function withParameter(string $parameterName, PropertyParameter $parameter): self
     {
-        $this->document->addPropertyParameter($this->code, $parameterName, $parameter, new DateTimeImmutable());
+        $this->document->addPropertyParameter($this->code, $parameterName, $parameter, AuditDateTime::fromNow());
 
         return $this;
     }

@@ -2,8 +2,8 @@
 
 namespace Star\Component\Document\Tests\Design\Domain\Messaging\Command;
 
-use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Builder\DocumentTypeBuilder;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateProperty;
@@ -42,7 +42,7 @@ final class CreatePropertyHandlerTest extends TestCase
                 $code = PropertyCode::random(),
                 PropertyName::random(),
                 new StringType(),
-                new DateTimeImmutable()
+                AuditDateTime::fromNow()
             )
         );
 
@@ -62,7 +62,7 @@ final class CreatePropertyHandlerTest extends TestCase
                 PropertyCode::random(),
                 PropertyName::random(),
                 new StringType(),
-                new DateTimeImmutable()
+                AuditDateTime::fromNow()
             )
         );
     }

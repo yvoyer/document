@@ -40,10 +40,10 @@ services:
     Star\Component\Document\Design\Domain\Model\DocumentTypeRepository:
         class: Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBAL\DocumentTypeEventStore
 
-    Star\Component\Document\Design\Domain\Model\Constraints\ConstraintRegistry:
-        class: Star\Component\Document\Design\Infrastructure\Persistence\InMemory\ConstraintFactory
-        calls:
-            - ['addClassMap', ['required', 'Star\Component\Document\Design\Domain\Model\Constraints\RequiresValue']]
+#    Star\Component\Document\Design\Domain\Model\Constraints\ConstraintRegistry:
+ #       class: Star\Component\Document\Design\Infrastructure\Persistence\InMemory\ConstraintFactory
+  #      calls:
+   #         - ['addClassMap', ['required', 'Star\Component\Document\Design\Domain\Model\Constraints\RequiresValue']]
 
     Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBAL\:
         resource: '../src/Design/Infrastructure/Persistence/Doctrine/DBAL/*{Projection}.php'

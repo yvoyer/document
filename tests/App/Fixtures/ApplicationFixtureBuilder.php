@@ -2,8 +2,9 @@
 
 namespace Star\Component\Document\Tests\App\Fixtures;
 
-use App\Tests\Assertions\Design\DocumentDesignAssertion;
-use DateTimeImmutable;
+use App\Tests\Assertions\Design\DocumentTypeAssertion;
+use Doctrine\DBAL\Connection;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocumentType;
 use Star\Component\Document\Design\Domain\Messaging\Query\FindSchemaForDocumentTypes;
 use Star\Component\Document\Design\Domain\Model\DocumentName;
@@ -20,20 +21,23 @@ use Star\Component\DomainEvent\Messaging\QueryBus;
 final class ApplicationFixtureBuilder
 {
     private CommandBus $commandBus;
-
     private QueryBus $queryBus;
+    private Connection $connection;
 
-    public function __construct(CommandBus $commandBus, QueryBus $queryBus)
-    {
+    public function __construct(
+        CommandBus $commandBus,
+        QueryBus $queryBus,
+        Connection $connection
+    ) {
         $this->commandBus = $commandBus;
         $this->queryBus = $queryBus;
+        $this->connection = $connection;
+
     }
 
-    public function assertDocument(DocumentTypeId $id, string $locale): DocumentDesignAssertion
+    public function assertDocumentType(DocumentTypeId $id): DocumentTypeAssertion
     {
-        $this->queryBus->dispatchQuery($query = new FindSchemaForDocumentTypes($locale, $id));
-
-        return new DocumentDesignAssertion($query->getSingleSchema($id));
+        return new DocumentTypeAssertion($id, $this->connection);
     }
 
     public function doCommand(Command $command): void
@@ -56,11 +60,16 @@ final class ApplicationFixtureBuilder
                 $id = DocumentTypeId::random(),
                 DocumentName::fromLocalizedString($name, $locale),
                 $owner,
-                new DateTimeImmutable()
+                AuditDateTime::fromNow()
             )
         );
 
-        return new DocumentTypeFixture($id, $this);
+        return $this->loadDocumentType($id);
+    }
+
+    public function loadDocumentType(DocumentTypeId $typeId): DocumentTypeFixture
+    {
+        return new DocumentTypeFixture($typeId, $this);
     }
 
     public function newMember(): MembershipFixture
@@ -69,10 +78,15 @@ final class ApplicationFixtureBuilder
             new RegisterMember(
                 $id = MemberId::asUUid(),
                 Username::fromString(\uniqid('username-')),
-                new DateTimeImmutable()
+                AuditDateTime::fromNow()
             )
         );
 
+        return $this->loadMember($id);
+    }
+
+    public function loadMember(MemberId $id): MembershipFixture
+    {
         return new MembershipFixture($id, $this);
     }
 }

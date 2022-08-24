@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller\Document;
+namespace App\Controller\DocumentType;
 
 use App\Controller\AppController;
 use Star\Component\Document\Design\Domain\Messaging\Query\FindSchemaForDocumentTypes;
@@ -11,13 +11,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-final class DocumentDesign extends AppController
+final class DocumentTypeDesign extends AppController
 {
     /**
-     * @Route(name="document_design", path="/documents/{id}", methods={"GET", "PUT"})
+     * @Route(name="document_type_design", path="/document-types/{id}", methods={"GET", "PUT"})
      *
      * @param string $id
      * @param QueryBus $bus
+     * @param Request $request
      * @return Response
      */
     public function __invoke(string $id, QueryBus $bus, Request $request): Response
@@ -26,14 +27,14 @@ final class DocumentDesign extends AppController
         $bus->dispatchQuery(
             $query = new FindSchemaForDocumentTypes(
                 $request->getLocale(),
-                $documentId = DocumentTypeId::fromString($id)
+                $typeId = DocumentTypeId::fromString($id)
             )
         );
 
         return $this->render(
-            'Document/design.html.twig',
+            'DocumentType/design.html.twig',
             [
-                'document' => $query->getSingleSchema($documentId),
+                'document_type' => $query->getSingleSchema($typeId),
                 'form' => $form->createView(),
             ]
         );

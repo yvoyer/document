@@ -13,12 +13,15 @@ use function array_keys;
 use function array_map;
 use function sprintf;
 
+/**
+ * todo check if still useful
+ */
 final class ConstraintFactory implements ConstraintRegistry
 {
     /**
      * @var string[]
      */
-    private $classMap = [];
+    private array $classMap = [];
 
     /**
      * @param string[] $classMap
@@ -68,6 +71,6 @@ final class ConstraintFactory implements ConstraintRegistry
             sprintf('Constraint class map "%s" does not exists, did you register it?', $alias)
         );
 
-        return (new ConstraintData($this->classMap[$alias], $arguments))->createPropertyConstraint();
+        return ConstraintData::fromClass($this->classMap[$alias], $arguments)->createPropertyConstraint();
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
-use DateTimeInterface;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\DataEntry\Domain\Model\SchemaMetadata;
 use Star\Component\Document\Design\Domain\Model\Behavior\BehaviorSubject;
@@ -27,7 +27,7 @@ class DocumentTypeAggregate extends AggregateRoot implements DocumentDesigner, B
         DocumentTypeId $id,
         DocumentName $name,
         DocumentOwner $owner,
-        DateTimeInterface $created_at
+        AuditDateTime $created_at
     ): DocumentTypeAggregate {
         /**
          * @var DocumentTypeAggregate $aggregate
@@ -50,7 +50,7 @@ class DocumentTypeAggregate extends AggregateRoot implements DocumentDesigner, B
         PropertyCode $code,
         PropertyName $name,
         PropertyType $type,
-        DateTimeInterface $addedAt
+        AuditDateTime $addedAt
     ): void {
         $this->mutate(
             new Events\PropertyWasAdded(
@@ -83,17 +83,17 @@ class DocumentTypeAggregate extends AggregateRoot implements DocumentDesigner, B
 
     public function addPropertyConstraint(
         PropertyCode $code,
-        string $constraintName,
+        string $constraintAlias,
         PropertyConstraint $constraint,
-        DateTimeInterface $addedAt
+        AuditDateTime $addedAt
     ): void
     {
         $this->mutate(
             new Events\PropertyConstraintWasAdded(
                 $this->getIdentity(),
                 $code,
-                $constraintName,
-                $constraint,
+                $constraintAlias,
+                $constraint->toData(),
                 $this->owner,
                 $addedAt
             )
@@ -127,7 +127,7 @@ class DocumentTypeAggregate extends AggregateRoot implements DocumentDesigner, B
         PropertyCode $code,
         string $parameterName,
         PropertyParameter $parameter,
-        DateTimeInterface $addedAt
+        AuditDateTime $addedAt
     ): void {
         $this->mutate(
             new Events\PropertyParameterWasAdded(
@@ -144,7 +144,7 @@ class DocumentTypeAggregate extends AggregateRoot implements DocumentDesigner, B
     public function addDocumentConstraint(string $name, DocumentConstraint $constraint): void
     {
         $this->mutate(
-            new Events\DocumentConstraintWasRegistered($this->getIdentity(), $name, $constraint)
+            new Events\DocumentTypeConstraintWasRegistered($this->getIdentity(), $name, $constraint)
         );
     }
 
@@ -159,7 +159,7 @@ class DocumentTypeAggregate extends AggregateRoot implements DocumentDesigner, B
 
     protected function onDocumentTypeWasCreated(Events\DocumentTypeWasCreated $event): void
     {
-        $this->schema = new DocumentSchema($event->documentId());
+        $this->schema = new DocumentSchema($event->typeId());
         $this->defaultLocale = $event->name()->locale();
         $this->name = $event->name();
         $this->owner = $event->updatedBy();
@@ -172,7 +172,7 @@ class DocumentTypeAggregate extends AggregateRoot implements DocumentDesigner, B
         $this->schema->addProperty($event->code(), $event->name(), $type);
     }
 
-    protected function onDocumentConstraintWasRegistered(Events\DocumentConstraintWasRegistered $event): void
+    protected function onDocumentTypeConstraintWasRegistered(Events\DocumentTypeConstraintWasRegistered $event): void
     {
         $constraint = $event->constraint();
         $constraint->onRegistered($this);
@@ -192,8 +192,8 @@ class DocumentTypeAggregate extends AggregateRoot implements DocumentDesigner, B
     {
         $this->schema->addPropertyConstraint(
             $event->propertyCode(),
-            $event->constraintName(),
-            $event->constraint()
+            $event->constraintAlias(),
+            $event->constraintData()->createPropertyConstraint()
         );
     }
 

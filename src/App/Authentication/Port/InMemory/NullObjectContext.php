@@ -3,7 +3,7 @@
 namespace App\Authentication\Port\InMemory;
 
 use App\Authentication\AuthenticationContext;
-use DateTimeImmutable;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\Membership\Domain\Model\MemberAggregate;
 use Star\Component\Document\Membership\Domain\Model\MemberId;
 use Star\Component\Document\Membership\Domain\Model\MemberRepository;
@@ -27,7 +27,7 @@ final class NullObjectContext implements AuthenticationContext
                 MemberAggregate::registered(
                     $this->loggedUser,
                     Username::fromString('null-member'),
-                    new DateTimeImmutable()
+                    AuditDateTime::fromNow()
                 )
             );
         };

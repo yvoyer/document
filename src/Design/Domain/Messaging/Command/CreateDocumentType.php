@@ -2,7 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
-use DateTimeInterface;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\DocumentName;
 use Star\Component\Document\Design\Domain\Model\DocumentOwner;
@@ -13,13 +13,13 @@ final class CreateDocumentType implements Command
     private DocumentTypeId $id;
     private DocumentName $name;
     private DocumentOwner $owner;
-    private DateTimeInterface $createdAt;
+    private AuditDateTime $createdAt;
 
     public function __construct(
         DocumentTypeId $typeId,
         DocumentName $name,
         DocumentOwner $owner,
-        DateTimeInterface $createdAt
+        AuditDateTime $createdAt
     ) {
         $this->id = $typeId;
         $this->name = $name;
@@ -42,7 +42,7 @@ final class CreateDocumentType implements Command
         return $this->owner;
     }
 
-    final public function createdAt(): DateTimeInterface
+    final public function createdAt(): AuditDateTime
     {
         return $this->createdAt;
     }

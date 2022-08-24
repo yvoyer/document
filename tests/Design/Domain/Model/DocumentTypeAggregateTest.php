@@ -4,6 +4,7 @@ namespace Star\Component\Document\Tests\Design\Domain\Model;
 
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\Constraints;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeAggregate;
@@ -29,7 +30,7 @@ final class DocumentTypeAggregateTest extends TestCase
             DocumentTypeId::fromString('id'),
             DocumentName::fromLocalizedString('name', 'en'),
             new NullOwner(),
-            new DateTimeImmutable()
+            AuditDateTime::fromNow()
         );
     }
 
@@ -42,7 +43,7 @@ final class DocumentTypeAggregateTest extends TestCase
             $code,
             PropertyName::fromLocalizedString('name', 'en'),
             new NullType(),
-            new DateTimeImmutable()
+            AuditDateTime::fromNow()
         );
 
         $this->assertTrue($this->type->propertyExists($code));
@@ -64,7 +65,7 @@ final class DocumentTypeAggregateTest extends TestCase
             PropertyCode::random(),
             PropertyName::random(),
             new NullType(),
-            new DateTimeImmutable()
+            AuditDateTime::fromNow()
         );
         $visitor = $this->createMock(DocumentTypeVisitor::class);
         $visitor
@@ -80,7 +81,7 @@ final class DocumentTypeAggregateTest extends TestCase
             $code = PropertyCode::random(),
             PropertyName::random(),
             new NullType(),
-            new DateTimeImmutable()
+            AuditDateTime::fromNow()
         );
         $this->type->uncommitedEvents(); // reset
 
@@ -91,7 +92,7 @@ final class DocumentTypeAggregateTest extends TestCase
             $code,
             'const',
             $constraint,
-            new DateTimeImmutable()
+            AuditDateTime::fromNow()
         );
 
         $this->assertTrue($this->type->propertyConstraintExists($code, 'const'));
@@ -103,10 +104,10 @@ final class DocumentTypeAggregateTest extends TestCase
         self::assertCount(1, $events);
         $event = $events[0];
         self::assertInstanceOf(PropertyConstraintWasAdded::class, $event);
-        self::assertSame($this->type->getIdentity()->toString(), $event->documentId()->toString());
-        self::assertSame('const', $event->constraintName());
+        self::assertSame($this->type->getIdentity()->toString(), $event->typeId()->toString());
+        self::assertSame('const', $event->constraintAlias());
         self::assertSame($code->toString(), $event->propertyCode()->toString());
-        self::assertInstanceOf(Constraints\All::class, $event->constraint());
+        self::assertInstanceOf(Constraints\All::class, $event->constraintData()->createPropertyConstraint());
     }
 
     public function test_it_should_remove_a_property_constraint(): void
@@ -115,13 +116,13 @@ final class DocumentTypeAggregateTest extends TestCase
             $code = PropertyCode::random(),
             PropertyName::random(),
             new NullType(),
-            new DateTimeImmutable()
+            AuditDateTime::fromNow()
         );
         $this->type->addPropertyConstraint(
             $code,
             'const',
             new Constraints\NoConstraint(),
-            new DateTimeImmutable()
+            AuditDateTime::fromNow()
         );
         $this->type->uncommitedEvents(); // reset
 
@@ -138,7 +139,7 @@ final class DocumentTypeAggregateTest extends TestCase
         self::assertCount(1, $events);
         $event = $events[0];
         self::assertInstanceOf(PropertyConstraintWasRemoved::class, $event);
-        self::assertSame($this->type->getIdentity()->toString(), $event->documentId()->toString());
+        self::assertSame($this->type->getIdentity()->toString(), $event->typeId()->toString());
         self::assertSame($code->toString(), $event->propertyCode()->toString());
         self::assertSame('const', $event->constraintName());
     }
@@ -146,7 +147,7 @@ final class DocumentTypeAggregateTest extends TestCase
     public function test_it_should_throw_exception_when_property_not_defined(): void
     {
         $this->expectException(ReferencePropertyNotFound::class);
-        $this->expectExceptionMessage('The property with code "not found" could not be found.');
+        $this->expectExceptionMessage('The property with code "not-found" could not be found.');
         $this->type->removePropertyConstraint(PropertyCode::fromString('not found'), 'const');
     }
 
@@ -167,14 +168,14 @@ final class DocumentTypeAggregateTest extends TestCase
             $code = PropertyCode::random(),
             PropertyName::random(),
             new NullType(),
-            new DateTimeImmutable()
+            AuditDateTime::fromNow()
         );
 
         $this->assertFalse(
             $this->type->getSchema()->getPropertyMetadata($code->toString())->hasParameter('param')
         );
 
-        $this->type->addPropertyParameter($code, 'param', $parameter, new DateTimeImmutable());
+        $this->type->addPropertyParameter($code, 'param', $parameter, AuditDateTime::fromNow());
 
         $this->assertTrue(
             $this->type->getSchema()->getPropertyMetadata($code->toString())->hasParameter('param')
@@ -190,7 +191,7 @@ final class DocumentTypeAggregateTest extends TestCase
         self::assertCount(1, $events);
         $event = $events[0];
         self::assertInstanceOf(DocumentTypeWasCreated::class, $event);
-        self::assertSame($this->type->getIdentity()->toString(), $event->documentId()->toString());
+        self::assertSame($this->type->getIdentity()->toString(), $event->typeId()->toString());
         self::assertSame('name', $event->name()->toString());
         self::assertSame('en', $event->name()->locale());
     }

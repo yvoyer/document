@@ -2,7 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
-use DateTimeInterface;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 
 interface DocumentDesigner
@@ -23,23 +23,23 @@ interface DocumentDesigner
         PropertyCode $code,
         PropertyName $name,
         PropertyType $type,
-        DateTimeInterface $addedAt
+        AuditDateTime $addedAt
     ): void;
 
     public function propertyExists(PropertyCode $code): bool;
 
     public function addPropertyConstraint(
         PropertyCode $code,
-        string $constraintName,
+        string $constraintAlias,
         PropertyConstraint $constraint,
-        DateTimeInterface $addedAt
+        AuditDateTime $addedAt
     ): void;
 
     public function addPropertyParameter(
         PropertyCode $code,
         string $parameterName,
         PropertyParameter $parameter,
-        DateTimeInterface $addedAt
+        AuditDateTime $addedAt
     ): void;
 
     public function addDocumentConstraint(string $name, DocumentConstraint $constraint): void;

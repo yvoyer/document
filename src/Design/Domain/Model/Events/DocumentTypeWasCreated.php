@@ -2,34 +2,33 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Events;
 
-use DateTimeImmutable;
-use DateTimeInterface;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\DocumentName;
 use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\Document\Membership\Domain\Model\MemberId;
 use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 
-final class DocumentTypeWasCreated implements DocumentEvent
+final class DocumentTypeWasCreated implements DocumentTypeEvent
 {
     private string $id;
     private DocumentName $name;
     private string $createdBy;
-    private string $createdAt;
+    private AuditDateTime $createdAt;
 
     public function __construct(
         DocumentTypeId $id,
         DocumentName $name,
         DocumentOwner $owner,
-        DateTimeInterface $createdAt
+        AuditDateTime $createdAt
     ) {
         $this->id = $id->toString();
         $this->name = $name;
         $this->createdBy = $owner->toString();
-        $this->createdAt = $createdAt->format('Y-m-d H:i:s');
+        $this->createdAt = $createdAt;
     }
 
-    final public function documentId(): DocumentTypeId
+    final public function typeId(): DocumentTypeId
     {
         return DocumentTypeId::fromString($this->id);
     }
@@ -44,9 +43,9 @@ final class DocumentTypeWasCreated implements DocumentEvent
         return MemberId::fromString($this->createdBy);
     }
 
-    final public function updatedAt(): DateTimeInterface
+    final public function updatedAt(): AuditDateTime
     {
-        return new DateTimeImmutable($this->createdAt);
+        return $this->createdAt;
     }
 
     public static function fromPayload(array $payload): CreatedFromPayload
@@ -55,7 +54,7 @@ final class DocumentTypeWasCreated implements DocumentEvent
             DocumentTypeId::fromString($payload['id']),
             DocumentName::fromSerializedString($payload['name']),
             MemberId::fromString($payload['createdBy']),
-            new DateTimeImmutable($payload['createdAt'])
+            AuditDateTime::fromString($payload['createdAt'])
         );
     }
 }

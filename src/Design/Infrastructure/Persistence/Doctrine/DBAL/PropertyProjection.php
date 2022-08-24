@@ -2,7 +2,6 @@
 
 namespace Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBAL;
 
-use Behat\Transliterator\Transliterator;
 use Doctrine\DBAL\Connection;
 use Star\Component\Document\Audit\Infrastructure\Persistence\DBAL\AuditTrailData;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
@@ -29,8 +28,8 @@ final class PropertyProjection implements EventListener
             'document_type_property',
             [
                 'type' => $event->type()->toData()->toString(),
-                'code' => $code = Transliterator::urlize($event->name()->toSerializableString(), '_'),
-                'document_type_id' => $event->documentId()->toString(),
+                'code' => $event->code()->toString(),
+                'document_type_id' => $event->typeId()->toString(),
                 'constraints' => json_encode([]),
                 'parameters' => json_encode([]),
             ]
@@ -41,7 +40,7 @@ final class PropertyProjection implements EventListener
                 'name',
                 $event->name()->toString(),
                 $event->name()->locale(),
-                $this->getPropertyId($event->documentId(), $code)
+                $this->getPropertyId($event->typeId(), $event->code()->toString())
             )
         );
     }

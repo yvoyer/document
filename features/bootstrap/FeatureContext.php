@@ -5,8 +5,8 @@ namespace Star\Component\Document\Tests;
 use Assert\Assertion;
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
-use DateTimeImmutable;
 use PHPUnit\Framework\Assert;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\DataEntry\Domain\Messaging\Command\CreateRecord;
 use Star\Component\Document\DataEntry\Domain\Messaging\Command\CreateRecordHandler;
 use Star\Component\Document\DataEntry\Domain\Messaging\Command\SetRecordValue;
@@ -15,6 +15,7 @@ use Star\Component\Document\DataEntry\Domain\Messaging\Query\GetAllRecordsOfDocu
 use Star\Component\Document\DataEntry\Domain\Messaging\Query\GetAllRecordsOfDocumentHandler;
 use Star\Component\Document\DataEntry\Domain\Messaging\Query\RecordRow;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentId;
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ValidationFailedForProperty;
 use Star\Component\Document\DataEntry\Domain\Model\Values\ListOptionValue;
 use Star\Component\Document\DataEntry\Domain\Model\Values\OptionListValue;
@@ -32,6 +33,7 @@ use Star\Component\Document\Design\Domain\Messaging\Command\CreatePropertyHandle
 use Star\Component\Document\Design\Domain\Model\Constraints\AfterDate;
 use Star\Component\Document\Design\Domain\Model\Constraints\BeforeDate;
 use Star\Component\Document\Design\Domain\Model\Constraints\BetweenDate;
+use Star\Component\Document\Design\Domain\Model\Constraints\ConstraintData;
 use Star\Component\Document\Design\Domain\Model\Constraints\MaximumLength;
 use Star\Component\Document\Design\Domain\Model\Constraints\MinimumLength;
 use Star\Component\Document\Design\Domain\Model\Constraints\Regex;
@@ -201,9 +203,10 @@ class FeatureContext implements Context
     {
         $this->bus->dispatchCommand(
             new CreateDocumentType(
-                $id = DocumentTypeId::fromString($documentId),
-                new DocumentName($documentId),
-                new NullOwner()
+                DocumentTypeId::fromString($documentId),
+                DocumentName::fromLocalizedString($documentId, 'en'),
+                new NullOwner(),
+                AuditDateTime::fromNow()
             )
         );
     }
@@ -216,10 +219,10 @@ class FeatureContext implements Context
         $this->bus->dispatchCommand(
             new CreateProperty(
                 DocumentTypeId::fromString($documentId),
+                PropertyCode::fromString($property),
                 PropertyName::fromLocalizedString($property, 'en'),
                 new Types\StringType(),
-                new NullOwner(),
-                new DateTimeImmutable()
+                AuditDateTime::fromNow()
             )
         );
     }
@@ -232,10 +235,10 @@ class FeatureContext implements Context
         $this->bus->dispatchCommand(
             new CreateProperty(
                 DocumentTypeId::fromString($documentId),
+                PropertyCode::fromString($property),
                 PropertyName::fromLocalizedString($property, 'en'),
                 new Types\BooleanType(),
-                new NullOwner(),
-                new DateTimeImmutable()
+                AuditDateTime::fromNow()
             )
         );
     }
@@ -248,10 +251,10 @@ class FeatureContext implements Context
         $this->bus->dispatchCommand(
             new CreateProperty(
                 DocumentTypeId::fromString($documentId),
+                PropertyCode::fromString($property),
                 PropertyName::fromLocalizedString($property, 'en'),
                 new Types\DateType(),
-                new NullOwner(),
-                new DateTimeImmutable()
+                AuditDateTime::fromNow()
             )
         );
     }
@@ -264,10 +267,10 @@ class FeatureContext implements Context
         $this->bus->dispatchCommand(
             new CreateProperty(
                 DocumentTypeId::fromString($documentId),
+                PropertyCode::fromString($property),
                 PropertyName::fromLocalizedString($property, 'en'),
                 new Types\NumberType(),
-                new NullOwner(),
-                new DateTimeImmutable()
+                AuditDateTime::fromNow()
             )
         );
     }
@@ -298,6 +301,7 @@ class FeatureContext implements Context
         $this->bus->dispatchCommand(
             new CreateProperty(
                 DocumentTypeId::fromString($documentId),
+                PropertyCode::fromString($property),
                 PropertyName::fromLocalizedString($property, 'en'),
                 new Types\ListOfOptionsType(
                     'custom-list',
@@ -310,8 +314,7 @@ class FeatureContext implements Context
                         )
                     )
                 ),
-                new NullOwner(),
-                new DateTimeImmutable()
+                AuditDateTime::fromNow()
             )
         );
     }
@@ -322,7 +325,7 @@ class FeatureContext implements Context
     public function iMarkThePropertyOfDocumentWithParameters(string $property, string $documentId, TableNode $table)
     {
         $documentId = DocumentTypeId::fromString($documentId);
-        $property = PropertyName::fromLocalizedString($property);
+        $property = PropertyCode::fromString($property);
         $builder = DocumentTypeBuilder::parameters();
 
         foreach ($table->getHash() as $row) {
@@ -365,7 +368,8 @@ class FeatureContext implements Context
                     $documentId,
                     $property,
                     $parameterName,
-                    ParameterData::fromJson($parameterClass, $jsonArguments)
+                    ParameterData::fromJson($parameterClass, $jsonArguments),
+                    AuditDateTime::fromNow()
                 )
             );
         }
@@ -378,8 +382,8 @@ class FeatureContext implements Context
     {
         $rows = $table->getHash();
         Assert::assertGreaterThan(0, count($rows));
-        $documentId = DocumentTypeId::fromString($document);
-        $propertyName = PropertyName::fromLocalizedString($property);
+        $typeId = DocumentTypeId::fromString($document);
+        $code = PropertyCode::fromString($property);
         foreach($rows as $row) {
             $name = $row['name'];
             $jsonString = $row['arguments'];
@@ -388,7 +392,11 @@ class FeatureContext implements Context
 
             $this->bus->dispatchCommand(
                 new AddPropertyConstraint(
-                    $documentId, $propertyName, $name, $arguments
+                    $typeId,
+                    $code,
+                    $name,
+                    ConstraintData::fromString($jsonString)->createPropertyConstraint(),
+                    AuditDateTime::fromNow()
                 )
             );
         }
@@ -465,19 +473,19 @@ class FeatureContext implements Context
     /**
      * @Then The document :arg1 should have a property :arg2
      */
-    public function theDocumentShouldHaveAProperty(string $documentId, string $name)
+    public function theDocumentShouldHaveAProperty(string $documentId, string $code)
     {
         $this->getDocument($documentId)->acceptDocumentVisitor($visitor = new PropertyExtractor());
-        Assert::assertTrue($visitor->hasProperty($name));
+        Assert::assertTrue($visitor->hasProperty(PropertyCode::fromString($code)));
     }
 
     /**
      * @Then The document :arg1 should have a required property :arg2
      */
-    public function theDocumentShouldHaveARequiredProperty(string $documentId, string $name)
+    public function theDocumentShouldHaveARequiredProperty(string $documentId, string $code)
     {
         $this->getDocument($documentId)->acceptDocumentVisitor($visitor = new PropertyExtractor());
-        Assert::assertTrue($visitor->getProperty($name)->hasConstraint('required'));
+        Assert::assertTrue($visitor->getProperty(PropertyCode::fromString($code))->hasConstraint('required'));
     }
 
     /**

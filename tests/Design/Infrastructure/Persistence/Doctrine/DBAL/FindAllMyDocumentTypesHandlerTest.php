@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\Tests\Design\Domain\Messaging\Query;
+namespace Star\Component\Document\Tests\Design\Infrastructure\Persistence\Doctrine\DBAL;
 
 use Star\Component\Document\Design\Domain\Messaging\Query\DataTransfer\ReadOnlyDocument;
 use Star\Component\Document\Design\Domain\Messaging\Query\FindAllMyDocumentTypes;
@@ -27,13 +27,10 @@ final class FindAllMyDocumentTypesHandlerTest extends RegressionTestCase
 
         $row = $result[0];
         self::assertSame($document->toString(), $row->getDocumentId());
-        self::assertSame(
-            'a:2:{s:7:"content";s:5:"doc 1";s:6:"locale";s:2:"en";}',
-            $row->getDocumentName()
-        );
+        self::assertSame('doc 1', $row->getDocumentName());
         self::assertSame($memberId->toString(), $row->getOwnerId());
         self::assertStringContainsString('username-', $row->getOwnerName());
-        self::assertSame(date('Y-m-d'), $row->getCreatedAt()->format('Y-m-d'));
-        self::assertSame(date('Y-m-d'), $row->getUpdatedAt()->format('Y-m-d'));
+        self::assertSame(date('Y-m-d'), $row->getCreatedAt()->toDateFormat());
+        self::assertSame(date('Y-m-d'), $row->getUpdatedAt()->toDateFormat());
     }
 }

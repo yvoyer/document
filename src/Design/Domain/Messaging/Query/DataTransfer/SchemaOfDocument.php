@@ -2,7 +2,6 @@
 
 namespace Star\Component\Document\Design\Domain\Messaging\Query\DataTransfer;
 
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\DataEntry\Domain\Model\PropertyMetadata;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\DocumentName;

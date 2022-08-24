@@ -52,7 +52,7 @@ final class RemovePropertyConstraintHandlerTest extends TestCase
         $this->documents->saveDocument($document);
 
         $this->expectException(ReferencePropertyNotFound::class);
-        $this->expectExceptionMessage('The property with code "not found" could not be found.');
+        $this->expectExceptionMessage('The property with code "not-found" could not be found.');
         $this->handler->__invoke(
             new RemovePropertyConstraint(
                 $document->getIdentity(),

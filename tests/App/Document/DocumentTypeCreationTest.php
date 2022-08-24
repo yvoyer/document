@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * @group functional
  */
-final class DocumentCreationTest extends RegressionTestCase
+final class DocumentTypeCreationTest extends RegressionTestCase
 {
     public function test_it_should_create_document(): void
     {
@@ -20,7 +20,7 @@ final class DocumentCreationTest extends RegressionTestCase
             ->assertStatusCode(Response::HTTP_FOUND)
             ->followRedirect()
             ->dumpResponse()
-            ->assertCurrentPageIs('/documents/document-')
+            ->assertCurrentPageIs('/document-types/document-')
             ->dumpResponse()
             ->assertBodyContains('dasdsa')
         ;

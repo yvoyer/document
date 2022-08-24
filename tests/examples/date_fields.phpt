@@ -20,26 +20,26 @@ $document->acceptDocumentVisitor(new OutputDocumentType())
 ?>
 --EXPECTF--
 Document: "All dates"
-Property: Optional (date)
+Property: optional (date)
   Constraints:
   Parameters:
-Property: Required (date)
+Property: required (date)
   Constraints:
     - required([])
   Parameters:
-Property: Format (date)
+Property: format (date)
   Constraints:
   Parameters:
     - format({"format":"y-m-d"})
-Property: Before (date)
+Property: before (date)
   Constraints:
     - before-date({"target":"2000-12-31"})
   Parameters:
-Property: After (date)
+Property: after (date)
   Constraints:
     - after-date({"target":"1999-01-01"})
   Parameters:
-Property: Between (date)
+Property: between (date)
   Constraints:
     - between({"from":"1999-01-01","to":"1999-12-31"})
   Parameters:

@@ -3,9 +3,13 @@
 namespace Star\Component\Document\Tests\Design\Domain\Model\Constraints;
 
 use InvalidArgumentException;
+use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
+use Star\Component\Document\Design\Domain\Model\Constraint;
 use Star\Component\Document\Design\Domain\Model\Constraints\ConstraintData;
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
+use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 
 final class ConstraintDataTest extends TestCase
 {
@@ -34,5 +38,50 @@ final class ConstraintDataTest extends TestCase
     {
         $original = (new NoConstraint())->toData()->toString();
         self::assertSame($original, ConstraintData::fromString($original)->toString());
+    }
+
+    public function test_it_should_return_the_string_argument(): void
+    {
+        self::assertSame(
+            'expected',
+            ConstraintData::fromClass(ConstraintStub::class, ['value' => 'expected'])
+                ->getStringArgument('value')
+        );
+    }
+
+    public function test_it_should_return_the_integer_argument(): void
+    {
+        self::assertSame(
+            42,
+            ConstraintData::fromClass(ConstraintStub::class, ['value' => 42])
+                ->getIntegerArgument('value')
+        );
+    }
+
+    public function test_it_should_return_the_array_argument(): void
+    {
+        self::assertSame(
+            ['expected'],
+            ConstraintData::fromClass(ConstraintStub::class, ['value' => ['expected']])
+                ->getArrayArgument('value')
+        );
+    }
+}
+
+final class ConstraintStub implements PropertyConstraint
+{
+    public function validate(string $propertyName, RecordValue $value, ErrorList $errors): void
+    {
+        throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
+    }
+
+    public function toData(): ConstraintData
+    {
+        throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
+    }
+
+    public static function fromData(ConstraintData $data): Constraint
+    {
+        throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
     }
 }

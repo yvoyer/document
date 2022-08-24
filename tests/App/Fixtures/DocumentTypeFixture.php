@@ -2,11 +2,10 @@
 
 namespace Star\Component\Document\Tests\App\Fixtures;
 
-use DateTimeImmutable;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateProperty;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
-use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Types\StringType;
@@ -15,7 +14,6 @@ final class DocumentTypeFixture
 {
     private DocumentTypeId $documentId;
     private ApplicationFixtureBuilder $builder;
-    private DocumentOwner $owner;
 
     public function __construct(
         DocumentTypeId $documentId,
@@ -25,9 +23,13 @@ final class DocumentTypeFixture
         $this->builder = $builder;
     }
 
-    public function withTextProperty(string $code): PropertyFixture
+    public function withTextProperty(string $name, string $locale): PropertyFixture
     {
-        return $this->withProperty($code, new StringType());
+        return $this->withProperty(
+            $name,
+            $locale,
+            new StringType()
+        );
     }
 
     public function getDocumentTypeId(): DocumentTypeId
@@ -35,17 +37,17 @@ final class DocumentTypeFixture
         return $this->documentId;
     }
 
-    private function withProperty(string $code, PropertyType $type): PropertyFixture
+    private function withProperty(string $name, string $locale, PropertyType $type): PropertyFixture
     {
-        $code = PropertyCode::fromString($code);
+        $code = PropertyCode::fromString($name);
 
         $this->builder->doCommand(
             new CreateProperty(
                 $this->documentId,
                 $code,
-                $nameObject = PropertyName::fromLocalizedString($code->toString(), 'en'), // todo parametrize
+                PropertyName::fromLocalizedString($name, $locale),
                 $type,
-                new DateTimeImmutable()
+                AuditDateTime::fromNow()
             )
         );
 

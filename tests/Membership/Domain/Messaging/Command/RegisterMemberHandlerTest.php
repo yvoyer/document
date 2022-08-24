@@ -2,7 +2,7 @@
 
 namespace Star\Component\Document\Tests\Membership\Domain\Messaging\Command;
 
-use DateTimeImmutable;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\Membership\Domain\Messaging\Command\RegisterMember;
 use Star\Component\Document\Membership\Domain\Messaging\Command\RegisterMemberHandler;
 use PHPUnit\Framework\TestCase;
@@ -25,7 +25,7 @@ final class RegisterMemberHandlerTest extends TestCase
             new RegisterMember(
                 $memberId = MemberId::asUUid(),
                 Username::fromString('user'),
-                new DateTimeImmutable()
+                AuditDateTime::fromNow()
             )
         );
 

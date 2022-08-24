@@ -2,7 +2,7 @@
 
 namespace Star\Component\Document\Membership\Domain\Messaging\Command;
 
-use DateTimeInterface;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\Membership\Domain\Model\MemberId;
 use Star\Component\Document\Membership\Domain\Model\Username;
 use Star\Component\DomainEvent\Messaging\Command;
@@ -11,12 +11,12 @@ final class RegisterMember implements Command
 {
     private MemberId $id;
     private Username $username;
-    private DateTimeInterface $registeredAt;
+    private AuditDateTime $registeredAt;
 
     public function __construct(
         MemberId $id,
         Username $username,
-        DateTimeInterface $registeredAt
+        AuditDateTime $registeredAt
     ) {
         $this->id = $id;
         $this->username = $username;
@@ -33,7 +33,7 @@ final class RegisterMember implements Command
         return $this->username;
     }
 
-    final public function registeredAt(): DateTimeInterface
+    final public function registeredAt(): AuditDateTime
     {
         return $this->registeredAt;
     }

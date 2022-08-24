@@ -17,14 +17,14 @@ $document->acceptDocumentVisitor(new OutputDocumentType())
 ?>
 --EXPECTF--
 Document: "All texts"
-Property: Optional (string)
+Property: optional (string)
   Constraints:
   Parameters:
-Property: Required (string)
+Property: required (string)
   Constraints:
     - required([])
   Parameters:
-Property: Regex (string)
+Property: regex (string)
   Constraints:
     - regex({"pattern":"\/\\W+\/"})
   Parameters:

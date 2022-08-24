@@ -6,7 +6,7 @@ use Star\Component\Document\Audit\Domain\Model\AuditableEvent;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 
-interface DocumentEvent extends AuditableEvent, CreatedFromPayload
+interface DocumentTypeEvent extends AuditableEvent, CreatedFromPayload
 {
-    public function documentId(): DocumentTypeId;
+    public function typeId(): DocumentTypeId;
 }

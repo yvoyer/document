@@ -2,6 +2,7 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Model;
 
+use Behat\Transliterator\Transliterator;
 use Star\Component\DomainEvent\Serialization\SerializableAttribute;
 use function uniqid;
 
@@ -11,7 +12,7 @@ final class PropertyCode implements SerializableAttribute
 
     private function __construct(string $value)
     {
-        $this->value = $value;
+        $this->value = Transliterator::urlize($value);
     }
 
     public function matchCode(PropertyCode $name): bool
