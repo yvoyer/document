@@ -2,9 +2,10 @@
 
 namespace Star\Component\Document\Design\Domain\Structure;
 
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyParameter;
@@ -13,39 +14,39 @@ use Star\Component\Document\Design\Domain\Model\Schema\PropertyDefinition;
 use Star\Component\Document\Design\Domain\Model\Schema\ReferencePropertyNotFound;
 use function array_values;
 
-final class PropertyExtractor implements DocumentVisitor
+final class PropertyExtractor implements DocumentTypeVisitor
 {
     /**
-     * @var PropertyDefinition[] Indexed by name
+     * @var PropertyDefinition[] Indexed by code
      */
-    private $properties = [];
+    private array $properties = [];
 
     /**
-     * @var DocumentConstraint[] Indexed by name
+     * @var DocumentConstraint[] Indexed by code
      */
-    private $documentConstraints;
+    private array $documentConstraints;
 
-    public function hasProperty(string $name): bool
+    public function hasProperty(PropertyCode $code): bool
     {
-        return isset($this->properties[$name]);
+        return isset($this->properties[$code->toString()]);
     }
 
-    public function hasPropertyConstraint(string $propertyName, string $constraintName): bool
+    public function hasPropertyConstraint(PropertyCode $code, string $constraintName): bool
     {
-        if (! $this->hasProperty($propertyName)) {
+        if (! $this->hasProperty($code)) {
             return false;
         }
 
-        return $this->getProperty($propertyName)->hasConstraint($constraintName);
+        return $this->getProperty($code)->hasConstraint($constraintName);
     }
 
-    public function hasPropertyParameter(string $propertyName, string $name): bool
+    public function hasPropertyParameter(PropertyCode $code, string $name): bool
     {
-        if (! $this->hasProperty($propertyName)) {
+        if (! $this->hasProperty($code)) {
             return false;
         }
 
-        return $this->getProperty($propertyName)->hasParameter($name);
+        return $this->getProperty($code)->hasParameter($name);
     }
 
     public function hasDocumentConstraint(string $name): bool
@@ -58,13 +59,13 @@ final class PropertyExtractor implements DocumentVisitor
         return $this->documentConstraints[$name];
     }
 
-    public function getProperty(string $name): PropertyDefinition
+    public function getProperty(PropertyCode $code): PropertyDefinition
     {
-        if (! $this->hasProperty($name)) {
-            throw new ReferencePropertyNotFound(PropertyName::fromString($name));
+        if (! $this->hasProperty($code)) {
+            throw new ReferencePropertyNotFound($code);
         }
 
-        return $this->properties[$name];
+        return $this->properties[$code->toString()];
     }
 
     /**
@@ -83,7 +84,7 @@ final class PropertyExtractor implements DocumentVisitor
         return array_values($this->documentConstraints);
     }
 
-    public function visitDocument(DocumentId $id): void
+    public function visitDocumentType(DocumentTypeId $id): void
     {
     }
 
@@ -92,38 +93,38 @@ final class PropertyExtractor implements DocumentVisitor
         $this->documentConstraints[$name] = $constraint;
     }
 
-    public function visitProperty(PropertyName $name, PropertyType $type): bool
+    public function visitProperty(PropertyCode $code, PropertyName $name, PropertyType $type): bool
     {
-        $this->properties[$name->toString()] = new PropertyDefinition($name, $type);
+        $this->properties[$code->toString()] = new PropertyDefinition($code, $name, $type);
 
         return false;
     }
 
-    public function enterPropertyConstraints(PropertyName $propertyName): void
+    public function enterPropertyConstraints(PropertyCode $code): void
     {
     }
 
     public function visitPropertyConstraint(
-        PropertyName $propertyName,
+        PropertyCode $code,
         string $constraintName,
         PropertyConstraint $constraint
     ): void {
-        $this->properties[$propertyName->toString()] = $this
-            ->getProperty($propertyName->toString())
+        $this->properties[$code->toString()] = $this
+            ->getProperty($code)
             ->addConstraint($constraintName, $constraint);
     }
 
-    public function enterPropertyParameters(PropertyName $propertyName): void
+    public function enterPropertyParameters(PropertyCode $code): void
     {
     }
 
     public function visitPropertyParameter(
-        PropertyName $propertyName,
+        PropertyCode $code,
         string $parameterName,
         PropertyParameter $parameter
     ): void {
-        $this->properties[$propertyName->toString()] = $this
-            ->getProperty($propertyName->toString())
+        $this->properties[$code->toString()] = $this
+            ->getProperty($code)
             ->addParameter($parameterName, $parameter);
     }
 }

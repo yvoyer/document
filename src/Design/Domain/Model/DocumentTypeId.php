@@ -7,7 +7,7 @@ use Star\Component\DomainEvent\Serialization\SerializableAttribute;
 use Star\Component\Identity\Identity;
 use function uniqid;
 
-final class DocumentId implements Identity, SerializableAttribute
+final class DocumentTypeId implements Identity, SerializableAttribute
 {
     private string $value;
 
@@ -18,18 +18,18 @@ final class DocumentId implements Identity, SerializableAttribute
     }
 
     /**
-     * @param DocumentId $id
+     * @param DocumentTypeId $id
      *
      * @return bool
      */
-    public function matchIdentity(DocumentId $id): bool
+    public function matchIdentity(DocumentTypeId $id): bool
     {
         return $id->toString() === $this->toString();
     }
 
     public function entityClass(): string
     {
-        return DocumentAggregate::class;
+        return DocumentTypeAggregate::class;
     }
 
     public function toString(): string

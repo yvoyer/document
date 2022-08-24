@@ -3,11 +3,11 @@
 namespace Star\Component\Document\Design\Domain\Messaging\Query\DataTransfer;
 
 use DateTimeInterface;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 
 final class ReadOnlyDocument
 {
-    private DocumentId $documentId;
+    private DocumentTypeId $documentId;
     private string $documentName;
     private string $ownerId;
     private string $ownerName;
@@ -15,7 +15,7 @@ final class ReadOnlyDocument
     private DateTimeInterface $updatedAt;
 
     public function __construct(
-        DocumentId $documentId,
+        DocumentTypeId $documentId,
         string $documentName,
         string $ownerId,
         string $ownerName,

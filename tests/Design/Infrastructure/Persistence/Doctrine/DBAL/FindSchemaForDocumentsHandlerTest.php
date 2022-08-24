@@ -19,14 +19,14 @@ final class FindSchemaForDocumentsHandlerTest extends RegressionTestCase
         $memberId = $fixtures->newMember()->getMemberId();
 
         $docOneId = $fixtures
-            ->newDocument($memberId)
-            ->getDocumentId();
+            ->newDocumentType($memberId)
+            ->getDocumentTypeId();
         $fixtures
-            ->newDocument($memberId)
-            ->getDocumentId();
+            ->newDocumentType($memberId)
+            ->getDocumentTypeId();
         $docThreeId = $fixtures
-            ->newDocument($memberId)
-            ->getDocumentId();
+            ->newDocumentType($memberId)
+            ->getDocumentTypeId();
 
         $fixtures->dispatchQuery($query = new FindSchemaForDocuments('en', $docOneId, $docThreeId));
         self::assertCount(2, $result = $query->getAllFoundSchemas());
@@ -42,9 +42,9 @@ final class FindSchemaForDocumentsHandlerTest extends RegressionTestCase
         $memberId = $fixtures->newMember()->getMemberId();
 
         $documentId = $fixtures
-            ->newDocument($memberId)
+            ->newDocumentType($memberId)
             ->withTextProperty('text', 'en')->endProperty()
-            ->getDocumentId();
+            ->getDocumentTypeId();
 
         $fixtures->dispatchQuery($query = new FindSchemaForDocuments('en', $documentId));
         self::assertCount(1, $result = $query->getAllFoundSchemas());
@@ -65,9 +65,9 @@ final class FindSchemaForDocumentsHandlerTest extends RegressionTestCase
         $memberId = $fixtures->newMember()->getMemberId();
 
         $documentId = $fixtures
-            ->newDocument($memberId)
+            ->newDocumentType($memberId)
             ->withTextProperty('text', 'en')->required()->endProperty()
-            ->getDocumentId();
+            ->getDocumentTypeId();
 
         $fixtures->dispatchQuery($query = new FindSchemaForDocuments('en', $documentId));
         self::assertCount(1, $result = $query->getAllFoundSchemas());

@@ -2,7 +2,7 @@
 
 namespace Star\Component\Document\Tests\App;
 
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 
 final class AppUris extends RequestFactory
 {
@@ -16,7 +16,7 @@ final class AppUris extends RequestFactory
         return self::get('/documents');
     }
 
-    public static function documentShow(DocumentId $id): RequestFactory
+    public static function documentShow(DocumentTypeId $id): RequestFactory
     {
         return self::get(\sprintf('/documents/%s', $id->toString()));
     }

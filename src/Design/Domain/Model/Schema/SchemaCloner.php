@@ -2,22 +2,20 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Schema;
 
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyParameter;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 
-final class SchemaCloner implements DocumentVisitor
+final class SchemaCloner implements DocumentTypeVisitor
 {
-    /**
-     * @var DocumentSchema
-     */
-    private $schema;
+    private DocumentSchema $schema;
 
-    public function __construct(DocumentId $id)
+    public function __construct(DocumentTypeId $id)
     {
         $this->schema = new DocumentSchema($id);
     }
@@ -27,7 +25,7 @@ final class SchemaCloner implements DocumentVisitor
         return $this->schema;
     }
 
-    public function visitDocument(DocumentId $id): void
+    public function visitDocumentType(DocumentTypeId $id): void
     {
     }
 
@@ -36,34 +34,34 @@ final class SchemaCloner implements DocumentVisitor
         throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
     }
 
-    public function visitProperty(PropertyName $name, PropertyType $type): bool
+    public function visitProperty(PropertyCode $code, PropertyName $name, PropertyType $type): bool
     {
-        $this->schema->addProperty($name, $type);
+        $this->schema->addProperty($code, $name, $type);
 
         return false;
     }
 
-    public function enterPropertyConstraints(PropertyName $propertyName): void
+    public function enterPropertyConstraints(PropertyCode $code): void
     {
     }
 
     public function visitPropertyConstraint(
-        PropertyName $propertyName,
+        PropertyCode $code,
         string $constraintName,
         PropertyConstraint $constraint
     ): void {
-        $this->schema->addPropertyConstraint($propertyName->toString(), $constraintName, $constraint);
+        $this->schema->addPropertyConstraint($code, $constraintName, $constraint);
     }
 
-    public function enterPropertyParameters(PropertyName $propertyName): void
+    public function enterPropertyParameters(PropertyCode $code): void
     {
     }
 
     public function visitPropertyParameter(
-        PropertyName $propertyName,
+        PropertyCode $code,
         string $parameterName,
         PropertyParameter $parameter
     ): void {
-        $this->schema->addParameter($propertyName->toString(), $parameterName, $parameter);
+        $this->schema->addParameter($code, $parameterName, $parameter);
     }
 }

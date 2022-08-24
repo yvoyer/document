@@ -4,8 +4,8 @@ namespace Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBA
 
 use Doctrine\DBAL\Connection;
 use Star\Component\Document\Audit\Infrastructure\Persistence\DBAL\AuditTrailData;
-use Star\Component\Document\Design\Domain\Model\Events\DocumentCreated;
-use Star\Component\Document\Design\Domain\Model\Events\PropertyAdded;
+use Star\Component\Document\Design\Domain\Model\Events\DocumentTypeWasCreated;
+use Star\Component\Document\Design\Domain\Model\Events\PropertyWasAdded;
 use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 use Star\Component\Document\Translation\Infrastructure\Persistence\DBAL\TranslatableData;
 use Star\Component\DomainEvent\EventListener;
@@ -22,7 +22,7 @@ final class DocumentProjection implements EventListener
         $this->connection = $connection;
     }
 
-    public function onDocumentCreated(DocumentCreated $event): void
+    public function onDocumentTypeWasCreated(DocumentTypeWasCreated $event): void
     {
         $this->connection->insert(
             'document',
@@ -46,7 +46,7 @@ final class DocumentProjection implements EventListener
         );
     }
 
-    public function onPropertyAdded(PropertyAdded $event): void
+    public function onPropertyAdded(PropertyWasAdded $event): void
     {
         $this->connection->update(
             'document',
@@ -64,8 +64,8 @@ final class DocumentProjection implements EventListener
     public function listensTo(): array
     {
         return [
-            DocumentCreated::class => 'onDocumentCreated',
-            PropertyAdded::class => 'onPropertyAdded',
+            DocumentTypeWasCreated::class => 'onDocumentTypeWasCreated',
+            PropertyWasAdded::class => 'onPropertyAdded',
         ];
     }
 }

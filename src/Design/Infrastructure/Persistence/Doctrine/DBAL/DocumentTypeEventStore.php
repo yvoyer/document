@@ -2,21 +2,21 @@
 
 namespace Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBAL;
 
-use Star\Component\Document\Design\Domain\Model\DocumentAggregate;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\DocumentNotFound;
-use Star\Component\Document\Design\Domain\Model\DocumentRepository;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeAggregate;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeNotFound;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeRepository;
 use Star\Component\DomainEvent\AggregateRoot;
 use Star\Component\DomainEvent\Ports\Doctrine\DBALEventStore;
 
-final class DocumentEventStore extends DBALEventStore implements DocumentRepository
+final class DocumentTypeEventStore extends DBALEventStore implements DocumentTypeRepository
 {
-    public function getDocumentByIdentity(DocumentId $id): DocumentAggregate
+    public function getDocumentByIdentity(DocumentTypeId $id): DocumentTypeAggregate
     {
         return $this->getAggregateWithId($id->toString());
     }
 
-    public function saveDocument(DocumentAggregate $document): void
+    public function saveDocument(DocumentTypeAggregate $document): void
     {
         $this->persistAggregate($document->getIdentity()->toString(), $document);
     }
@@ -28,11 +28,11 @@ final class DocumentEventStore extends DBALEventStore implements DocumentReposit
 
     protected function createAggregateFromStream(array $events): AggregateRoot
     {
-        return DocumentAggregate::fromStream($events);
+        return DocumentTypeAggregate::fromStream($events);
     }
 
     protected function handleNoEventFound(string $id): void
     {
-        throw new DocumentNotFound($id);
+        throw new DocumentTypeNotFound($id);
     }
 }

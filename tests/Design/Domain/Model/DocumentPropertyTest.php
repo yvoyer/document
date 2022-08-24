@@ -3,6 +3,7 @@
 namespace Star\Component\Document\Tests\Design\Domain\Model;
 
 use PHPUnit\Framework\TestCase;
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\Constraints\All;
 use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentProperty;
@@ -12,22 +13,23 @@ use Star\Component\Document\Design\Domain\Model\Types\NullType;
 
 final class DocumentPropertyTest extends TestCase
 {
-    /**
-     * @var DocumentProperty
-     */
-    private $property;
+    private DocumentProperty $property;
 
     public function setUp(): void
     {
         $this->property = new DocumentProperty(
-            new PropertyDefinition(PropertyName::fromString('name'), new NullType())
+            new PropertyDefinition(
+                PropertyCode::fromString('name'),
+                PropertyName::random(),
+                new NullType()
+            )
         );
     }
 
     public function test_it_should_match_definition_name(): void
     {
-        $this->assertTrue($this->property->matchName(PropertyName::fromString('name')));
-        $this->assertFalse($this->property->matchName(PropertyName::fromString('not name')));
+        $this->assertTrue($this->property->matchCode(PropertyCode::fromString('name')));
+        $this->assertFalse($this->property->matchCode(PropertyCode::fromString('not name')));
     }
 
     public function test_it_should_add_constraint(): DocumentProperty

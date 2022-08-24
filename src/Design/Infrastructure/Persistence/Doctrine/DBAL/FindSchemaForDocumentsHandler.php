@@ -5,7 +5,7 @@ namespace Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBA
 use Doctrine\DBAL\Connection;
 use Star\Component\Document\Design\Domain\Messaging\Query\DataTransfer\SchemaOfDocument;
 use Star\Component\Document\Design\Domain\Messaging\Query\FindSchemaForDocuments;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\DocumentName;
 use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 
@@ -58,7 +58,7 @@ final class FindSchemaForDocumentsHandler
                 $result = $stmt->executeQuery();
                 foreach ($result->iterateAssociativeIndexed() as $documentId => $row) {
                     yield $documentId => new SchemaOfDocument(
-                        DocumentId::fromString($documentId),
+                        DocumentTypeId::fromString($documentId),
                         new DocumentName($row['name'], $locale),
                         DocumentSchema::fromJsonString($row['structure'])
                     );

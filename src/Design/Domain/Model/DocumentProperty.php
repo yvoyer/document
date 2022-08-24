@@ -2,14 +2,12 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\Schema\PropertyDefinition;
 
 final class DocumentProperty implements ReadOnlyProperty
 {
-    /**
-     * @var PropertyDefinition
-     */
-    private $definition;
+    private PropertyDefinition $definition;
 
     public function __construct(PropertyDefinition $definition)
     {
@@ -26,14 +24,14 @@ final class DocumentProperty implements ReadOnlyProperty
         $this->definition = $this->definition->removeConstraint($name);
     }
 
-    public function acceptDocumentVisitor(DocumentVisitor $visitor): void
+    public function acceptDocumentVisitor(DocumentTypeVisitor $visitor): void
     {
         $this->definition->acceptDocumentVisitor($visitor);
     }
 
-    public function matchName(PropertyName $name): bool
+    public function matchCode(PropertyCode $code): bool
     {
-        return $name->matchCode($this->definition->getName());
+        return $code->matchCode($this->definition->getCode());
     }
 
     public function getDefinition(): PropertyDefinition

@@ -2,8 +2,9 @@
 
 namespace Star\Component\Document\Design\Domain\Messaging\Query\DataTransfer;
 
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\DataEntry\Domain\Model\PropertyMetadata;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\DocumentName;
 use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 use Star\Component\Document\Design\Domain\Model\Schema\ReadOnlySchema;
@@ -12,12 +13,12 @@ use function array_keys;
 
 final class SchemaOfDocument implements ReadOnlySchema
 {
-    private DocumentId $documentId;
+    private DocumentTypeId $documentId;
     private DocumentName $documentName;
     private DocumentSchema $schema;
 
     public function __construct(
-        DocumentId $documentId,
+        DocumentTypeId $documentId,
         DocumentName $documentName,
         DocumentSchema $schema
     ) {
@@ -41,12 +42,12 @@ final class SchemaOfDocument implements ReadOnlySchema
      */
     public function getPublicProperties(): array
     {
-        $this->schema->acceptDocumentVisitor($visitor = new PropertyExtractor());
+        $this->schema->acceptDocumentTypeVisitor($visitor = new PropertyExtractor());
 
         return array_keys($visitor->properties());
     }
 
-    public function getPublicProperty(string $name): PropertyMetadata
+    public function getPublicProperty(PropertyCode $name): PropertyMetadata
     {
         return $this->schema->getPropertyMetadata($name);
     }

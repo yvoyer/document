@@ -11,8 +11,8 @@ final class DocumentSchemaManagerTest extends RegressionTestCase
         $client = self::createTestClient();
         $fixtures = $client->createFixtureBuilder();
 
-        $documentId = $fixtures->newDocument($fixtures->newMember()->getMemberId())
-            ->getDocumentId();
+        $documentId = $fixtures->newDocumentType($fixtures->newMember()->getMemberId())
+            ->getDocumentTypeId();
 
         $fixtures->assertDocument($documentId, 'en')
             ->assertName('default-name')
@@ -24,9 +24,9 @@ final class DocumentSchemaManagerTest extends RegressionTestCase
         $client = self::createTestClient();
         $fixtures = $client->createFixtureBuilder();
 
-        $documentId = $fixtures->newDocument($fixtures->newMember()->getMemberId())
+        $documentId = $fixtures->newDocumentType($fixtures->newMember()->getMemberId())
             ->withTextProperty('text', 'en')->endProperty()
-            ->getDocumentId();
+            ->getDocumentTypeId();
 
         $fixtures->assertDocument($documentId, 'en')
             ->assertName('default-name')

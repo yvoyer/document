@@ -2,6 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Values\FloatValue;
 use Star\Component\Document\DataEntry\Domain\Model\Values\IntegerValue;
@@ -32,14 +33,16 @@ final class NumberType implements PropertyType
     }
 
     public function generateExceptionForNotSupportedTypeForValue(
-        string $property,
+        PropertyCode $property,
         RecordValue $value
     ): NotSupportedTypeForValue {
         return new NotSupportedTypeForValue($property, $value, $this);
     }
 
-    public function generateExceptionForNotSupportedValue(string $property, RecordValue $value): InvalidPropertyValue
-    {
+    public function generateExceptionForNotSupportedValue(
+        PropertyCode $property,
+        RecordValue $value
+    ): InvalidPropertyValue {
         throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
     }
 

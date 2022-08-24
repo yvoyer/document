@@ -5,7 +5,7 @@ namespace Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
 use Star\Component\Document\DataEntry\Domain\Model\RecordRepository;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Identity\Exception\EntityNotFoundException;
 
 final class RecordCollection implements RecordRepository, \Countable
@@ -25,11 +25,11 @@ final class RecordCollection implements RecordRepository, \Countable
     }
 
     /**
-     * @param DocumentId $id
+     * @param DocumentTypeId $id
      *
      * @return DocumentRecord[]
      */
-    public function allRecordsOfDocument(DocumentId $id): array
+    public function allRecordsOfDocument(DocumentTypeId $id): array
     {
         return array_values(
             array_filter(

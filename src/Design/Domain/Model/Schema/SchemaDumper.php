@@ -2,18 +2,22 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Schema;
 
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyParameter;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
+use function self;
 
-final class SchemaDumper implements DocumentVisitor
+final class SchemaDumper implements DocumentTypeVisitor
 {
     const INDEX_ID = 'id';
-    const INDEX_TYPE = 'type';
+    const INDEX_DEFAULT_LOCALE = 'default_locale';
+    const INDEX_PROPERTY_TYPE = 'type';
+    const INDEX_PROPERTY_NAME = 'name';
     const INDEX_PROPERTIES = 'properties';
     const INDEX_CONSTRAINTS = 'constraints';
     const INDEX_PARAMETERS = 'parameters';
@@ -31,7 +35,7 @@ final class SchemaDumper implements DocumentVisitor
         return $this->data;
     }
 
-    public function visitDocument(DocumentId $id): void
+    public function visitDocumentType(DocumentTypeId $id): void
     {
         $this->data[self::INDEX_ID] = $id->toString();
         $this->data[self::INDEX_PROPERTIES] = [];
@@ -42,40 +46,41 @@ final class SchemaDumper implements DocumentVisitor
         throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
     }
 
-    public function visitProperty(PropertyName $name, PropertyType $type): bool
+    public function visitProperty(PropertyCode $code, PropertyName $name, PropertyType $type): bool
     {
-        $this->data[self::INDEX_PROPERTIES][$name->toString()][self::INDEX_TYPE] = $type->toData()->toArray();
+        $this->data[self::INDEX_PROPERTIES][$code->toString()][self::INDEX_PROPERTY_NAME] = $name->toSerializableString();
+        $this->data[self::INDEX_PROPERTIES][$code->toString()][self::INDEX_PROPERTY_TYPE] = $type->toData()->toArray();
 
         return false;
     }
 
-    public function enterPropertyConstraints(PropertyName $propertyName): void
+    public function enterPropertyConstraints(PropertyCode $code): void
     {
-        $this->data[self::INDEX_PROPERTIES][$propertyName->toString()][self::INDEX_CONSTRAINTS] = [];
+        $this->data[self::INDEX_PROPERTIES][$code->toString()][self::INDEX_CONSTRAINTS] = [];
     }
 
     public function visitPropertyConstraint(
-        PropertyName $propertyName,
+        PropertyCode $code,
         string $constraintName,
         PropertyConstraint $constraint
     ): void {
-        $property = $propertyName->toString();
+        $property = $code->toString();
         $constraintData = $constraint->toData()->toArray();
         $this->data[self::INDEX_PROPERTIES][$property][self::INDEX_CONSTRAINTS][$constraintName] = $constraintData;
     }
 
-    public function enterPropertyParameters(PropertyName $propertyName): void
+    public function enterPropertyParameters(PropertyCode $code): void
     {
-        $this->data[self::INDEX_PROPERTIES][$propertyName->toString()][self::INDEX_PARAMETERS] = [];
+        $this->data[self::INDEX_PROPERTIES][$code->toString()][self::INDEX_PARAMETERS] = [];
     }
 
     public function visitPropertyParameter(
-        PropertyName $propertyName,
+        PropertyCode $code,
         string $parameterName,
         PropertyParameter $parameter
     ): void {
         $parameterData = $parameter->toParameterData()->toArray();
-        $this->data[self::INDEX_PROPERTIES][$propertyName->toString()][self::INDEX_PARAMETERS][$parameterName]
+        $this->data[self::INDEX_PROPERTIES][$code->toString()][self::INDEX_PARAMETERS][$parameterName]
             = $parameterData;
     }
 }

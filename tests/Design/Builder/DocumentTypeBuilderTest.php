@@ -13,14 +13,14 @@ use Star\Component\Document\DataEntry\Domain\Model\Values\FloatValue;
 use Star\Component\Document\DataEntry\Domain\Model\Values\IntegerValue;
 use Star\Component\Document\DataEntry\Domain\Model\Values\OptionListValue;
 use Star\Component\Document\DataEntry\Domain\Model\Values\StringValue;
-use Star\Component\Document\Design\Builder\DocumentBuilder;
+use Star\Component\Document\Design\Builder\DocumentTypeBuilder;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 
-final class DocumentBuilderTest extends TestCase
+final class DocumentTypeBuilderTest extends TestCase
 {
     public function test_it_should_build_a_document_with_a_text_property(): void
     {
-        $document = DocumentBuilder::createDocument('id')
+        $document = DocumentTypeBuilder::startDocumentTypeFixture('id')
             ->createText('name')->endProperty()
             ->getSchema();
 
@@ -32,7 +32,7 @@ final class DocumentBuilderTest extends TestCase
 
     public function test_it_should_create_a_boolean_property(): void
     {
-        $document = DocumentBuilder::createDocument('id')
+        $document = DocumentTypeBuilder::startDocumentTypeFixture('id')
             ->createBoolean('bool')->endProperty()
             ->getSchema();
         $this->assertSame(
@@ -43,7 +43,7 @@ final class DocumentBuilderTest extends TestCase
 
     public function test_it_should_create_a_date_property(): void
     {
-        $document = DocumentBuilder::createDocument('id')
+        $document = DocumentTypeBuilder::startDocumentTypeFixture('id')
             ->createDate('date')->endProperty()
             ->getSchema();
         $this->assertSame(
@@ -54,7 +54,7 @@ final class DocumentBuilderTest extends TestCase
 
     public function test_it_should_create_a_number_property(): void
     {
-        $document = DocumentBuilder::createDocument('id')
+        $document = DocumentTypeBuilder::startDocumentTypeFixture('id')
             ->createNumber('number')->endProperty()
             ->getSchema();
         $this->assertSame(
@@ -65,8 +65,8 @@ final class DocumentBuilderTest extends TestCase
 
     public function test_it_should_create_a_custom_list_property(): void
     {
-        $name = PropertyName::fromString('name', 'en');
-        $document = DocumentBuilder::createDocument('id')
+        $name = PropertyName::fromLocalizedString('name', 'en');
+        $document = DocumentTypeBuilder::startDocumentTypeFixture('id')
             ->createListOfOptions($name->toString(), OptionListValue::withElements(3))->endProperty()
             ->getSchema();
         $this->assertSame(
@@ -77,7 +77,7 @@ final class DocumentBuilderTest extends TestCase
 
     public function test_it_should_throw_exception_when_setting_empty_on_required_text_property(): void
     {
-        $builder = DocumentBuilder::createDocument('id')
+        $builder = DocumentTypeBuilder::startDocumentTypeFixture('id')
             ->createText('name')->required()->endProperty();
 
         $this->expectException(ValidationFailedForProperty::class);
@@ -87,7 +87,7 @@ final class DocumentBuilderTest extends TestCase
 
     public function test_it_should_throw_exception_when_setting_empty_on_required_boolean_property(): void
     {
-        $builder = DocumentBuilder::createDocument('id')
+        $builder = DocumentTypeBuilder::startDocumentTypeFixture('id')
             ->createBoolean('name')->required()->endProperty();
 
         $this->expectException(ValidationFailedForProperty::class);
@@ -102,7 +102,7 @@ final class DocumentBuilderTest extends TestCase
 
     public function test_it_should_throw_exception_when_setting_empty_on_required_date_property(): void
     {
-        $builder = DocumentBuilder::createDocument('id')
+        $builder = DocumentTypeBuilder::startDocumentTypeFixture('id')
             ->createDate('name')->required()->endProperty();
 
         $this->expectException(ValidationFailedForProperty::class);
@@ -112,7 +112,7 @@ final class DocumentBuilderTest extends TestCase
 
     public function test_it_should_throw_exception_when_setting_empty_on_required_number_property(): void
     {
-        $builder = DocumentBuilder::createDocument('id')
+        $builder = DocumentTypeBuilder::startDocumentTypeFixture('id')
             ->createNumber('name')->required()->endProperty();
 
         $this->expectException(ValidationFailedForProperty::class);
@@ -122,7 +122,7 @@ final class DocumentBuilderTest extends TestCase
 
     public function test_it_should_throw_exception_when_setting_empty_on_required_list_property(): void
     {
-        $builder = DocumentBuilder::createDocument('id')
+        $builder = DocumentTypeBuilder::startDocumentTypeFixture('id')
             ->createListOfOptions('name', OptionListValue::withElements(1))->required()->endProperty();
 
         $this->expectException(ValidationFailedForProperty::class);
@@ -134,7 +134,7 @@ final class DocumentBuilderTest extends TestCase
 
     public function test_it_should_throw_exception_when_setting_more_than_one_value_on_single_value_property(): void
     {
-        $builder = DocumentBuilder::createDocument('id')
+        $builder = DocumentTypeBuilder::startDocumentTypeFixture('id')
             ->createListOfOptions('name', OptionListValue::withElements(3))->singleOption()->endProperty()
             ->startRecord(RecordId::random());
 
@@ -147,7 +147,7 @@ final class DocumentBuilderTest extends TestCase
 
     public function test_it_should_build_a_record_with_text_property(): void
     {
-        $record = DocumentBuilder::createDocument('doc')
+        $record = DocumentTypeBuilder::startDocumentTypeFixture('doc')
             ->createText('optional')->endProperty()
             ->createText('regex')->matchesRegex('/\w+/')->endProperty()
             ->createText('required')->required()->endProperty()
@@ -167,7 +167,7 @@ final class DocumentBuilderTest extends TestCase
 
     public function test_it_should_build_a_record_with_boolean_property(): void
     {
-        $record = DocumentBuilder::createDocument('doc')
+        $record = DocumentTypeBuilder::startDocumentTypeFixture('doc')
             ->createBoolean('optional')->endProperty()
             ->createBoolean('required')->required()->endProperty()
             ->createBoolean('default')->defaultValue(true)->endProperty()
@@ -189,7 +189,7 @@ final class DocumentBuilderTest extends TestCase
 
     public function test_it_should_build_a_record_with_date_property(): void
     {
-        $builder = DocumentBuilder::createDocument('doc')
+        $builder = DocumentTypeBuilder::startDocumentTypeFixture('doc')
             ->createDate('optional')->endProperty()
             ->createDate('required')->required()->endProperty()
             ->createDate('before')->beforeDate('2000-01-01')->endProperty()
@@ -218,7 +218,7 @@ final class DocumentBuilderTest extends TestCase
 
     public function test_it_should_build_a_record_with_all_number_property(): void
     {
-        $record = DocumentBuilder::createDocument('doc')
+        $record = DocumentTypeBuilder::startDocumentTypeFixture('doc')
             ->createNumber('optional')->endProperty()
             ->createNumber('required')->required()->endProperty()
             ->createNumber('float')->asFloat()->endProperty()
@@ -238,7 +238,7 @@ final class DocumentBuilderTest extends TestCase
 
     public function test_it_should_build_a_record_with_custom_list_property(): void
     {
-        $record = DocumentBuilder::createDocument('doc')
+        $record = DocumentTypeBuilder::startDocumentTypeFixture('doc')
             ->createListOfOptions('optional', OptionListValue::withElements(3))->endProperty()
             ->createListOfOptions('required', OptionListValue::withElements(3))->required()->endProperty()
             ->createListOfOptions('single', OptionListValue::withElements(3))->singleOption()->endProperty()

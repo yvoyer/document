@@ -2,27 +2,25 @@
 
 namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
-use Star\Component\Document\Design\Domain\Model\DocumentRepository;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeRepository;
 
 final class AddPropertyParameterHandler
 {
-    /**
-     * @var DocumentRepository
-     */
-    private $documents;
+    private DocumentTypeRepository $documents;
 
-    public function __construct(DocumentRepository $documents)
+    public function __construct(DocumentTypeRepository $documents)
     {
         $this->documents = $documents;
     }
 
     public function __invoke(AddPropertyParameter $command): void
     {
-        $document = $this->documents->getDocumentByIdentity($command->documentId());
+        $document = $this->documents->getDocumentByIdentity($command->typeId());
         $document->addPropertyParameter(
-            $command->property(),
+            $command->code(),
             $command->parameterName(),
-            $command->parameterData()->createParameter()
+            $command->parameterData()->createParameter(),
+            $command->addedAt()
         );
 
         $this->documents->saveDocument($document);

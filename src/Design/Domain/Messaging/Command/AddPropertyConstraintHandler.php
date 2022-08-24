@@ -3,35 +3,29 @@
 namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
 use Star\Component\Document\Design\Domain\Model\Constraints\ConstraintRegistry;
-use Star\Component\Document\Design\Domain\Model\DocumentRepository;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeRepository;
 
 final class AddPropertyConstraintHandler
 {
-    /**
-     * @var DocumentRepository
-     */
-    private $documents;
+    private DocumentTypeRepository $types;
+    private ConstraintRegistry $registry;
 
-    /**
-     * @var ConstraintRegistry
-     */
-    private $registry;
-
-    public function __construct(DocumentRepository $documents, ConstraintRegistry $registry)
+    public function __construct(DocumentTypeRepository $types, ConstraintRegistry $registry)
     {
-        $this->documents = $documents;
+        $this->types = $types;
         $this->registry = $registry;
     }
 
     public function __invoke(AddPropertyConstraint $command): void
     {
-        $document = $this->documents->getDocumentByIdentity($command->documentId());
+        $document = $this->types->getDocumentByIdentity($command->typeId());
         $document->addPropertyConstraint(
-            $command->name(),
+            $command->code(),
             $command->constraintName(),
-            $this->registry->createPropertyConstraint($command->constraintName(), $command->constraintData())
+            $this->registry->createPropertyConstraint($command->constraintName(), $command->constraintData()),
+            $command->addedAt()
         );
 
-        $this->documents->saveDocument($document);
+        $this->types->saveDocument($document);
     }
 }

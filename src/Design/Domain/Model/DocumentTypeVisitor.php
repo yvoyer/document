@@ -2,28 +2,31 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
-interface DocumentVisitor
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
+
+interface DocumentTypeVisitor
 {
-    public function visitDocument(DocumentId $id): void;
+    public function visitDocumentType(DocumentTypeId $id): void;
 
     public function visitDocumentConstraint(string $name, DocumentConstraint $constraint): void;
 
     /**
-     * @param PropertyName $name
+     * @param PropertyCode $code
+     * @param PropertyName $name The default locale name of the property
      * @param PropertyType $type
      * @return bool Whether to stop iteration after this visit
      */
-    public function visitProperty(PropertyName $name, PropertyType $type): bool;
+    public function visitProperty(PropertyCode $code, PropertyName $name, PropertyType $type): bool;
 
     /**
      * Executed before iteration on property constraints
      *
-     * @param PropertyName $propertyName
+     * @param PropertyCode $code
      */
-    public function enterPropertyConstraints(PropertyName $propertyName): void;
+    public function enterPropertyConstraints(PropertyCode $code): void;
 
     public function visitPropertyConstraint(
-        PropertyName $propertyName,
+        PropertyCode $code,
         string $constraintName,
         PropertyConstraint $constraint
     ): void;
@@ -31,12 +34,12 @@ interface DocumentVisitor
     /**
      * Executed before iteration on property parameters
      *
-     * @param PropertyName $propertyName
+     * @param PropertyCode $code
      */
-    public function enterPropertyParameters(PropertyName $propertyName): void;
+    public function enterPropertyParameters(PropertyCode $code): void;
 
     public function visitPropertyParameter(
-        PropertyName $propertyName,
+        PropertyCode $code,
         string $parameterName,
         PropertyParameter $parameter
     ): void;

@@ -5,8 +5,8 @@ namespace App\Controller\Document;
 use App\Authentication\AuthenticationContext;
 use App\Controller\AppController;
 use DateTimeImmutable;
-use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocument;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocumentType;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\DocumentName;
 use Star\Component\DomainEvent\Messaging\CommandBus;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,9 +42,9 @@ final class DocumentNew extends AppController
             return $this->redirect($this->generateUrl('dashboard'));
         }
 
-        $documentId = DocumentId::random();
+        $documentId = DocumentTypeId::random();
         $bus->dispatchCommand(
-            new CreateDocument(
+            new CreateDocumentType(
                 $documentId,
                 $name,
                 $context->getLoggedMember(),

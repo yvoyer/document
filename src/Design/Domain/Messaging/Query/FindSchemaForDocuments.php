@@ -5,14 +5,14 @@ namespace Star\Component\Document\Design\Domain\Messaging\Query;
 use Assert\Assertion;
 use Closure;
 use Star\Component\Document\Design\Domain\Messaging\Query\DataTransfer\SchemaOfDocument;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\DomainEvent\Messaging\Query;
 use Traversable;
 
 final class FindSchemaForDocuments implements Query
 {
     /**
-     * @var DocumentId[]
+     * @var DocumentTypeId[]
      */
     private array $documentIds;
     private string $locale;
@@ -20,15 +20,15 @@ final class FindSchemaForDocuments implements Query
 
     public function __construct(
         string $locale,
-        DocumentId $first,
-        DocumentId ...$others
+        DocumentTypeId $first,
+        DocumentTypeId ...$others
     ) {
         $this->documentIds = \array_merge([$first], $others);
         $this->locale = $locale;
     }
 
     /**
-     * @return array|DocumentId[]
+     * @return array|DocumentTypeId[]
      */
     public function documentIdentities(): array
     {
@@ -46,7 +46,7 @@ final class FindSchemaForDocuments implements Query
     public function documentIntIds(): array
     {
         return \array_map(
-            function (DocumentId $id): string {
+            function (DocumentTypeId $id): string {
                 return $id->toString();
             },
             $this->documentIds
@@ -67,7 +67,7 @@ final class FindSchemaForDocuments implements Query
         return \call_user_func($this->schemas);
     }
 
-    public function getSingleSchema(DocumentId $id): SchemaOfDocument
+    public function getSingleSchema(DocumentTypeId $id): SchemaOfDocument
     {
         $result = $this->getAllFoundSchemas();
         Assertion::keyExists($result, $id->toString());

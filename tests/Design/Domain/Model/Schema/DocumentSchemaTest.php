@@ -4,9 +4,10 @@ namespace Star\Component\Document\Tests\Design\Domain\Model\Schema;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\Constraints\All;
 use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\Parameters\NullParameter;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
@@ -17,14 +18,11 @@ use function json_encode;
 
 final class DocumentSchemaTest extends TestCase
 {
-    /**
-     * @var DocumentSchema
-     */
-    private $schema;
+    private DocumentSchema $schema;
 
     public function setUp(): void
     {
-        $this->schema = new DocumentSchema(DocumentId::fromString('d-id'));
+        $this->schema = new DocumentSchema(DocumentTypeId::fromString('d-id'));
     }
 
     private function assertArrayIsJson(array $data, string $actual): void
@@ -49,7 +47,11 @@ final class DocumentSchemaTest extends TestCase
     public function test_it_should_add_property(): void
     {
         $type = new Types\NullType();
-        $this->schema->addProperty(PropertyName::fromString('name', 'en'), $type);
+        $this->schema->addProperty(
+            PropertyCode::fromString('name'),
+            PropertyName::fromLocalizedString('name-en', 'en'),
+            $type
+        );
         $this->assertArrayIsJson(
             [
                 'id' => 'd-id',
@@ -73,11 +75,14 @@ final class DocumentSchemaTest extends TestCase
 
     public function test_it_should_serialize_constraints(): void
     {
-        $property = 'prop';
         $constraint = 'const';
 
-        $this->schema->addProperty(PropertyName::fromString($property, 'en'), new Types\NullType());
-        $this->schema->addPropertyConstraint($property, $constraint, new All(new NoConstraint()));
+        $this->schema->addProperty(
+            $code = PropertyCode::fromString($property = 'prop'),
+            PropertyName::fromLocalizedString('name', 'en'),
+            new Types\NullType()
+        );
+        $this->schema->addPropertyConstraint($code, $constraint, new All(new NoConstraint()));
         $this->assertArrayIsJson(
             [
                 'id' => 'd-id',
@@ -107,8 +112,12 @@ final class DocumentSchemaTest extends TestCase
         $property = 'prop';
         $constraint = 'const';
 
-        $this->schema->addProperty(PropertyName::fromString($property, 'en'), new Types\NullType());
-        $this->schema->addPropertyConstraint($property, $constraint, new All(new NoConstraint()));
+        $this->schema->addProperty(
+            $code = PropertyCode::fromString($property),
+            PropertyName::fromLocalizedString($property, 'en'),
+            new Types\NullType()
+        );
+        $this->schema->addPropertyConstraint($code, $constraint, new All(new NoConstraint()));
         $this->assertArrayIsJson(
             [
                 'id' => 'd-id',
@@ -141,6 +150,7 @@ final class DocumentSchemaTest extends TestCase
                     'id' => 'dId',
                     'properties' => [
                         'name' => [
+                            'name' => 'a:2:{s:7:"content";s:7:"invalid";s:6:"locale";s:2:"en";}',
                             'type' => [
                                 'class' => 'Some\Path',
                                 'arguments' => [],
@@ -154,11 +164,19 @@ final class DocumentSchemaTest extends TestCase
 
     public function test_it_should_clone_schema(): void
     {
-        $this->schema->addProperty(PropertyName::fromString('empty', 'en'), new Types\NullType());
-        $this->schema->addProperty(PropertyName::fromString('with-constraint', 'en'), new Types\NullType());
-        $this->schema->addPropertyConstraint('with-constraint', 'const', new NoConstraint());
+        $this->schema->addProperty(
+            PropertyCode::fromString('empty'),
+            PropertyName::random(),
+            new Types\NullType()
+        );
+        $this->schema->addProperty(
+            $code = PropertyCode::fromString('with-constraint'),
+            PropertyName::random(),
+            new Types\NullType()
+        );
+        $this->schema->addPropertyConstraint($code, 'const', new NoConstraint());
 
-        $duplicate = $this->schema->clone(DocumentId::fromString('new-id'));
+        $duplicate = $this->schema->clone(DocumentTypeId::fromString('new-id'));
         $expected = json_decode($this->schema->toString(), true);
         $expected['id'] = 'new-id';
 
@@ -167,13 +185,18 @@ final class DocumentSchemaTest extends TestCase
 
     public function test_add_parameter(): void
     {
-        $this->schema->addProperty(PropertyName::fromString('prop', 'en'), new Types\NullType());
+        $this->schema->addProperty(
+            $code = PropertyCode::fromString('prop'),
+            PropertyName::fromLocalizedString('name', 'en'),
+            new Types\NullType()
+        );
         $this->assertSame(
             json_encode(
                 [
                     'id' => 'd-id',
                     'properties' => [
                         'prop' => [
+                            'name' => 'a:2:{s:7:"content";s:4:"name";s:6:"locale";s:2:"en";}',
                             'type' => [
                                 'class' => Types\NullType::class,
                                 'arguments' => [],
@@ -187,7 +210,7 @@ final class DocumentSchemaTest extends TestCase
             $this->schema->toString()
         );
 
-        $this->schema->addParameter('prop', 'param', new NullParameter());
+        $this->schema->addParameter($code, 'param', new NullParameter());
 
         $this->assertSame(
             json_encode(
@@ -195,6 +218,7 @@ final class DocumentSchemaTest extends TestCase
                     'id' => 'd-id',
                     'properties' => [
                         'prop' => [
+                            'name' => 'a:2:{s:7:"content";s:4:"name";s:6:"locale";s:2:"en";}',
                             'type' => [
                                 'class' => Types\NullType::class,
                                 'arguments' => [],
@@ -216,12 +240,16 @@ final class DocumentSchemaTest extends TestCase
 
     public function test_parameters_should_be_cloned(): void
     {
-        $this->schema->addProperty(PropertyName::fromString('prop', 'en'), new Types\NullType());
-        $this->schema->addParameter('prop', 'param', new NullParameter());
+        $this->schema->addProperty(
+            $code = PropertyCode::fromString('prop'),
+            PropertyName::fromLocalizedString('name', 'en'),
+            new Types\NullType()
+        );
+        $this->schema->addParameter($code, 'param', new NullParameter());
 
         $this->assertTrue($this->schema->getPropertyMetadata('prop')->hasParameter('param'));
 
-        $clone = $this->schema->clone(DocumentId::random());
+        $clone = $this->schema->clone(DocumentTypeId::random());
 
         $this->assertTrue($clone->getPropertyMetadata('prop')->hasParameter('param'));
         $this->assertTrue($this->schema->getPropertyMetadata('prop')->hasParameter('param'));

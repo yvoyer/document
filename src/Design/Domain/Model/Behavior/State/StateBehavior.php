@@ -14,18 +14,11 @@ use Star\Component\State\Visitor\TransitionDumper;
 
 class StateBehavior extends DocumentBehavior
 {
-    /**
-     * @var StateMachine
-     */
-    private $machine;
+    private StateMachine $machine;
+    private string $current;
 
     /**
-     * @var string
-     */
-    private $current;
-
-    /**
-     * @param mixed[] $arguments
+     * @param array $arguments
      */
     protected function onInit(array $arguments): void
     {

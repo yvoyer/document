@@ -4,32 +4,32 @@ namespace Star\Component\Document\DataEntry\Domain\Model;
 
 use Star\Component\Document\DataEntry\Domain\Model\Values\EmptyValue;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyParameter;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
-use function array_search;
+use function in_array;
 
-final class HandleDefaultValues implements DocumentVisitor
+final class HandleDefaultValues implements DocumentTypeVisitor
 {
     /**
      * @var string[]
      */
-    private $propertiesToExclude;
+    private array $propertiesToExclude;
 
     /**
      * @var RecordValue[] indexed by property name
      */
-    private $defaultValues = [];
+    private array $defaultValues = [];
 
     public function __construct(string ...$propertiesToExclude)
     {
         $this->propertiesToExclude = $propertiesToExclude;
     }
 
-    public function visitDocument(DocumentId $id): void
+    public function visitDocumentType(DocumentTypeId $id): void
     {
     }
 
@@ -38,32 +38,32 @@ final class HandleDefaultValues implements DocumentVisitor
         throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
     }
 
-    public function visitProperty(PropertyName $name, PropertyType $type): bool
+    public function visitProperty(PropertyCode $code, PropertyName $name, PropertyType $type): bool
     {
-        if (false === array_search($name->toString(), $this->propertiesToExclude)) {
-            $this->defaultValues[$name->toString()] = new EmptyValue();
+        if (false === in_array($code->toString(), $this->propertiesToExclude)) {
+            $this->defaultValues[$code->toString()] = new EmptyValue();
         }
 
         return false;
     }
 
-    public function enterPropertyConstraints(PropertyName $propertyName): void
+    public function enterPropertyConstraints(PropertyCode $code): void
     {
     }
 
     public function visitPropertyConstraint(
-        PropertyName $propertyName,
+        PropertyCode $code,
         string $constraintName,
         PropertyConstraint $constraint
     ): void {
     }
 
-    public function enterPropertyParameters(PropertyName $propertyName): void
+    public function enterPropertyParameters(PropertyCode $code): void
     {
     }
 
     public function visitPropertyParameter(
-        PropertyName $propertyName,
+        PropertyCode $code,
         string $parameterName,
         PropertyParameter $parameter
     ): void {

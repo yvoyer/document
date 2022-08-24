@@ -2,58 +2,52 @@
 
 namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
-use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
+use DateTimeInterface;
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\DomainEvent\Messaging\Command;
 
 final class AddPropertyConstraint implements Command
 {
-    /**
-     * @var DocumentId
-     */
-    private $documentId;
-
-    /**
-     * @var PropertyName
-     */
-    private $name;
-
-    /**
-     * @var string
-     */
-    private $constraintName;
+    private DocumentTypeId $documentId;
+    private PropertyCode $code;
+    private string $constraintName;
+    private DateTimeInterface $addedAt;
 
     /**
      * @var mixed[]
      */
-    private $constraintData;
+    private array $constraintData;
 
     /**
-     * @param DocumentId $documentId
-     * @param PropertyName $name
+     * @param DocumentTypeId $typeId
+     * @param PropertyCode $code
      * @param string $constraintName
      * @param mixed[] $constraintData
+     * @param DateTimeInterface $addedAt
      */
     public function __construct(
-        DocumentId $documentId,
-        PropertyName $name,
+        DocumentTypeId $typeId,
+        PropertyCode $code,
         string $constraintName,
-        array $constraintData
+        array $constraintData,
+        DateTimeInterface $addedAt
     ) {
-        $this->documentId = $documentId;
-        $this->name = $name;
+        $this->documentId = $typeId;
+        $this->code = $code;
         $this->constraintName = $constraintName;
         $this->constraintData = $constraintData;
+        $this->addedAt = $addedAt;
     }
 
-    public function documentId(): DocumentId
+    public function typeId(): DocumentTypeId
     {
         return $this->documentId;
     }
 
-    public function name(): PropertyName
+    public function code(): PropertyCode
     {
-        return $this->name;
+        return $this->code;
     }
 
     public function constraintName(): string
@@ -67,5 +61,10 @@ final class AddPropertyConstraint implements Command
     public function constraintData(): array
     {
         return $this->constraintData;
+    }
+
+    final public function addedAt(): DateTimeInterface
+    {
+        return $this->addedAt;
     }
 }

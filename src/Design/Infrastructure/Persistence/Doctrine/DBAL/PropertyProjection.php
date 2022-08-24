@@ -5,8 +5,8 @@ namespace Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBA
 use Behat\Transliterator\Transliterator;
 use Doctrine\DBAL\Connection;
 use Star\Component\Document\Audit\Infrastructure\Persistence\DBAL\AuditTrailData;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\Events\PropertyAdded;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\Events\PropertyWasAdded;
 use Star\Component\Document\Translation\Infrastructure\Persistence\DBAL\TranslatableData;
 use Star\Component\DomainEvent\EventListener;
 use function json_encode;
@@ -23,7 +23,7 @@ final class PropertyProjection implements EventListener
         $this->connection = $connection;
     }
 
-    public function onPropertyAdded(PropertyAdded $event): void
+    public function onPropertyAdded(PropertyWasAdded $event): void
     {
         $this->connection->insert(
             'document_property',
@@ -46,7 +46,7 @@ final class PropertyProjection implements EventListener
         );
     }
 
-    private function getPropertyId(DocumentId $documentId, string $code): string
+    private function getPropertyId(DocumentTypeId $documentId, string $code): string
     {
         $qb = $this->connection->createQueryBuilder();
         $expr = $qb->expr();
@@ -69,7 +69,7 @@ final class PropertyProjection implements EventListener
     public function listensTo(): array
     {
         return [
-            PropertyAdded::class => 'onPropertyAdded',
+            PropertyWasAdded::class => 'onPropertyAdded',
         ];
     }
 }

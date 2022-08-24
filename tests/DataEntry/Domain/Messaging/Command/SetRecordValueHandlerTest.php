@@ -6,12 +6,12 @@ use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Messaging\Command\SetRecordValue;
 use Star\Component\Document\DataEntry\Domain\Messaging\Command\SetRecordValueHandler;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
-use Star\Component\Document\DataEntry\Domain\Model\RecordAggregate;
+use Star\Component\Document\DataEntry\Domain\Model\DocumentAggregate;
 use Star\Component\Document\DataEntry\Domain\Model\RecordId;
 use Star\Component\Document\DataEntry\Domain\Model\Values\StringValue;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
-use Star\Component\Document\Design\Builder\DocumentBuilder;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Builder\DocumentTypeBuilder;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Identity\Exception\EntityNotFoundException;
 use function sprintf;
 
@@ -47,7 +47,7 @@ final class SetRecordValueHandlerTest extends TestCase
         );
         $this->handler->__invoke(
             new SetRecordValue(
-                DocumentId::random(),
+                DocumentTypeId::random(),
                 RecordId::fromString('id'),
                 'name',
                 StringValue::fromString('value')
@@ -57,14 +57,14 @@ final class SetRecordValueHandlerTest extends TestCase
 
     public function test_it_should_return_all_records_when_values_entered(): void
     {
-        $documentId = DocumentId::fromString('id');
+        $documentId = DocumentTypeId::fromString('id');
         $recordId = RecordId::fromString('id');
 
         $this->records->saveRecord(
             $recordId,
-            RecordAggregate::withValues(
+            DocumentAggregate::withValues(
                 $recordId,
-                DocumentBuilder::createDocument($documentId->toString())
+                DocumentTypeBuilder::startDocumentTypeFixture($documentId->toString())
                     ->createText('p1')->endProperty()
                     ->createText('p2')->endProperty()
                     ->createText('p3')->endProperty()
@@ -94,9 +94,9 @@ final class SetRecordValueHandlerTest extends TestCase
     public function test_it_should_use_the_old_record_to_store_value(): void
     {
         $recordId = RecordId::fromString('r1');
-        $record = RecordAggregate::withValues(
+        $record = DocumentAggregate::withValues(
             $recordId,
-            DocumentBuilder::createDocument()->createText('name')->endProperty()->getSchema(),
+            DocumentTypeBuilder::startDocumentTypeFixture()->createText('name')->endProperty()->getSchema(),
             [
                 'name' => StringValue::fromString('old-value'),
             ]
@@ -108,7 +108,7 @@ final class SetRecordValueHandlerTest extends TestCase
 
         $this->handler->__invoke(
             new SetRecordValue(
-                DocumentId::random(),
+                DocumentTypeId::random(),
                 $recordId,
                 'name',
                 StringValue::fromString('new-value')

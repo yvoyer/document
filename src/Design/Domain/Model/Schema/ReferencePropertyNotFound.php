@@ -2,17 +2,14 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Schema;
 
-use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 
 final class ReferencePropertyNotFound extends \RuntimeException
 {
-    /**
-     * @param PropertyName $name
-     */
-    public function __construct(PropertyName $name)
+    public function __construct(PropertyCode $code)
     {
         parent::__construct(
-            sprintf('The property with name "%s" could not be found.', $name->toString())
+            sprintf('The property with code "%s" could not be found.', $code->toString())
         );
     }
 }

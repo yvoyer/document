@@ -3,10 +3,10 @@
 namespace Star\Component\Document\Design\Domain\Model\Events;
 
 use Star\Component\Document\Audit\Domain\Model\AuditableEvent;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 
 interface DocumentEvent extends AuditableEvent, CreatedFromPayload
 {
-    public function documentId(): DocumentId;
+    public function documentId(): DocumentTypeId;
 }

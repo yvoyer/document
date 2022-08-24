@@ -2,14 +2,14 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Model;
 
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 
 interface SchemaFactory
 {
     /**
-     * @param DocumentId $documentId
+     * @param DocumentTypeId $documentId
      *
      * @return SchemaMetadata
      */
-    public function createSchema(DocumentId $documentId): SchemaMetadata;
+    public function createSchema(DocumentTypeId $documentId): SchemaMetadata;
 }

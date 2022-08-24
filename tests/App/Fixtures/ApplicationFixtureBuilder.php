@@ -4,9 +4,10 @@ namespace Star\Component\Document\Tests\App\Fixtures;
 
 use App\Tests\Assertions\Design\DocumentDesignAssertion;
 use DateTimeImmutable;
-use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocument;
+use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocumentType;
 use Star\Component\Document\Design\Domain\Messaging\Query\FindSchemaForDocuments;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentName;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\Document\Membership\Domain\Messaging\Command\RegisterMember;
 use Star\Component\Document\Membership\Domain\Model\MemberId;
@@ -28,7 +29,7 @@ final class ApplicationFixtureBuilder
         $this->queryBus = $queryBus;
     }
 
-    public function assertDocument(DocumentId $id, string $locale): DocumentDesignAssertion
+    public function assertDocument(DocumentTypeId $id, string $locale): DocumentDesignAssertion
     {
         $this->queryBus->dispatchQuery($query = new FindSchemaForDocuments($locale, $id));
 
@@ -45,17 +46,18 @@ final class ApplicationFixtureBuilder
         $this->queryBus->dispatchQuery($query);
     }
 
-    public function newDocument(DocumentOwner $owner): DocumentFixture
+    public function newDocumentType(DocumentOwner $owner): DocumentTypeFixture
     {
         $this->doCommand(
-            CreateDocument::emptyDocument(
-                $id = DocumentId::random(),
+            new CreateDocumentType(
+                $id = DocumentTypeId::random(),
+                DocumentName::fromLocalizedString('New document type', 'en'), // todo parametrize
                 $owner,
                 new DateTimeImmutable()
             )
         );
 
-        return new DocumentFixture($id, $this, $owner);
+        return new DocumentTypeFixture($id, $this);
     }
 
     public function newMember(): MembershipFixture

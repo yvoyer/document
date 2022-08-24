@@ -6,7 +6,7 @@ use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Star\Component\Document\Design\Domain\Messaging\Query\DataTransfer\ReadOnlyDocument;
 use Star\Component\Document\Design\Domain\Messaging\Query\FindAllMyDocuments;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 
 final class FindAllMyDocumentsHandler
 {
@@ -64,7 +64,7 @@ final class FindAllMyDocumentsHandler
 
             while ($row = $result->fetchAssociative()) {
                 yield new ReadOnlyDocument(
-                    DocumentId::fromString($row['document_id']),
+                    DocumentTypeId::fromString($row['document_id']),
                     $row['document_name'],
                     $row['owner_id'],
                     $row['owner_name'],

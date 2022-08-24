@@ -2,17 +2,18 @@
 
 namespace Star\Component\Document\Design\Domain\Structure;
 
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyParameter;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 
-final class OutputDocument implements DocumentVisitor
+final class OutputDocument implements DocumentTypeVisitor
 {
-    public function visitDocument(DocumentId $id): void
+    public function visitDocumentType(DocumentTypeId $id): void
     {
         $this->writeLine(\sprintf('Document: "%s"', $id->toString()));
     }
@@ -22,12 +23,12 @@ final class OutputDocument implements DocumentVisitor
         throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
     }
 
-    public function visitProperty(PropertyName $name, PropertyType $type): bool
+    public function visitProperty(PropertyCode $code, PropertyName $name, PropertyType $type): bool
     {
         $this->writeLine(
             \sprintf(
                 'Property: %s (%s)',
-                $name->toString(),
+                $code->toString(),
                 $type->toHumanReadableString()
             )
         );
@@ -35,13 +36,13 @@ final class OutputDocument implements DocumentVisitor
         return false;
     }
 
-    public function enterPropertyConstraints(PropertyName $propertyName): void
+    public function enterPropertyConstraints(PropertyCode $code): void
     {
         $this->writeLine('  Constraints:');
     }
 
     public function visitPropertyConstraint(
-        PropertyName $propertyName,
+        PropertyCode $code,
         string $constraintName,
         PropertyConstraint $constraint
     ): void {
@@ -54,13 +55,13 @@ final class OutputDocument implements DocumentVisitor
         );
     }
 
-    public function enterPropertyParameters(PropertyName $propertyName): void
+    public function enterPropertyParameters(PropertyCode $code): void
     {
         $this->writeLine('  Parameters:');
     }
 
     public function visitPropertyParameter(
-        PropertyName $propertyName,
+        PropertyCode $code,
         string $parameterName,
         PropertyParameter $parameter
     ): void {

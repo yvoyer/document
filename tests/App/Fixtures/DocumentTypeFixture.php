@@ -3,47 +3,46 @@
 namespace Star\Component\Document\Tests\App\Fixtures;
 
 use DateTimeImmutable;
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateProperty;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Types\StringType;
 
-final class DocumentFixture
+final class DocumentTypeFixture
 {
-    private DocumentId $documentId;
+    private DocumentTypeId $documentId;
     private ApplicationFixtureBuilder $builder;
     private DocumentOwner $owner;
 
     public function __construct(
-        DocumentId $documentId,
-        ApplicationFixtureBuilder $builder,
-        DocumentOwner $owner
+        DocumentTypeId $documentId,
+        ApplicationFixtureBuilder $builder
     ) {
         $this->documentId = $documentId;
         $this->builder = $builder;
-        $this->owner = $owner;
     }
 
-    public function withTextProperty(string $name, string $locale): PropertyFixture
+    public function withTextProperty(string $code): PropertyFixture
     {
-        return $this->withProperty($name, $locale, new StringType());
+        return $this->withProperty($code, new StringType());
     }
 
-    public function getDocumentId(): DocumentId
+    public function getDocumentTypeId(): DocumentTypeId
     {
         return $this->documentId;
     }
 
-    private function withProperty(string $name, string $locale, PropertyType $type): PropertyFixture
+    private function withProperty(string $code, PropertyType $type): PropertyFixture
     {
         $this->builder->doCommand(
             new CreateProperty(
                 $this->documentId,
-                $nameObject = PropertyName::fromString($name, $locale),
+                PropertyCode::fromString($code),
+                $nameObject = PropertyName::fromLocalizedString($code, 'en'), // todo parametrize
                 $type,
-                $this->owner,
                 new DateTimeImmutable()
             )
         );

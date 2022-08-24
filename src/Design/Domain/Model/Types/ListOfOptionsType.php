@@ -3,6 +3,7 @@
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
 use RuntimeException;
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Values\ArrayOfInteger;
 use Star\Component\Document\DataEntry\Domain\Model\Values\OptionListValue;
@@ -13,15 +14,8 @@ use function sprintf;
 
 final class ListOfOptionsType implements PropertyType
 {
-    /**
-     * @var string
-     */
-    private $typeName;
-
-    /**
-     * @var OptionListValue
-     */
-    private $allowed;
+    private string $typeName;
+    private OptionListValue $allowed;
 
     public function __construct(string $typeName, OptionListValue $allowedOptions)
     {
@@ -90,7 +84,7 @@ final class ListOfOptionsType implements PropertyType
     }
 
     public function generateExceptionForNotSupportedTypeForValue(
-        string $property,
+        PropertyCode $property,
         RecordValue $value
     ): NotSupportedTypeForValue {
         return new NotSupportedTypeForValue(
@@ -100,15 +94,17 @@ final class ListOfOptionsType implements PropertyType
         );
     }
 
-    public function generateExceptionForNotSupportedValue(string $property, RecordValue $value): InvalidPropertyValue
-    {
+    public function generateExceptionForNotSupportedValue(
+        PropertyCode $property,
+        RecordValue $value
+    ): InvalidPropertyValue {
         $values = explode(RecordValue::LIST_SEPARATOR, $value->toString());
         foreach ($values as $id) {
             if (! $this->allowed->idIsAllowed((int) $id)) {
                 return new InvalidPropertyValue(
                     sprintf(
                         'Value for property "%s" must contain valid option ids. Supporting: "%s", given "%s".',
-                        $property,
+                        $property->toString(),
                         $this->allowed->toString(),
                         $value->toTypedString()
                     )

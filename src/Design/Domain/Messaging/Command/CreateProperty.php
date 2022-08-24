@@ -3,52 +3,52 @@
 namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
 use DateTimeInterface;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\DocumentOwner;
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\DomainEvent\Messaging\Command;
 
 final class CreateProperty implements Command
 {
-    private DocumentId $documentId;
+    private DocumentTypeId $typeId;
+    private PropertyCode $code;
     private PropertyName $name;
     private PropertyType $type;
-    private DocumentOwner $createdBy;
     private DateTimeInterface $createdAt;
 
     public function __construct(
-        DocumentId $documentId,
+        DocumentTypeId $typeId,
+        PropertyCode $code,
         PropertyName $name,
         PropertyType $type,
-        DocumentOwner $createdBy,
         DateTimeInterface $createdAt
     ) {
-        $this->documentId = $documentId;
+        $this->typeId = $typeId;
+        $this->code = $code;
         $this->name = $name;
         $this->type = $type;
-        $this->createdBy = $createdBy;
         $this->createdAt = $createdAt;
     }
 
-    public function documentId(): DocumentId
+    final public function typeId(): DocumentTypeId
     {
-        return $this->documentId;
+        return $this->typeId;
     }
 
-    public function name(): PropertyName
+    final public function code(): PropertyCode
+    {
+        return $this->code;
+    }
+
+    final public function name(): PropertyName
     {
         return $this->name;
     }
 
-    public function type(): PropertyType
+    final public function type(): PropertyType
     {
         return $this->type;
-    }
-
-    final public function createdBy(): DocumentOwner
-    {
-        return $this->createdBy;
     }
 
     final public function createdAt(): DateTimeInterface

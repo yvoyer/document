@@ -2,53 +2,42 @@
 
 namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use DateTimeInterface;
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\Parameters\ParameterData;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\DomainEvent\Messaging\Command;
 
 final class AddPropertyParameter implements Command
 {
-    /**
-     * @var DocumentId
-     */
-    private $documentId;
-
-    /**
-     * @var PropertyName
-     */
-    private $property;
-
-    /**
-     * @var string
-     */
-    private $parameterName;
-
-    /**
-     * @var ParameterData
-     */
-    private $parameterData;
+    private DocumentTypeId $typeId;
+    private PropertyCode $code;
+    private string $parameterName;
+    private ParameterData $parameterData;
+    private DateTimeInterface $addedAt;
 
     public function __construct(
-        DocumentId $documentId,
-        PropertyName $property,
+        DocumentTypeId $typeId,
+        PropertyCode $code,
         string $parameterName,
-        ParameterData $parameterData
+        ParameterData $parameterData,
+        DateTimeInterface $addedAt
     ) {
-        $this->documentId = $documentId;
-        $this->property = $property;
+        $this->typeId = $typeId;
+        $this->code = $code;
         $this->parameterName = $parameterName;
         $this->parameterData = $parameterData;
+        $this->addedAt = $addedAt;
     }
 
-    public function documentId(): DocumentId
+    public function typeId(): DocumentTypeId
     {
-        return $this->documentId;
+        return $this->typeId;
     }
 
-    public function property(): PropertyName
+    public function code(): PropertyCode
     {
-        return $this->property;
+        return $this->code;
     }
 
     public function parameterName(): string
@@ -59,5 +48,10 @@ final class AddPropertyParameter implements Command
     public function parameterData(): ParameterData
     {
         return $this->parameterData;
+    }
+
+    final public function addedAt(): DateTimeInterface
+    {
+        return $this->addedAt;
     }
 }

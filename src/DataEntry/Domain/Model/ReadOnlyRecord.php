@@ -2,7 +2,7 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Model;
 
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 
 interface ReadOnlyRecord
 {
@@ -12,7 +12,7 @@ interface ReadOnlyRecord
     public function getIdentity(): RecordId;
 
     /**
-     * @return DocumentId
+     * @return DocumentTypeId
      */
-    public function getDocumentId(): DocumentId;
+    public function getDocumentId(): DocumentTypeId;
 }

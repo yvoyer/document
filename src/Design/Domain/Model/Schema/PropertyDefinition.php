@@ -2,10 +2,11 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Schema;
 
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\DataEntry\Domain\Model\PropertyMetadata;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
-use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeVisitor;
 use Star\Component\Document\Design\Domain\Model\PropertyConstrainNotFound;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
@@ -19,65 +20,63 @@ use function array_merge;
 
 final class PropertyDefinition implements PropertyMetadata
 {
-    /**
-     * @var PropertyName
-     */
-    private $name;
-
-    /**
-     * @var PropertyType
-     */
-    private $type;
+    private PropertyCode $code;
+    private PropertyName $name;
+    private PropertyType $type;
 
     /**
      * @var PropertyConstraint[]
      */
-    private $constraints = [];
+    private array $constraints = [];
 
     /**
      * @var PropertyParameter[]
      */
-    private $parameters = [];
+    private array $parameters = [];
 
-    public function __construct(PropertyName $name, PropertyType $type)
-    {
+    public function __construct(
+        PropertyCode $code,
+        PropertyName $name,
+        PropertyType $type
+    ) {
+        $this->code = $code;
         $this->name = $name;
         $this->type = $type;
     }
 
-    public function getName(): PropertyName
+    final public function getCode(): PropertyCode
     {
-        return $this->name;
+        return $this->code;
     }
 
-    public function toTypedString(): string
+    final public function toTypedString(): string
     {
         return $this->type->toHumanReadableString();
     }
 
-    public function typeIs(string $type): bool
+    final public function typeIs(string $type): bool
     {
         return $this->type->toHumanReadableString() === $type;
     }
 
-    public function acceptDocumentVisitor(DocumentVisitor $visitor): void
+    final public function acceptDocumentVisitor(DocumentTypeVisitor $visitor): void
     {
-        if ($visitor->visitProperty($this->name, $this->type)) {
+        if ($visitor->visitProperty($this->code, $this->name, $this->type)) {
             return;
         }
 
-        $visitor->enterPropertyConstraints($this->name);
+        $visitor->enterPropertyConstraints($this->code);
         foreach ($this->constraints as $name => $constraint) {
-            $visitor->visitPropertyConstraint($this->name, $name, $constraint);
+            $visitor->visitPropertyConstraint($this->code, $name, $constraint);
         }
 
-        $visitor->enterPropertyParameters($this->name);
+        $visitor->enterPropertyParameters($this->code);
         foreach ($this->parameters as $parameterName => $parameter) {
-            $visitor->visitPropertyParameter($this->name, $parameterName, $parameter);
+            $visitor->visitPropertyParameter($this->code, $parameterName, $parameter);
         }
     }
 
-    public function addConstraint(string $name, PropertyConstraint $constraint): PropertyDefinition
+    final public function addConstraint(string $name, PropertyConstraint $constraint): PropertyDefinition
     {
         $new = $this->merge($this);
         $new->constraints[$name] = $constraint;
@@ -85,9 +84,9 @@ final class PropertyDefinition implements PropertyMetadata
         return $new;
     }
 
-    public function removeConstraint(string $name): PropertyDefinition
+    final public function removeConstraint(string $name): PropertyDefinition
     {
-        $new = new self($this->getName(), $this->type);
+        $new = new self($this->code, $this->name, $this->type);
         $new->constraints = $this->constraints;
         $new->parameters = $this->parameters;
 
@@ -96,12 +95,12 @@ final class PropertyDefinition implements PropertyMetadata
         return $new;
     }
 
-    public function hasConstraint(string $name): bool
+    final public function hasConstraint(string $name): bool
     {
         return isset($this->constraints[$name]);
     }
 
-    public function getConstraint(string $name): PropertyConstraint
+    final public function getConstraint(string $name): PropertyConstraint
     {
         if (! $this->hasConstraint($name)) {
             throw new PropertyConstrainNotFound('The property "%s" do not have a constraint named "%s".');
@@ -113,25 +112,25 @@ final class PropertyDefinition implements PropertyMetadata
     /**
      * @return string[]
      */
-    public function getConstraints(): array
+    final public function getConstraints(): array
     {
         return array_keys($this->constraints);
     }
 
-    public function addParameter(string $parameterName, PropertyParameter $parameter): PropertyDefinition
+    final public function addParameter(string $parameterName, PropertyParameter $parameter): PropertyDefinition
     {
-        $new = $this->merge(new PropertyDefinition($this->name, $this->type));
+        $new = $this->merge(new PropertyDefinition($this->code, $this->name, $this->type));
         $new->parameters[$parameterName] = $parameter;
 
         return $new;
     }
 
-    public function hasParameter(string $name): bool
+    final public function hasParameter(string $name): bool
     {
         return array_key_exists($name, $this->parameters);
     }
 
-    public function toWriteFormat(RecordValue $value): RecordValue
+    final public function toWriteFormat(RecordValue $value): RecordValue
     {
         $value = $this->type->toWriteFormat($value);
         foreach ($this->parameters as $parameterName => $parameter) {
@@ -141,7 +140,7 @@ final class PropertyDefinition implements PropertyMetadata
         return $value;
     }
 
-    public function toReadFormat(RecordValue $value): RecordValue
+    final public function toReadFormat(RecordValue $value): RecordValue
     {
         $value = $this->type->toReadFormat($value);
         foreach ($this->parameters as $parameterName => $parameter) {
@@ -151,34 +150,36 @@ final class PropertyDefinition implements PropertyMetadata
         return $value;
     }
 
-    public function doBehavior(RecordValue $value): RecordValue
+    final public function doBehavior(RecordValue $value): RecordValue
     {
         return $this->type->doBehavior($this->name->toString(), $value);
     }
 
-    public function supportsType(RecordValue $value): bool
+    final public function supportsType(RecordValue $value): bool
     {
         return $this->type->supportsType($value);
     }
 
-    public function supportsValue(RecordValue $value): bool
+    final public function supportsValue(RecordValue $value): bool
     {
         return $this->type->supportsValue($value);
     }
 
-    public function generateExceptionForNotSupportedTypeForValue(
-        string $property,
+    final public function generateExceptionForNotSupportedTypeForValue(
+        PropertyCode $property,
         RecordValue $value
     ): NotSupportedTypeForValue {
         return $this->type->generateExceptionForNotSupportedTypeForValue($property, $value);
     }
 
-    public function generateExceptionForNotSupportedValue(string $property, RecordValue $value): InvalidPropertyValue
-    {
+    final public function generateExceptionForNotSupportedValue(
+        PropertyCode $property,
+        RecordValue $value
+    ): InvalidPropertyValue {
         return $this->type->generateExceptionForNotSupportedValue($property, $value);
     }
 
-    public function validateValue(RecordValue $value, ErrorList $errors): void
+    final public function validateValue(RecordValue $value, ErrorList $errors): void
     {
         foreach ($this->constraints as $constraint) {
             $constraint->validate($this->name->toString(), $value, $errors);
@@ -195,12 +196,25 @@ final class PropertyDefinition implements PropertyMetadata
      *
      * @return PropertyDefinition
      */
-    public function merge(PropertyDefinition $definition): PropertyDefinition
+    final public function merge(PropertyDefinition $definition): PropertyDefinition
     {
-        $new = new self($this->name, $this->type);
+        $new = new self($this->code, $this->name, $this->type);
         $new->constraints = array_merge($this->constraints, $definition->constraints);
         $new->parameters = array_merge($this->parameters, $definition->parameters);
 
         return $new;
+    }
+
+    final public static function fromStrings(
+        string $code,
+        string $name,
+        string $locale,
+        PropertyType $type
+    ): self {
+        return new self(
+            PropertyCode::fromString($code),
+            PropertyName::fromLocalizedString($name, $locale),
+            $type
+        );
     }
 }

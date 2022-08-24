@@ -18,8 +18,8 @@ final class FindAllMyDocumentsHandlerTest extends RegressionTestCase
         $memberId = $fixtures->newMember()->getMemberId();
 
         $document = $fixtures
-            ->newDocument($memberId)
-            ->getDocumentId();
+            ->newDocumentType($memberId)
+            ->getDocumentTypeId();
 
         $fixtures->dispatchQuery($query = new FindAllMyDocuments($memberId, 'en'));
         self::assertCount(1, $result = $query->getResultArray());

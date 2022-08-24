@@ -3,46 +3,46 @@
 namespace Star\Component\Document\Design\Domain\Model\Events;
 
 use DateTimeInterface;
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\Constraints\ConstraintData;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 
 final class PropertyConstraintWasAdded implements DocumentEvent
 {
-    private DocumentId $document;
-    private PropertyName $propertyName;
+    private DocumentTypeId $document;
+    private PropertyCode $propertyCode;
     private string $constraintName;
     private ConstraintData $constraint;
     private DocumentOwner $addedBy;
     private DateTimeInterface $addedAt;
 
     public function __construct(
-        DocumentId $document,
-        PropertyName $propertyName,
+        DocumentTypeId $document,
+        PropertyCode $propertyCode,
         string $constraintName,
         PropertyConstraint $constraint,
         DocumentOwner $addedBy,
         DateTimeInterface $addedAt
     ) {
         $this->document = $document;
-        $this->propertyName = $propertyName;
+        $this->propertyCode = $propertyCode;
         $this->constraintName = $constraintName;
         $this->constraint = $constraint->toData();
         $this->addedBy = $addedBy;
         $this->addedAt = $addedAt;
     }
 
-    public function documentId(): DocumentId
+    public function documentId(): DocumentTypeId
     {
         return $this->document;
     }
 
-    public function propertyName(): PropertyName
+    public function propertyCode(): PropertyCode
     {
-        return $this->propertyName;
+        return $this->propertyCode;
     }
 
     public function constraintName(): string

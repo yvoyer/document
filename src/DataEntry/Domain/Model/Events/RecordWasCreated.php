@@ -6,15 +6,8 @@ use Star\Component\Document\DataEntry\Domain\Model\RecordId;
 
 final class RecordWasCreated implements RecordEvent
 {
-    /**
-     * @var RecordId
-     */
-    private $recordId;
-
-    /**
-     * @var string
-     */
-    private $schema;
+    private RecordId $recordId;
+    private string $schema;
 
     public function __construct(RecordId $recordId, string $schema)
     {

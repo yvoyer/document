@@ -3,37 +3,25 @@
 namespace Star\Component\Document\Design\Domain\Model\Events;
 
 use DateTimeInterface;
-use Star\Component\Document\Audit\Domain\Model\UpdatedBy;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 
-final class DocumentConstraintRegistered implements DocumentEvent
+final class DocumentConstraintWasRegistered implements DocumentEvent
 {
-    /**
-     * @var DocumentId
-     */
-    private $id;
+    private DocumentTypeId $id;
+    private string $name; // todo constraint name
+    private DocumentConstraint $constraint;
 
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var DocumentConstraint
-     */
-    private $constraint;
-
-    public function __construct(DocumentId $id, string $name, DocumentConstraint $constraint)
+    public function __construct(DocumentTypeId $id, string $name, DocumentConstraint $constraint)
     {
         $this->id = $id;
         $this->name = $name;
         $this->constraint = $constraint;
     }
 
-    public function documentId(): DocumentId
+    public function documentId(): DocumentTypeId
     {
         return $this->id;
     }

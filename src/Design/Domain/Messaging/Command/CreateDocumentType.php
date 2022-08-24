@@ -3,31 +3,31 @@
 namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
 use DateTimeInterface;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\DocumentName;
 use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\DomainEvent\Messaging\Command;
 
-final class CreateDocument implements Command
+final class CreateDocumentType implements Command
 {
-    private DocumentId $id;
+    private DocumentTypeId $id;
     private DocumentName $name;
     private DocumentOwner $owner;
     private DateTimeInterface $createdAt;
 
     public function __construct(
-        DocumentId $id,
+        DocumentTypeId $typeId,
         DocumentName $name,
         DocumentOwner $owner,
         DateTimeInterface $createdAt
     ) {
-        $this->id = $id;
+        $this->id = $typeId;
         $this->name = $name;
         $this->owner = $owner;
         $this->createdAt = $createdAt;
     }
 
-    final public function documentId(): DocumentId
+    final public function typeId(): DocumentTypeId
     {
         return $this->id;
     }
@@ -45,13 +45,5 @@ final class CreateDocument implements Command
     final public function createdAt(): DateTimeInterface
     {
         return $this->createdAt;
-    }
-
-    final public static function emptyDocument(
-        DocumentId $id,
-        DocumentOwner $owner,
-        DateTimeInterface $createdAt
-    ): self {
-        return new self($id, DocumentName::defaultName(), $owner, $createdAt);
     }
 }

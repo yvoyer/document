@@ -3,13 +3,13 @@
 namespace Star\Component\Document\Tests\App\Fixtures;
 
 use Star\Component\Document\Design\Domain\Messaging\Command\AddPropertyConstraint;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 
 final class PropertyFixture
 {
     /**
-     * @var DocumentId
+     * @var DocumentTypeId
      */
     private $documentId;
 
@@ -19,7 +19,7 @@ final class PropertyFixture
     private $propertyName;
 
     /**
-     * @var DocumentFixture
+     * @var DocumentTypeFixture
      */
     private $parent;
 
@@ -29,9 +29,9 @@ final class PropertyFixture
     private $fixture;
 
     public function __construct(
-        DocumentId $documentId,
+        DocumentTypeId $documentId,
         PropertyName $propertyName,
-        DocumentFixture $parent,
+        DocumentTypeFixture $parent,
         ApplicationFixtureBuilder $fixtures
     ) {
         $this->documentId = $documentId;
@@ -54,7 +54,7 @@ final class PropertyFixture
         return $this;
     }
 
-    public function endProperty(): DocumentFixture
+    public function endProperty(): DocumentTypeFixture
     {
         return $this->parent;
     }

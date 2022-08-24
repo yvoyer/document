@@ -5,7 +5,7 @@ namespace Star\Component\Document\Design\Domain\Model;
 use RuntimeException;
 use function sprintf;
 
-final class DocumentNotFound extends RuntimeException
+final class DocumentTypeNotFound extends RuntimeException
 {
     public function __construct(string $id)
     {

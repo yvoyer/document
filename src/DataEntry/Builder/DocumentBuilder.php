@@ -4,16 +4,16 @@ namespace Star\Component\Document\DataEntry\Builder;
 
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
-use Star\Component\Document\Design\Builder\DocumentBuilder;
+use Star\Component\Document\Design\Builder\DocumentTypeBuilder;
 
-final class RecordBuilder
+final class DocumentBuilder
 {
     private DocumentRecord $record;
-    private DocumentBuilder $builder;
+    private DocumentTypeBuilder $builder;
 
     public function __construct(
         DocumentRecord $record,
-        DocumentBuilder $builder
+        DocumentTypeBuilder $builder
     ) {
         $this->record = $record;
         $this->builder = $builder;
@@ -31,7 +31,7 @@ final class RecordBuilder
         return $this->record;
     }
 
-    public function endRecord(): DocumentBuilder
+    public function endRecord(): DocumentTypeBuilder
     {
         return $this->builder;
     }

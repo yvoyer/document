@@ -3,34 +3,40 @@
 namespace Star\Component\Document\Design\Domain\Model;
 
 use DateTimeInterface;
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 
 interface DocumentDesigner
 {
     /**
-     * @return DocumentId
+     * @return DocumentTypeId
      */
-    public function getIdentity(): DocumentId;
+    public function getIdentity(): DocumentTypeId;
+
+    public function getDefaultLocale(): string;
 
     /**
-     * @param DocumentVisitor $visitor
+     * @param DocumentTypeVisitor $visitor
      */
-    public function acceptDocumentVisitor(DocumentVisitor $visitor): void;
+    public function acceptDocumentVisitor(DocumentTypeVisitor $visitor): void;
 
     public function addProperty(
+        PropertyCode $code,
         PropertyName $name,
         PropertyType $type,
         DateTimeInterface $addedAt
     ): void;
 
+    public function propertyExists(PropertyCode $code): bool;
+
     public function addPropertyConstraint(
-        PropertyName $name,
+        PropertyCode $code,
         string $constraintName,
         PropertyConstraint $constraint,
         DateTimeInterface $addedAt
     ): void;
 
     public function addPropertyParameter(
-        PropertyName $name,
+        PropertyCode $code,
         string $parameterName,
         PropertyParameter $parameter,
         DateTimeInterface $addedAt
@@ -38,5 +44,5 @@ interface DocumentDesigner
 
     public function addDocumentConstraint(string $name, DocumentConstraint $constraint): void;
 
-    public function removePropertyConstraint(PropertyName $name, string $constraintName): void;
+    public function removePropertyConstraint(PropertyCode $code, string $constraintName): void;
 }

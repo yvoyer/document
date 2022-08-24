@@ -5,30 +5,30 @@ namespace Star\Component\Document\Design\Infrastructure\Persistence\InMemory;
 use Countable;
 use Star\Component\Document\DataEntry\Domain\Model\SchemaFactory;
 use Star\Component\Document\DataEntry\Domain\Model\SchemaMetadata;
-use Star\Component\Document\Design\Domain\Model\DocumentAggregate;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\DocumentRepository;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeAggregate;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeRepository;
 use Star\Component\Identity\Exception\EntityNotFoundException;
 use function array_map;
 
-final class DocumentCollection implements DocumentRepository, Countable, SchemaFactory
+final class DocumentTypeCollection implements DocumentTypeRepository, Countable, SchemaFactory
 {
     /**
-     * @var DocumentAggregate[]
+     * @var DocumentTypeAggregate[]
      */
     private $documents = [];
 
-    public function __construct(DocumentAggregate ...$documents)
+    public function __construct(DocumentTypeAggregate ...$documents)
     {
         array_map(
-            function (DocumentAggregate $document) {
+            function (DocumentTypeAggregate $document) {
                 $this->saveDocument($document);
             },
             $documents
         );
     }
 
-    public function getDocumentByIdentity(DocumentId $id): DocumentAggregate
+    public function getDocumentByIdentity(DocumentTypeId $id): DocumentTypeAggregate
     {
         if (! isset($this->documents[$id->toString()])) {
             throw EntityNotFoundException::objectWithIdentity($id);
@@ -37,7 +37,7 @@ final class DocumentCollection implements DocumentRepository, Countable, SchemaF
         return $this->documents[$id->toString()];
     }
 
-    public function saveDocument(DocumentAggregate $document): void
+    public function saveDocument(DocumentTypeAggregate $document): void
     {
         $this->documents[$document->getIdentity()->toString()] = $document;
     }
@@ -47,7 +47,7 @@ final class DocumentCollection implements DocumentRepository, Countable, SchemaF
         return count($this->documents);
     }
 
-    public function createSchema(DocumentId $documentId): SchemaMetadata
+    public function createSchema(DocumentTypeId $documentId): SchemaMetadata
     {
         return $this->getDocumentByIdentity($documentId)->getSchema();
     }

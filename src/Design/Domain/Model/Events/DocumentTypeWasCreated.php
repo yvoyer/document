@@ -4,13 +4,13 @@ namespace Star\Component\Document\Design\Domain\Model\Events;
 
 use DateTimeImmutable;
 use DateTimeInterface;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\DocumentName;
 use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\Document\Membership\Domain\Model\MemberId;
 use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 
-final class DocumentCreated implements DocumentEvent
+final class DocumentTypeWasCreated implements DocumentEvent
 {
     private string $id;
     private DocumentName $name;
@@ -18,9 +18,9 @@ final class DocumentCreated implements DocumentEvent
     private string $createdAt;
 
     public function __construct(
-        DocumentId        $id,
-        DocumentName      $name,
-        DocumentOwner     $owner,
+        DocumentTypeId $id,
+        DocumentName $name,
+        DocumentOwner $owner,
         DateTimeInterface $createdAt
     ) {
         $this->id = $id->toString();
@@ -29,12 +29,12 @@ final class DocumentCreated implements DocumentEvent
         $this->createdAt = $createdAt->format('Y-m-d H:i:s');
     }
 
-    public function documentId(): DocumentId
+    final public function documentId(): DocumentTypeId
     {
-        return DocumentId::fromString($this->id);
+        return DocumentTypeId::fromString($this->id);
     }
 
-    public function name(): DocumentName
+    final public function name(): DocumentName
     {
         return $this->name;
     }
@@ -52,7 +52,7 @@ final class DocumentCreated implements DocumentEvent
     public static function fromPayload(array $payload): CreatedFromPayload
     {
         return new self(
-            DocumentId::fromString($payload['id']),
+            DocumentTypeId::fromString($payload['id']),
             DocumentName::fromSerializedString($payload['name']),
             MemberId::fromString($payload['createdBy']),
             new DateTimeImmutable($payload['createdAt'])
