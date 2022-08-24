@@ -11,7 +11,7 @@ use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyParameter;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 
-final class OutputDocument implements DocumentTypeVisitor
+final class OutputDocumentType implements DocumentTypeVisitor
 {
     public function visitDocumentType(DocumentTypeId $id): void
     {

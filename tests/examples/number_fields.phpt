@@ -3,17 +3,17 @@ Number fields supported constraints.
 --FILE--
 <?php
 
-use Star\Component\Document\Design\Builder\DocumentBuilder;
-use Star\Component\Document\Design\Domain\Structure\OutputDocument;
+use Star\Component\Document\Design\Builder\DocumentTypeBuilder;
+use Star\Component\Document\Design\Domain\Structure\OutputDocumentType;
 
 require __DIR__ . '/../../vendor/autoload.php';
 
-$document = DocumentBuilder::createDocument('All num')
+$document = DocumentTypeBuilder::startDocumentTypeFixture('All num')
     ->createNumber('Int')->endProperty()
     ->createNumber('Required')->required()->endProperty()
     ->createNumber('Float')->asFloat()->endProperty()
-    ->getDocument();
-$document->acceptDocumentVisitor(new OutputDocument())
+    ->getDocumentType();
+$document->acceptDocumentVisitor(new OutputDocumentType())
 ?>
 --EXPECTF--
 Document: "All num"

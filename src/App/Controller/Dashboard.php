@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Authentication\AuthenticationContext;
 use App\Twig\Design\TwigDocumentCollection;
-use Star\Component\Document\Design\Domain\Messaging\Query\FindAllMyDocuments;
+use Star\Component\Document\Design\Domain\Messaging\Query\FindAllMyDocumentTypes;
 use Star\Component\DomainEvent\Messaging\QueryBus;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,11 +20,11 @@ final class Dashboard extends AppController
      * @return Response
      */
     public function __invoke(AuthenticationContext $context, QueryBus $queries, Request $request): Response {
-        $queries->dispatchQuery($query = new FindAllMyDocuments($context->getLoggedMember(), $request->getLocale()));
+        $queries->dispatchQuery($query = new FindAllMyDocumentTypes($context->getLoggedMember(), $request->getLocale()));
         return $this->render(
             'Dashboard\index.html.twig',
             [
-                'documents' => TwigDocumentCollection::fromReadOnlyDocuments(...$query->getResult()),
+                'document_types' => $query->getResult(),
             ]
         );
     }

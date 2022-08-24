@@ -5,10 +5,10 @@ namespace Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBA
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Star\Component\Document\Design\Domain\Messaging\Query\DataTransfer\ReadOnlyDocument;
-use Star\Component\Document\Design\Domain\Messaging\Query\FindAllMyDocuments;
+use Star\Component\Document\Design\Domain\Messaging\Query\FindAllMyDocumentTypes;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 
-final class FindAllMyDocumentsHandler
+final class FindAllMyDocumentTypesHandler
 {
     private Connection $connection;
 
@@ -17,40 +17,40 @@ final class FindAllMyDocumentsHandler
         $this->connection = $connection;
     }
 
-    public function __invoke(FindAllMyDocuments $query): void
+    public function __invoke(FindAllMyDocumentTypes $query): void
     {
         $qb = $this->connection->createQueryBuilder();
         $expr = $qb->expr();
         $sql = $qb->select(
             [
-                'document.id AS document_id',
-                'document_name.content AS document_name',
-                'document.structure AS structure',
+                'document_type.id AS document_type_id',
+                'document_type_name.content AS document_type_name',
+                'document_type.structure AS structure',
                 'member.id AS owner_id',
                 'member.name AS owner_name',
-                'document.created_at AS created_at',
-                'document.updated_at AS updated_at',
+                'document_type.created_at AS created_at',
+                'document_type.updated_at AS updated_at',
             ]
         )
-            ->from('document', 'document')
+            ->from('document_type')
             ->innerJoin(
-                'document',
+                'document_type',
                 'member',
                 'member',
-                $expr->eq('document.created_by', 'member.id')
+                $expr->eq('document_type.created_by', 'member.id')
             )
             ->innerJoin(
-                'document',
-                'document_translation',
-                'document_name',
+                'document_type',
+                'document_type_translation',
+                'document_type_name',
                 $expr->and(
-                    $expr->eq('document_name.object_id', 'document.id'),
-                    $expr->eq('document_name.field', $expr->literal('name')),
-                    $expr->eq('document_name.locale', ':locale'),
+                    $expr->eq('document_type_name.object_id', 'document_type.id'),
+                    $expr->eq('document_type_name.field', $expr->literal('name')),
+                    $expr->eq('document_type_name.locale', ':locale'),
                 )
             )
             ->where(
-                $expr->eq('document.created_by', ':member_id')
+                $expr->eq('document_type.created_by', ':member_id')
             )
             ->setParameters(
                 [
@@ -64,8 +64,8 @@ final class FindAllMyDocumentsHandler
 
             while ($row = $result->fetchAssociative()) {
                 yield new ReadOnlyDocument(
-                    DocumentTypeId::fromString($row['document_id']),
-                    $row['document_name'],
+                    DocumentTypeId::fromString($row['document_type_id']),
+                    $row['document_type_name'],
                     $row['owner_id'],
                     $row['owner_name'],
                     new DateTimeImmutable($row['created_at']),

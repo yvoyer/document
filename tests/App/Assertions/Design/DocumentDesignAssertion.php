@@ -28,8 +28,8 @@ final class DocumentDesignAssertion
         return $this;
     }
 
-    public function enterPropertyWithName(string $propertyName): PropertyAssertion
+    public function enterPropertyWithName(string $code): PropertyAssertion
     {
-        return new PropertyAssertion($this->document->getPublicProperty($propertyName));
+        return new PropertyAssertion($this->document->getPublicProperty($code));
     }
 }

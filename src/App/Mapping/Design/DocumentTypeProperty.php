@@ -6,9 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="document_property")
+ * @ORM\Table(name="document_type_property")
  */
-final class DocumentProperty
+final class DocumentTypeProperty
 {
     /**
      * @ORM\Id
@@ -48,10 +48,10 @@ final class DocumentProperty
     private string $constraints;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Mapping\Design\Document")
-     * @ORM\JoinColumn(name="document_id", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\ManyToOne(targetEntity="DocumentType")
+     * @ORM\JoinColumn(name="document_type_id", referencedColumnName="id", onDelete="CASCADE")
      *
-     * @var Document
+     * @var DocumentType
      */
-    private Document $document;
+    private DocumentType $document;
 }

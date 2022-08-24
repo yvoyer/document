@@ -2,7 +2,7 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Messaging\Command;
 
-use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\DomainEvent\Messaging\Command;
@@ -15,7 +15,7 @@ final class SetRecordValue implements Command
     private $documentId;
 
     /**
-     * @var RecordId
+     * @var DocumentId
      */
     private $recordId;
 
@@ -31,7 +31,7 @@ final class SetRecordValue implements Command
 
     public function __construct(
         DocumentTypeId $documentId,
-        RecordId $recordId,
+        DocumentId $recordId,
         string $property,
         RecordValue $value
     ) {
@@ -46,7 +46,7 @@ final class SetRecordValue implements Command
         return $this->documentId;
     }
 
-    public function recordId(): RecordId
+    public function recordId(): DocumentId
     {
         return $this->recordId;
     }

@@ -5,7 +5,7 @@ namespace Star\Component\Document\Tests\App\Fixtures;
 use App\Tests\Assertions\Design\DocumentDesignAssertion;
 use DateTimeImmutable;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocumentType;
-use Star\Component\Document\Design\Domain\Messaging\Query\FindSchemaForDocuments;
+use Star\Component\Document\Design\Domain\Messaging\Query\FindSchemaForDocumentTypes;
 use Star\Component\Document\Design\Domain\Model\DocumentName;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\DocumentOwner;
@@ -31,7 +31,7 @@ final class ApplicationFixtureBuilder
 
     public function assertDocument(DocumentTypeId $id, string $locale): DocumentDesignAssertion
     {
-        $this->queryBus->dispatchQuery($query = new FindSchemaForDocuments($locale, $id));
+        $this->queryBus->dispatchQuery($query = new FindSchemaForDocumentTypes($locale, $id));
 
         return new DocumentDesignAssertion($query->getSingleSchema($id));
     }
@@ -46,12 +46,15 @@ final class ApplicationFixtureBuilder
         $this->queryBus->dispatchQuery($query);
     }
 
-    public function newDocumentType(DocumentOwner $owner): DocumentTypeFixture
-    {
+    public function newDocumentType(
+        string $name,
+        string $locale,
+        DocumentOwner $owner
+    ): DocumentTypeFixture {
         $this->doCommand(
             new CreateDocumentType(
                 $id = DocumentTypeId::random(),
-                DocumentName::fromLocalizedString('New document type', 'en'), // todo parametrize
+                DocumentName::fromLocalizedString($name, $locale),
                 $owner,
                 new DateTimeImmutable()
             )

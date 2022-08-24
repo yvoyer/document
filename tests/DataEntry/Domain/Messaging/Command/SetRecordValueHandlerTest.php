@@ -7,7 +7,7 @@ use Star\Component\Document\DataEntry\Domain\Messaging\Command\SetRecordValue;
 use Star\Component\Document\DataEntry\Domain\Messaging\Command\SetRecordValueHandler;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentAggregate;
-use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\Values\StringValue;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
 use Star\Component\Document\Design\Builder\DocumentTypeBuilder;
@@ -48,7 +48,7 @@ final class SetRecordValueHandlerTest extends TestCase
         $this->handler->__invoke(
             new SetRecordValue(
                 DocumentTypeId::random(),
-                RecordId::fromString('id'),
+                DocumentId::fromString('id'),
                 'name',
                 StringValue::fromString('value')
             )
@@ -58,7 +58,7 @@ final class SetRecordValueHandlerTest extends TestCase
     public function test_it_should_return_all_records_when_values_entered(): void
     {
         $documentId = DocumentTypeId::fromString('id');
-        $recordId = RecordId::fromString('id');
+        $recordId = DocumentId::fromString('id');
 
         $this->records->saveRecord(
             $recordId,
@@ -93,7 +93,7 @@ final class SetRecordValueHandlerTest extends TestCase
 
     public function test_it_should_use_the_old_record_to_store_value(): void
     {
-        $recordId = RecordId::fromString('r1');
+        $recordId = DocumentId::fromString('r1');
         $record = DocumentAggregate::withValues(
             $recordId,
             DocumentTypeBuilder::startDocumentTypeFixture()->createText('name')->endProperty()->getSchema(),

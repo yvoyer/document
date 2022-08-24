@@ -37,8 +37,8 @@ services:
         tags:
             - { name: star.command_handler }
 
-    Star\Component\Document\Design\Domain\Model\DocumentRepository:
-        class: Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBAL\DocumentEventStore
+    Star\Component\Document\Design\Domain\Model\DocumentTypeRepository:
+        class: Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBAL\DocumentTypeEventStore
 
     Star\Component\Document\Design\Domain\Model\Constraints\ConstraintRegistry:
         class: Star\Component\Document\Design\Infrastructure\Persistence\InMemory\ConstraintFactory
@@ -50,13 +50,13 @@ services:
         tags:
             - { name: star.event_listener }
 
-    Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBAL\FindAllMyDocumentsHandler:
+    Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBAL\FindAllMyDocumentTypesHandler:
         tags:
-            - { name: star.query_handler, message: Star\Component\Document\Design\Domain\Messaging\Query\FindAllMyDocuments }
+            - { name: star.query_handler, message: Star\Component\Document\Design\Domain\Messaging\Query\FindAllMyDocumentTypes }
 
-    Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBAL\FindSchemaForDocumentsHandler:
+    Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBAL\FindSchemaForDocumentTypesHandler:
         tags:
-            - { name: star.query_handler, message: Star\Component\Document\Design\Domain\Messaging\Query\FindSchemaForDocuments }
+            - { name: star.query_handler, message: Star\Component\Document\Design\Domain\Messaging\Query\FindSchemaForDocumentTypes }
     # End Design context
 
     # Membership context

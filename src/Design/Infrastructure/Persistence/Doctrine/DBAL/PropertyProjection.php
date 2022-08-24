@@ -26,17 +26,17 @@ final class PropertyProjection implements EventListener
     public function onPropertyAdded(PropertyWasAdded $event): void
     {
         $this->connection->insert(
-            'document_property',
+            'document_type_property',
             [
                 'type' => $event->type()->toData()->toString(),
                 'code' => $code = Transliterator::urlize($event->name()->toSerializableString(), '_'),
-                'document_id' => $event->documentId()->toString(),
+                'document_type_id' => $event->documentId()->toString(),
                 'constraints' => json_encode([]),
                 'parameters' => json_encode([]),
             ]
         );
         $this->connection->insert(
-            'document_property_translation',
+            'document_type_property_translation',
             $this->mergeTranslatableDataForCreation(
                 'name',
                 $event->name()->toString(),
@@ -46,21 +46,21 @@ final class PropertyProjection implements EventListener
         );
     }
 
-    private function getPropertyId(DocumentTypeId $documentId, string $code): string
+    private function getPropertyId(DocumentTypeId $typeId, string $code): string
     {
         $qb = $this->connection->createQueryBuilder();
         $expr = $qb->expr();
 
-        return $qb->select('property.id')
-            ->from('document_property', 'property')
+        return (string) $qb->select('property.id')
+            ->from('document_type_property', 'property')
             ->andWhere(
                 $expr->eq('property.code', ':code'),
-                $expr->eq('property.document_id', ':document_id')
+                $expr->eq('property.document_type_id', ':document_type_id')
             )
             ->setParameters(
                 [
                     'code' => $code,
-                    'document_id' => $documentId->toString(),
+                    'document_type_id' => $typeId->toString(),
                 ]
             )
             ->fetchOne();

@@ -6,9 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="document")
+ * @ORM\Table(name="document_type")
  */
-final class Document
+final class DocumentType
 {
     /**
      * @ORM\Id()

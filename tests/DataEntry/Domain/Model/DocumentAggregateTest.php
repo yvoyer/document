@@ -7,7 +7,7 @@ use Star\Component\Document\DataEntry\Domain\Model\Events\PropertyValueWasChange
 use Star\Component\Document\DataEntry\Domain\Model\Events\PropertyValueWasSet;
 use Star\Component\Document\DataEntry\Domain\Model\Events\RecordWasCreated;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentAggregate;
-use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleValidationErrors;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ValidationFailedForProperty;
 use Star\Component\Document\DataEntry\Domain\Model\Values\ArrayOfInteger;
@@ -25,7 +25,7 @@ final class DocumentAggregateTest extends TestCase
     public function test_it_should_set_a_property_value(): void
     {
         $record = DocumentAggregate::withValues(
-            RecordId::fromString('id'),
+            DocumentId::fromString('id'),
             DocumentTypeBuilder::startDocumentTypeFixture()
                 ->createText($property = 'name')->endProperty()
                 ->getSchema()
@@ -41,12 +41,12 @@ final class DocumentAggregateTest extends TestCase
     public function test_it_should_throw_exception_when_property_never_set(): void
     {
         $record = DocumentAggregate::withValues(
-            RecordId::fromString('id'),
+            DocumentId::fromString('id'),
             DocumentTypeBuilder::startDocumentTypeFixture()->getSchema()
         );
 
         $this->expectException(ReferencePropertyNotFound::class);
-        $this->expectExceptionMessage('The property with name "name" could not be found.');
+        $this->expectExceptionMessage('The property with code "name" could not be found.');
         $record->getValue('name');
     }
 
@@ -61,7 +61,7 @@ final class DocumentAggregateTest extends TestCase
             'Validation error: [Property named "text" is required, but "empty()" given.]'
         );
         DocumentAggregate::withValues(
-            RecordId::random(),
+            DocumentId::random(),
             $schema,
             [
                 'text' => StringValue::fromString(''),
@@ -75,7 +75,7 @@ final class DocumentAggregateTest extends TestCase
             ->createText('optional')->endProperty()
             ->getSchema();
 
-        $record = DocumentAggregate::withValues(RecordId::random(), $schema);
+        $record = DocumentAggregate::withValues(DocumentId::random(), $schema);
         $this->assertSame('', $record->getValue('optional')->toString());
         $this->assertTrue($record->getValue('optional')->isEmpty());
     }
@@ -86,7 +86,7 @@ final class DocumentAggregateTest extends TestCase
             ->createText('optional')->endProperty()
             ->getSchema();
 
-        $record = DocumentAggregate::withValues(RecordId::random(), $schema);
+        $record = DocumentAggregate::withValues(DocumentId::random(), $schema);
         $this->assertSame('', $record->getValue('optional')->toString());
         $this->assertTrue($record->getValue('optional')->isEmpty());
     }
@@ -100,7 +100,7 @@ final class DocumentAggregateTest extends TestCase
         $this->expectException(NotSupportedTypeForValue::class);
         $this->expectExceptionMessage('The property "list" only supports values of type "list", "int(2000)" given.');
         DocumentAggregate::withValues(
-            RecordId::random(),
+            DocumentId::random(),
             $schema,
             ['list' => IntegerValue::fromInt(2000)]
         );
@@ -119,7 +119,7 @@ final class DocumentAggregateTest extends TestCase
             . '{"id":2,"value":"Option 2","label":"Label 2"}]", given "list(999)".'
         );
         DocumentAggregate::withValues(
-            RecordId::random(),
+            DocumentId::random(),
             $schema,
             ['list-field' => ArrayOfInteger::withValues(999)]
         );
@@ -131,7 +131,7 @@ final class DocumentAggregateTest extends TestCase
             ->createText('text')->endProperty()
             ->getSchema();
         $record = DocumentAggregate::withValues(
-            RecordId::random(),
+            DocumentId::random(),
             $schema,
             [
                 'text' => StringValue::fromString('val'),
@@ -158,7 +158,7 @@ final class DocumentAggregateTest extends TestCase
             ->createText('text')->endProperty()
             ->getSchema();
         $record = DocumentAggregate::withValues(
-            RecordId::random(),
+            DocumentId::random(),
             $schema,
             [
                 'text' => StringValue::fromString('val'),
@@ -176,7 +176,7 @@ final class DocumentAggregateTest extends TestCase
             ->createText('text')->endProperty()
             ->getSchema();
         $record = DocumentAggregate::withValues(
-            RecordId::random(),
+            DocumentId::random(),
             $schema,
             [
                 'text' => StringValue::fromString('before'),

@@ -7,7 +7,7 @@ use DateTimeInterface;
 use Star\Component\Document\DataEntry\Builder\DocumentBuilder;
 use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentAggregate;
-use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\SchemaMetadata;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\AlwaysThrowExceptionOnValidationErrors;
@@ -97,14 +97,14 @@ final class DocumentTypeBuilder
     }
 
     /**
-     * @param RecordId|null $recordId
+     * @param DocumentId|null $recordId
      * @param RecordValue[] $recordValues
      * @return DocumentBuilder
      */
-    public function startRecord(RecordId $recordId = null, array $recordValues = []): DocumentBuilder
+    public function startDocument(DocumentId $recordId = null, array $recordValues = []): DocumentBuilder
     {
         if (!$recordId) {
-            $recordId= RecordId::random();
+            $recordId= DocumentId::random();
         }
 
         return new DocumentBuilder(

@@ -37,16 +37,18 @@ final class DocumentTypeFixture
 
     private function withProperty(string $code, PropertyType $type): PropertyFixture
     {
+        $code = PropertyCode::fromString($code);
+
         $this->builder->doCommand(
             new CreateProperty(
                 $this->documentId,
-                PropertyCode::fromString($code),
-                $nameObject = PropertyName::fromLocalizedString($code, 'en'), // todo parametrize
+                $code,
+                $nameObject = PropertyName::fromLocalizedString($code->toString(), 'en'), // todo parametrize
                 $type,
                 new DateTimeImmutable()
             )
         );
 
-        return new PropertyFixture($this->documentId, $nameObject, $this, $this->builder);
+        return new PropertyFixture($this->documentId, $code, $this, $this->builder);
     }
 }

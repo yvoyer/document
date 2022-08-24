@@ -1,19 +1,19 @@
 {% block body %}
-    <h1>{{ 'header.documents.your_documents'|trans([], 'labels') }}</h1>
+    <h1>{{ 'header.documents.your_document_types'|trans([], 'labels') }}</h1>
 
     <table>
         <thead>
         <tr>
-            <th>{{ 'header.my_documents.table.columns.id' }}</th>
-            <th>{{ 'header.my_documents.table.columns.type' }}</th>
-            <th>{{ 'header.my_documents.table.columns.actions' }}</th>
+            <th>{{ 'header.my_document_types.table.columns.id'|trans }}</th>
+            <th>{{ 'header.my_document_types.table.columns.type'|trans }}</th>
+            <th>{{ 'header.my_document_types.table.columns.actions'|trans }}</th>
         </tr>
         </thead>
         <tbody>
-        {% for document in documents %}
+        {{ dump(document_types) }}
+        {% for document_type in document_types %}
             <tr>
-                <td>{{ document.documentId() }}</td>
-                {{ dump(document) }}
+                <td>{{ document_type.documentId() }}</td>
                 {# set property = document.getPublicProperty('type') #}
                 <td>
 {#                    <span>{{ property.getLabel() }}</span>#}

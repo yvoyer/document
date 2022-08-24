@@ -17,6 +17,19 @@ final class MemberSchemaManager implements EventListener
 
     public function onMemberRegistered(MemberWasRegistered $event): void
     {
+        $memberExists = $this->connection
+            ->executeQuery(
+                'SELECT * FROM member where id = :member_id',
+                [
+                    'member_id' => $event->memberId()->toString(),
+                ]
+            )
+            ->rowCount();
+        if ($memberExists === 1) {
+            return; // todo do not create for now
+        }
+
+        // todo make real register, this will create duplicate
         $this->connection->insert(
             'member',
             [

@@ -3,7 +3,7 @@
 namespace Star\Component\Document\Tests\Design\Builder;
 
 use PHPUnit\Framework\TestCase;
-use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ValidationFailedForProperty;
 use Star\Component\Document\DataEntry\Domain\Model\Values\ArrayOfInteger;
 use Star\Component\Document\DataEntry\Domain\Model\Values\BooleanValue;
@@ -82,7 +82,7 @@ final class DocumentTypeBuilderTest extends TestCase
 
         $this->expectException(ValidationFailedForProperty::class);
         $this->expectExceptionMessage('Validation error: [Property named "name" is required, but "empty()" given.]');
-        $builder->startRecord(RecordId::random());
+        $builder->startDocument(DocumentId::random());
     }
 
     public function test_it_should_throw_exception_when_setting_empty_on_required_boolean_property(): void
@@ -92,8 +92,8 @@ final class DocumentTypeBuilderTest extends TestCase
 
         $this->expectException(ValidationFailedForProperty::class);
         $this->expectExceptionMessage('Validation error: [Property named "name" is required, but "empty()" given.]');
-        $builder->startRecord(
-            RecordId::random(),
+        $builder->startDocument(
+            DocumentId::random(),
             [
                 'name' => new EmptyValue(),
             ]
@@ -107,7 +107,7 @@ final class DocumentTypeBuilderTest extends TestCase
 
         $this->expectException(ValidationFailedForProperty::class);
         $this->expectExceptionMessage('Validation error: [Property named "name" is required, but "empty()" given.]');
-        $builder->startRecord(RecordId::random());
+        $builder->startDocument(DocumentId::random());
     }
 
     public function test_it_should_throw_exception_when_setting_empty_on_required_number_property(): void
@@ -117,7 +117,7 @@ final class DocumentTypeBuilderTest extends TestCase
 
         $this->expectException(ValidationFailedForProperty::class);
         $this->expectExceptionMessage('Validation error: [Property named "name" is required, but "empty()" given.]');
-        $builder->startRecord(RecordId::random());
+        $builder->startDocument(DocumentId::random());
     }
 
     public function test_it_should_throw_exception_when_setting_empty_on_required_list_property(): void
@@ -129,14 +129,14 @@ final class DocumentTypeBuilderTest extends TestCase
         $this->expectExceptionMessage(
             'Validation error: [Property named "name" requires at least 1 option(s), "empty()" given.]'
         );
-        $builder->startRecord(RecordId::random());
+        $builder->startDocument(DocumentId::random());
     }
 
     public function test_it_should_throw_exception_when_setting_more_than_one_value_on_single_value_property(): void
     {
         $builder = DocumentTypeBuilder::startDocumentTypeFixture('id')
             ->createListOfOptions('name', OptionListValue::withElements(3))->singleOption()->endProperty()
-            ->startRecord(RecordId::random());
+            ->startDocument(DocumentId::random());
 
         $this->expectException(ValidationFailedForProperty::class);
         $this->expectExceptionMessage(
@@ -151,8 +151,8 @@ final class DocumentTypeBuilderTest extends TestCase
             ->createText('optional')->endProperty()
             ->createText('regex')->matchesRegex('/\w+/')->endProperty()
             ->createText('required')->required()->endProperty()
-            ->startRecord(
-                RecordId::random(),
+            ->startDocument(
+                DocumentId::random(),
                 [
                     'regex' => StringValue::fromString('Text'),
                     'required' => StringValue::fromString('My required value'),
@@ -172,8 +172,8 @@ final class DocumentTypeBuilderTest extends TestCase
             ->createBoolean('required')->required()->endProperty()
             ->createBoolean('default')->defaultValue(true)->endProperty()
             ->createBoolean('label')->labeled('Vrai', 'Faux')->endProperty()
-            ->startRecord(
-                RecordId::random(),
+            ->startDocument(
+                DocumentId::random(),
                 [
                     'required' => BooleanValue::trueValue(),
                     'label' => BooleanValue::falseValue(),
@@ -196,8 +196,8 @@ final class DocumentTypeBuilderTest extends TestCase
             ->createDate('after')->afterDate('2000-01-01')->endProperty()
             ->createDate('format')->outputAsFormat('Y')->endProperty()
             ->createDate('between')->betweenDate('2000-01-01', '2000-12-31')->endProperty()
-            ->startRecord(
-                RecordId::random(),
+            ->startDocument(
+                DocumentId::random(),
                 [
                     'required' => DateValue::fromString('2010-01-02'),
                     'before' => DateValue::fromString('1999-12-31'),
@@ -222,8 +222,8 @@ final class DocumentTypeBuilderTest extends TestCase
             ->createNumber('optional')->endProperty()
             ->createNumber('required')->required()->endProperty()
             ->createNumber('float')->asFloat()->endProperty()
-            ->startRecord(
-                RecordId::random(),
+            ->startDocument(
+                DocumentId::random(),
                 [
                     'required' => IntegerValue::fromInt(1234),
                     'float' => FloatValue::fromFloat(12.34),
@@ -243,8 +243,8 @@ final class DocumentTypeBuilderTest extends TestCase
             ->createListOfOptions('required', OptionListValue::withElements(3))->required()->endProperty()
             ->createListOfOptions('single', OptionListValue::withElements(3))->singleOption()->endProperty()
             ->createListOfOptions('multi', OptionListValue::withElements(3))->endProperty()
-            ->startRecord(
-                RecordId::random(),
+            ->startDocument(
+                DocumentId::random(),
                 [
                     'required' => ArrayOfInteger::withValues(1, 3),
                     'single' => ArrayOfInteger::withValues(2),

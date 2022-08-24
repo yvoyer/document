@@ -4,6 +4,9 @@ namespace App\Tests\Design\Infrastructure\Persistence\Doctrine\DBAL;
 
 use Star\Component\Document\Tests\App\RegressionTestCase;
 
+/**
+ * @group functional
+ */
 final class DocumentSchemaManagerTest extends RegressionTestCase
 {
     public function test_it_should_create_row_on_document_create(): void

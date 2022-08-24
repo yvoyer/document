@@ -7,9 +7,9 @@ use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 interface ReadOnlyRecord
 {
     /**
-     * @return RecordId
+     * @return DocumentId
      */
-    public function getIdentity(): RecordId;
+    public function getIdentity(): DocumentId;
 
     /**
      * @return DocumentTypeId

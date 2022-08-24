@@ -3,19 +3,19 @@
 namespace Star\Component\Document\DataEntry\Domain\Model\Events;
 
 use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
-use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 
 final class PropertyValueWasSet implements RecordEvent
 {
-    private RecordId $recordId;
+    private DocumentId $recordId;
     private DocumentTypeId $documentId;
     private PropertyCode $property;
     private RecordValue $value;
 
     public function __construct(
-        RecordId $recordId,
+        DocumentId $recordId,
         DocumentTypeId $documentId,
         PropertyCode $property,
         RecordValue $value
@@ -26,7 +26,7 @@ final class PropertyValueWasSet implements RecordEvent
         $this->value = $value;
     }
 
-    public function recordId(): RecordId
+    public function recordId(): DocumentId
     {
         return $this->recordId;
     }

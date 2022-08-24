@@ -2,40 +2,26 @@
 
 namespace Star\Component\Document\Tests\App\Fixtures;
 
+use DateTimeImmutable;
+use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddPropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
 
 final class PropertyFixture
 {
-    /**
-     * @var DocumentTypeId
-     */
-    private $documentId;
-
-    /**
-     * @var PropertyName
-     */
-    private $propertyName;
-
-    /**
-     * @var DocumentTypeFixture
-     */
-    private $parent;
-
-    /**
-     * @var ApplicationFixtureBuilder
-     */
-    private $fixture;
+    private DocumentTypeId $typeId;
+    private PropertyCode $code;
+    private DocumentTypeFixture $parent;
+    private ApplicationFixtureBuilder $fixture;
 
     public function __construct(
-        DocumentTypeId $documentId,
-        PropertyName $propertyName,
+        DocumentTypeId $typeId,
+        PropertyCode $code,
         DocumentTypeFixture $parent,
         ApplicationFixtureBuilder $fixtures
     ) {
-        $this->documentId = $documentId;
-        $this->propertyName = $propertyName;
+        $this->typeId = $typeId;
+        $this->code = $code;
         $this->parent = $parent;
         $this->fixture = $fixtures;
     }
@@ -44,10 +30,11 @@ final class PropertyFixture
     {
         $this->fixture->doCommand(
             new AddPropertyConstraint(
-                $this->documentId,
-                $this->propertyName,
+                $this->typeId,
+                $this->code,
                 'required',
-                []
+                [],
+                new DateTimeImmutable()
             )
         );
 

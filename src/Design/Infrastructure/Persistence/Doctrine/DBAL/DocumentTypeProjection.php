@@ -10,7 +10,7 @@ use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 use Star\Component\Document\Translation\Infrastructure\Persistence\DBAL\TranslatableData;
 use Star\Component\DomainEvent\EventListener;
 
-final class DocumentProjection implements EventListener
+final class DocumentTypeProjection implements EventListener
 {
     use AuditTrailData;
     use TranslatableData;
@@ -25,7 +25,7 @@ final class DocumentProjection implements EventListener
     public function onDocumentTypeWasCreated(DocumentTypeWasCreated $event): void
     {
         $this->connection->insert(
-            'document',
+            'document_type',
             $this->withAuditForInsert(
                 [
                     'id' => $event->documentId()->toString(),
@@ -36,7 +36,7 @@ final class DocumentProjection implements EventListener
             )
         );
         $this->connection->insert(
-            'document_translation',
+            'document_type_translation',
             $this->mergeTranslatableDataForCreation(
                 'name',
                 $event->name()->toSerializableString(),
@@ -49,7 +49,7 @@ final class DocumentProjection implements EventListener
     public function onPropertyAdded(PropertyWasAdded $event): void
     {
         $this->connection->update(
-            'document',
+            'document_type',
             $this->withAuditForUpdate(
                 [],
                 $event->updatedAt(),

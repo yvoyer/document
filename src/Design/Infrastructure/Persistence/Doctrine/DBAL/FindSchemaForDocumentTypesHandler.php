@@ -4,12 +4,12 @@ namespace Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBA
 
 use Doctrine\DBAL\Connection;
 use Star\Component\Document\Design\Domain\Messaging\Query\DataTransfer\SchemaOfDocument;
-use Star\Component\Document\Design\Domain\Messaging\Query\FindSchemaForDocuments;
+use Star\Component\Document\Design\Domain\Messaging\Query\FindSchemaForDocumentTypes;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\DocumentName;
 use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 
-final class FindSchemaForDocumentsHandler
+final class FindSchemaForDocumentTypesHandler
 {
     private Connection $connection;
 
@@ -18,7 +18,7 @@ final class FindSchemaForDocumentsHandler
         $this->connection = $connection;
     }
 
-    public function __invoke(FindSchemaForDocuments $query): void
+    public function __invoke(FindSchemaForDocumentTypes $query): void
     {
         $qb = $this->connection->createQueryBuilder();
         $expr = $qb->expr();
@@ -26,40 +26,40 @@ final class FindSchemaForDocumentsHandler
         $stmt = $qb
             ->select(
                 [
-                    'document.id AS id',
+                    'document_type.id AS id',
                     'name.content AS name',
-                    'document.structure AS structure',
+                    'document_type.structure AS structure',
                 ]
             )
-            ->from('document', 'document')
+            ->from('document_type')
             ->innerJoin(
-                'document',
-                'document_translation',
+                'document_type',
+                'document_type_translation',
                 'name',
                 $expr->and(
                     $expr->eq('name.field', $expr->literal('name')),
                     $expr->eq('name.locale', ':locale'),
-                    $expr->eq('name.object_id', 'document.id')
+                    $expr->eq('name.object_id', 'document_type.id')
                 )
             )
-            ->andWhere($expr->in('document.id', ':document_ids'))
+            ->andWhere($expr->in('document_type.id', ':document_type_ids'))
             ->setParameters(
                 [
-                    'document_ids' => $query->documentIntIds(),
+                    'document_type_ids' => $query->documentIntIds(),
                     'locale' => $locale,
                 ],
                 [
-                    'document_ids' => Connection::PARAM_STR_ARRAY,
+                    'document_type_ids' => Connection::PARAM_STR_ARRAY,
                 ]
             );
 
         $query(
             function () use ($stmt, $locale) {
                 $result = $stmt->executeQuery();
-                foreach ($result->iterateAssociativeIndexed() as $documentId => $row) {
-                    yield $documentId => new SchemaOfDocument(
-                        DocumentTypeId::fromString($documentId),
-                        new DocumentName($row['name'], $locale),
+                foreach ($result->iterateAssociativeIndexed() as $typeId => $row) {
+                    yield $typeId => new SchemaOfDocument(
+                        DocumentTypeId::fromString($typeId),
+                        DocumentName::fromLocalizedString($row['name'], $locale),
                         DocumentSchema::fromJsonString($row['structure'])
                     );
                 }

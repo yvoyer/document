@@ -3,7 +3,7 @@
 namespace Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory;
 
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
-use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\RecordRepository;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Identity\Exception\EntityNotFoundException;
@@ -16,10 +16,10 @@ final class RecordCollection implements RecordRepository, \Countable
     private $records = [];
 
     /**
-     * @param RecordId $id
+     * @param DocumentId $id
      * @param DocumentRecord $record
      */
-    public function saveRecord(RecordId $id, DocumentRecord $record): void
+    public function saveRecord(DocumentId $id, DocumentRecord $record): void
     {
         $this->records[$id->toString()] = $record;
     }
@@ -42,12 +42,12 @@ final class RecordCollection implements RecordRepository, \Countable
     }
 
     /**
-     * @param RecordId $id
+     * @param DocumentId $id
      *
      * @return DocumentRecord
      * @throws EntityNotFoundException
      */
-    public function getRecordWithIdentity(RecordId $id): DocumentRecord
+    public function getRecordWithIdentity(DocumentId $id): DocumentRecord
     {
         if (! $this->recordExists($id)) {
             throw EntityNotFoundException::objectWithIdentity($id);
@@ -57,11 +57,11 @@ final class RecordCollection implements RecordRepository, \Countable
     }
 
     /**
-     * @param RecordId $id
+     * @param DocumentId $id
      *
      * @return bool
      */
-    public function recordExists(RecordId $id): bool
+    public function recordExists(DocumentId $id): bool
     {
         return isset($this->records[$id->toString()]);
     }

@@ -9,7 +9,7 @@ use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\DomainEvent\Messaging\Query;
 use Traversable;
 
-final class FindSchemaForDocuments implements Query
+final class FindSchemaForDocumentTypes implements Query
 {
     /**
      * @var DocumentTypeId[]

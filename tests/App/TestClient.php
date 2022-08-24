@@ -12,15 +12,8 @@ use function sprintf;
 
 final class TestClient
 {
-    /**
-     * @var KernelBrowser
-     */
-    private $client;
-
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
+    private KernelBrowser $client;
+    private ContainerInterface $container;
 
     public function __construct(KernelBrowser $client, ContainerInterface $container)
     {

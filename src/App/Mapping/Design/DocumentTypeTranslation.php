@@ -6,13 +6,13 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="document_translation")
+ * @ORM\Table(name="document_type_translation")
  * todo add unique on field/locale/object
  */
-final class DocumentTranslation extends ObjectTranslation
+final class DocumentTypeTranslation extends ObjectTranslation
 {
     /**
-     * @ORM\ManyToOne(targetEntity="App\Mapping\Design\Document")
+     * @ORM\ManyToOne(targetEntity="DocumentType")
      * @ORM\JoinColumn(name="object_id", referencedColumnName="id", onDelete="CASCADE")
      *
      * @var string

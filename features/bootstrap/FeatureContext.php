@@ -14,7 +14,7 @@ use Star\Component\Document\DataEntry\Domain\Messaging\Command\SetRecordValueHan
 use Star\Component\Document\DataEntry\Domain\Messaging\Query\GetAllRecordsOfDocument;
 use Star\Component\Document\DataEntry\Domain\Messaging\Query\GetAllRecordsOfDocumentHandler;
 use Star\Component\Document\DataEntry\Domain\Messaging\Query\RecordRow;
-use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ValidationFailedForProperty;
 use Star\Component\Document\DataEntry\Domain\Model\Values\ListOptionValue;
 use Star\Component\Document\DataEntry\Domain\Model\Values\OptionListValue;
@@ -400,7 +400,7 @@ class FeatureContext implements Context
     public function iEnterTheFollowingValuesToDocument(string $documentId, TableNode $table)
     {
         foreach ($table->getHash() as $data) {
-            $recordId = RecordId::fromString($data['record-id']);
+            $recordId = DocumentId::fromString($data['record-id']);
             Assert::assertJson($jsonString = $data['values'], 'values index do not contains valid json');
             $json = json_decode($jsonString, true);
             $property = $json['property'];

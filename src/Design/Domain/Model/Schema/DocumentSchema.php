@@ -17,7 +17,6 @@ use Star\Component\Document\Design\Domain\Model\Types\TypeData;
 use function array_key_exists;
 use function json_decode;
 use function json_encode;
-use function var_dump;
 
 final class DocumentSchema implements SchemaMetadata
 {

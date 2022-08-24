@@ -3,7 +3,7 @@
 namespace App\Controller\Document;
 
 use App\Controller\AppController;
-use Star\Component\Document\Design\Domain\Messaging\Query\FindSchemaForDocuments;
+use Star\Component\Document\Design\Domain\Messaging\Query\FindSchemaForDocumentTypes;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Infrastructure\Templating\SymfonyForm\DocumentDesignType;
 use Star\Component\DomainEvent\Messaging\QueryBus;
@@ -24,7 +24,7 @@ final class DocumentDesign extends AppController
     {
         $form = $this->createForm(DocumentDesignType::class);
         $bus->dispatchQuery(
-            $query = new FindSchemaForDocuments(
+            $query = new FindSchemaForDocumentTypes(
                 $request->getLocale(),
                 $documentId = DocumentTypeId::fromString($id)
             )

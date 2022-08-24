@@ -8,25 +8,25 @@ use Star\Component\Identity\Exception\EntityNotFoundException;
 interface RecordRepository
 {
     /**
-     * @param RecordId $id
+     * @param DocumentId $id
      *
      * @return DocumentRecord
      * @throws EntityNotFoundException
      */
-    public function getRecordWithIdentity(RecordId $id): DocumentRecord;
+    public function getRecordWithIdentity(DocumentId $id): DocumentRecord;
 
     /**
-     * @param RecordId $id
+     * @param DocumentId $id
      *
      * @return bool
      */
-    public function recordExists(RecordId $id): bool;
+    public function recordExists(DocumentId $id): bool;
 
     /**
-     * @param RecordId $id
+     * @param DocumentId $id
      * @param DocumentRecord $record
      */
-    public function saveRecord(RecordId $id, DocumentRecord $record): void;
+    public function saveRecord(DocumentId $id, DocumentRecord $record): void;
 
     /**
      * @param DocumentTypeId $id

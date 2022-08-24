@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Messaging\Command\CreateRecord;
 use Star\Component\Document\DataEntry\Domain\Messaging\Command\CreateRecordHandler;
 use Star\Component\Document\DataEntry\Domain\Model\AlwaysReturnSchema;
-use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Values\StringValue;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
@@ -25,7 +25,7 @@ final class CreateRecordHandlerTest extends TestCase
         );
         $this->assertCount(0, $records);
 
-        $handler(new CreateRecord(DocumentTypeId::random(), RecordId::random(), []));
+        $handler(new CreateRecord(DocumentTypeId::random(), DocumentId::random(), []));
 
         $this->assertCount(1, $records);
     }
@@ -45,7 +45,7 @@ final class CreateRecordHandlerTest extends TestCase
 
         $handler(new CreateRecord(
             DocumentTypeId::random(),
-            $recordId = RecordId::random(),
+            $recordId = DocumentId::random(),
             [
                 'key' => StringValue::fromString('value'),
             ]
@@ -64,7 +64,7 @@ final class CreateRecordHandlerTest extends TestCase
         $this->expectExceptionMessage(
             'Keys of value map "0" is expected to be the name of the property, "integer" given.'
         );
-        new CreateRecord(DocumentTypeId::random(), RecordId::random(), ['value']);
+        new CreateRecord(DocumentTypeId::random(), DocumentId::random(), ['value']);
     }
 
     public function test_it_should_throw_exception_when_value_not_scalar(): void
@@ -76,6 +76,6 @@ final class CreateRecordHandlerTest extends TestCase
                 RecordValue::class
             )
         );
-        new CreateRecord(DocumentTypeId::random(), RecordId::random(), ['property' => new \stdClass()]);
+        new CreateRecord(DocumentTypeId::random(), DocumentId::random(), ['property' => new \stdClass()]);
     }
 }

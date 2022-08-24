@@ -2,7 +2,6 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Translation\Domain\Model\TranslationLocale;
 use Star\Component\DomainEvent\Serialization\SerializableAttribute;
 use function mb_strlen;

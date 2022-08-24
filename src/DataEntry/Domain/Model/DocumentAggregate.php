@@ -16,7 +16,7 @@ use function array_merge;
 
 final class DocumentAggregate extends AggregateRoot implements DocumentRecord
 {
-    private RecordId $id;
+    private DocumentId $id;
     private SchemaMetadata $schema;
 
     /**
@@ -25,14 +25,14 @@ final class DocumentAggregate extends AggregateRoot implements DocumentRecord
     private array $values = [];
 
     /**
-     * @param RecordId $id
+     * @param DocumentId $id
      * @param SchemaMetadata $schema
      * @param RecordValue[] $values Indexed by the property code of the property todo convert to object
      * @param StrategyToHandleValidationErrors|null $strategy
      * @return DocumentAggregate
      */
     public static function withValues(
-        RecordId $id,
+        DocumentId $id,
         SchemaMetadata $schema,
         array $values = [],
         StrategyToHandleValidationErrors $strategy = null
@@ -51,7 +51,7 @@ final class DocumentAggregate extends AggregateRoot implements DocumentRecord
         return $record;
     }
 
-    public function getIdentity(): RecordId
+    public function getIdentity(): DocumentId
     {
         return $this->id;
     }

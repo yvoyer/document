@@ -23,7 +23,7 @@ final class DocumentTypeEventStore extends DBALEventStore implements DocumentTyp
 
     protected function tableName(): string
     {
-        return '_events_documents';
+        return '_events_document_types';
     }
 
     protected function createAggregateFromStream(array $events): AggregateRoot

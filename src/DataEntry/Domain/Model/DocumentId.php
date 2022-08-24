@@ -5,7 +5,7 @@ namespace Star\Component\Document\DataEntry\Domain\Model;
 use Assert\Assertion;
 use Star\Component\Identity\Identity;
 
-final class RecordId implements Identity
+final class DocumentId implements Identity
 {
     /**
      * @var string

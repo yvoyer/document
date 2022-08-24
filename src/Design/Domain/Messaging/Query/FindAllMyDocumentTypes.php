@@ -8,7 +8,7 @@ use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\DomainEvent\Messaging\Query;
 use Traversable;
 
-final class FindAllMyDocuments implements Query
+final class FindAllMyDocumentTypes implements Query
 {
     private DocumentOwner $owner;
     private Closure $result;

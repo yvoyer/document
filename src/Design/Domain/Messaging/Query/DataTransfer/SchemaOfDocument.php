@@ -47,8 +47,8 @@ final class SchemaOfDocument implements ReadOnlySchema
         return array_keys($visitor->properties());
     }
 
-    public function getPublicProperty(PropertyCode $name): PropertyMetadata
+    public function getPublicProperty(string $code): PropertyMetadata
     {
-        return $this->schema->getPropertyMetadata($name);
+        return $this->schema->getPropertyMetadata($code);
     }
 }

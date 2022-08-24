@@ -4,7 +4,7 @@ namespace Star\Component\Document\Tests\Design\Domain\Model\Behavior\State;
 
 use Star\Component\Document\DataEntry\Domain\Model\Events\ActionWasPerformed;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentAggregate;
-use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\DocumentId;
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Design\Builder\DocumentTypeBuilder;
 use Star\Component\Document\Design\Domain\Model\Behavior\State\StateBehavior;
@@ -30,7 +30,7 @@ final class StateBehaviorTest extends TestCase
         $schema = DocumentTypeBuilder::startDocumentTypeFixture()
             ->attachBehavior('state', StateBehavior::fromMachine($this->machine))
             ->getSchema();
-        $record = DocumentAggregate::withValues(RecordId::fromString('id'), $schema);
+        $record = DocumentAggregate::withValues(DocumentId::fromString('id'), $schema);
         $record->uncommitedEvents(); // reset
 
         $this->assertSame('state(draft)', $record->getValue('state')->toTypedString());

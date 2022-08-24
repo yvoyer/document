@@ -2,9 +2,10 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Model;
 
+use Star\Component\DomainEvent\Serialization\SerializableAttribute;
 use function uniqid;
 
-final class PropertyCode
+final class PropertyCode implements SerializableAttribute
 {
     private string $value;
 
@@ -21,6 +22,11 @@ final class PropertyCode
     public function toString(): string
     {
         return $this->value;
+    }
+
+    public function toSerializableString(): string
+    {
+        return $this->toString();
     }
 
     public static function fromString(string $value): self
