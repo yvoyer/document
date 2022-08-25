@@ -20,9 +20,13 @@ final class FindSchemaForDocumentTypesHandlerTest extends RegressionTestCase
 
         $docOneId = $fixtures
             ->newDocumentType('type-1', 'en', $memberId)
+            ->namedTo('type-1-fr', 'fr')
             ->getDocumentTypeId();
         $fixtures
             ->newDocumentType('type-2', 'en', $memberId)
+            ->namedTo('type-2-de', 'de')
+            ->namedTo('type-2-it', 'it')
+            ->namedTo('type-2-es', 'es')
             ->getDocumentTypeId();
         $docThreeId = $fixtures
             ->newDocumentType('type-3', 'en', $memberId)

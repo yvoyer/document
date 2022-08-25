@@ -2,6 +2,7 @@
 
 namespace Star\Component\Document\Translation\Domain\Model;
 
+use Star\Component\Document\Translation\Domain\Model\Strategy\ThrowExceptionWhenNotDefined;
 use function array_key_exists;
 
 final class TranslatedField
@@ -34,20 +35,36 @@ final class TranslatedField
         return $this->localizedMap[$locale];
     }
 
+    public function update(string $value, string $locale): self
+    {
+        $map = $this->localizedMap;
+        $map[$locale] = $value;
+
+        return self::withMultipleTranslation($this->field, $map, $this->strategy);
+    }
+
     final public static function withSingleTranslation(
         string $field,
         string $content,
         string $locale,
-        FallbackStrategy $strategy
+        FallbackStrategy $strategy = null
     ): TranslatedField {
+        if (!$strategy) {
+            $strategy = new ThrowExceptionWhenNotDefined();
+        }
+
         return self::withMultipleTranslation($field, [$locale => $content], $strategy);
     }
 
     final public static function withMultipleTranslation(
         string $field,
         array $localeMap,
-        FallbackStrategy $strategy
+        FallbackStrategy $strategy = null
     ): TranslatedField {
+        if (!$strategy) {
+            $strategy = new ThrowExceptionWhenNotDefined();
+        }
+
         return new self($field, $localeMap, $strategy);
     }
 }

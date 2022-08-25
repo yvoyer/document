@@ -33,7 +33,7 @@ final class SchemaOfDocument implements ReadOnlySchema
 
     public function getName(): string
     {
-        return $this->documentName->toSerializableString();
+        return $this->documentName->toString();
     }
 
     /**

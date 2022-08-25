@@ -10,6 +10,8 @@ use Star\Component\DomainEvent\Messaging\QueryBus;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use function iterator_to_array;
+use function var_dump;
 
 final class DocumentTypeDesign extends AppController
 {
@@ -23,12 +25,25 @@ final class DocumentTypeDesign extends AppController
      */
     public function __invoke(string $id, QueryBus $bus, Request $request): Response
     {
-        $form = $this->createForm(DocumentDesignType::class);
-        $bus->dispatchQuery(
-            $query = new FindSchemaForDocumentTypes(
-                $request->getLocale(),
-                $typeId = DocumentTypeId::fromString($id)
-            )
+        $typeId = DocumentTypeId::fromString($id);
+        $bus->dispatchQuery($query = new FindSchemaForDocumentTypes($request->getLocale(), $typeId));
+        var_dump($schema = $query->getSingleSchema($typeId));
+
+        $supportedLocales = [ // todo make configurable using system setting
+            'en'
+        ];
+        $data = [];
+        foreach ($supportedLocales as $locale) {
+            $data[$locale . '_name'] = $schema->getName($locale);
+        }
+
+        $form = $this->createForm(
+            DocumentDesignType::class,
+            [
+
+                'name' => $schema->getName(),
+
+            ]
         );
 
         return $this->render(

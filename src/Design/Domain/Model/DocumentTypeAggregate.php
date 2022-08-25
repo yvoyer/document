@@ -3,17 +3,23 @@
 namespace Star\Component\Document\Design\Domain\Model;
 
 use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
+use Star\Component\Document\Audit\Domain\Model\UpdatedBy;
 use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\DataEntry\Domain\Model\SchemaMetadata;
 use Star\Component\Document\Design\Domain\Model\Behavior\BehaviorSubject;
 use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 use Star\Component\Document\Design\Domain\Model\Events;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
+use Star\Component\Document\Translation\Domain\Model\Strategy\ReturnDefaultValue;
+use Star\Component\Document\Translation\Domain\Model\Strategy\ThrowExceptionWhenNotDefined;
+use Star\Component\Document\Translation\Domain\Model\TranslatedField;
+use Star\Component\Document\Translation\Domain\Model\TranslationLocale;
 use Star\Component\DomainEvent\AggregateRoot;
+use function var_dump;
 
 class DocumentTypeAggregate extends AggregateRoot implements DocumentDesigner, BehaviorSubject
 {
-    private DocumentName $name;
+    private TranslatedField $name;
     private DocumentSchema $schema;
     private DocumentOwner $owner;
     private string $defaultLocale;
@@ -39,6 +45,14 @@ class DocumentTypeAggregate extends AggregateRoot implements DocumentDesigner, B
         );
 
         return $aggregate;
+    }
+
+    public function getName(TranslationLocale $locale): DocumentName
+    {
+        return DocumentName::fromLocalizedString(
+            $this->name->toTranslatedString($locale->toString()),
+            $locale->toString()
+        );
     }
 
     public function getSchema(): SchemaMetadata
@@ -123,6 +137,19 @@ class DocumentTypeAggregate extends AggregateRoot implements DocumentDesigner, B
         );
     }
 
+    public function rename(DocumentName $name, AuditDateTime $renamedAt, UpdatedBy $renamedBy): void
+    {
+        $this->mutate(
+            new Events\DocumentTypeWasRenamed(
+                $this->getIdentity(),
+                $this->getName(TranslationLocale::fromString($name->locale())),
+                $name,
+                $renamedAt,
+                $renamedBy
+            )
+        );
+    }
+
     public function addPropertyParameter(
         PropertyCode $code,
         string $parameterName,
@@ -161,7 +188,12 @@ class DocumentTypeAggregate extends AggregateRoot implements DocumentDesigner, B
     {
         $this->schema = new DocumentSchema($event->typeId());
         $this->defaultLocale = $event->name()->locale();
-        $this->name = $event->name();
+        $this->name = TranslatedField::withSingleTranslation(
+            'name',
+            $event->name()->toString(),
+            $event->name()->locale(),
+            new ReturnDefaultValue($event->name()->toString())
+        );
         $this->owner = $event->updatedBy();
     }
 
@@ -200,5 +232,13 @@ class DocumentTypeAggregate extends AggregateRoot implements DocumentDesigner, B
     protected function onPropertyConstraintWasRemoved(Events\PropertyConstraintWasRemoved $event): void
     {
         $this->schema->removePropertyConstraint($event->propertyCode(), $event->constraintName());
+    }
+
+    protected function onDocumentTypeWasRenamed(Events\DocumentTypeWasRenamed $event): void
+    {
+        $this->name = $this->name->update(
+            $event->newName()->toString(),
+            $event->newName()->locale()
+        );
     }
 }

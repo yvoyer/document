@@ -43,4 +43,13 @@ final class TranslatedFieldTest extends TestCase
         $this->expectErrorMessage('No translation map for field "field" could be found for locale "fr".');
         $field->toTranslatedString('fr');
     }
+
+    public function test_it_should_set_new_translation(): void
+    {
+        $old = TranslatedField::withSingleTranslation('name', 'old', 'en');
+        $new = $old->update('new', 'en');
+
+        self::assertSame('old', $old->toTranslatedString('en'));
+        self::assertSame('new', $new->toTranslatedString('en'));
+    }
 }

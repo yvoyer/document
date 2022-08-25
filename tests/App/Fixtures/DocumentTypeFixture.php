@@ -5,6 +5,7 @@ namespace Star\Component\Document\Tests\App\Fixtures;
 use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateProperty;
+use Star\Component\Document\Design\Domain\Model\DocumentName;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
@@ -21,6 +22,19 @@ final class DocumentTypeFixture
     ) {
         $this->documentId = $documentId;
         $this->builder = $builder;
+    }
+
+    public function namedTo(string $name, string $locale): self
+    {
+        $this->builder->doCommand(
+            new RenameDocumentType(
+                $this->documentId,
+                DocumentName::fromLocalizedString($name, $locale),
+                AuditDateTime::fromNow()
+            )
+        );
+
+        return $this;
     }
 
     public function withTextProperty(string $name, string $locale): PropertyFixture
