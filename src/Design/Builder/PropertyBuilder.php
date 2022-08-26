@@ -3,8 +3,8 @@
 namespace Star\Component\Document\Design\Builder;
 
 use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\DocumentDesigner;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyParameter;
 

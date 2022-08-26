@@ -2,7 +2,7 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Schema;
 
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 
 final class ReferencePropertyNotFound extends \RuntimeException
 {

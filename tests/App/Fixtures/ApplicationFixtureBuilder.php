@@ -7,7 +7,7 @@ use Doctrine\DBAL\Connection;
 use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocumentType;
 use Star\Component\Document\Design\Domain\Messaging\Query\FindSchemaForDocumentTypes;
-use Star\Component\Document\Design\Domain\Model\DocumentName;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeName;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\Document\Membership\Domain\Messaging\Command\RegisterMember;
@@ -58,7 +58,7 @@ final class ApplicationFixtureBuilder
         $this->doCommand(
             new CreateDocumentType(
                 $id = DocumentTypeId::random(),
-                DocumentName::fromLocalizedString($name, $locale),
+                DocumentTypeName::fromLocalizedString($name, $locale),
                 $owner,
                 AuditDateTime::fromNow()
             )

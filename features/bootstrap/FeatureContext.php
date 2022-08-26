@@ -15,7 +15,6 @@ use Star\Component\Document\DataEntry\Domain\Messaging\Query\GetAllRecordsOfDocu
 use Star\Component\Document\DataEntry\Domain\Messaging\Query\GetAllRecordsOfDocumentHandler;
 use Star\Component\Document\DataEntry\Domain\Messaging\Query\RecordRow;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentId;
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ValidationFailedForProperty;
 use Star\Component\Document\DataEntry\Domain\Model\Values\ListOptionValue;
 use Star\Component\Document\DataEntry\Domain\Model\Values\OptionListValue;
@@ -41,10 +40,11 @@ use Star\Component\Document\Design\Domain\Model\Constraints\RequiresOptionCount;
 use Star\Component\Document\Design\Domain\Model\Constraints\RequiresValue;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeAggregate;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
-use Star\Component\Document\Design\Domain\Model\DocumentName;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeName;
 use Star\Component\Document\Design\Domain\Model\Parameters\DateFormat;
 use Star\Component\Document\Design\Domain\Model\Parameters\DefaultValue;
 use Star\Component\Document\Design\Domain\Model\Parameters\ParameterData;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\Test\NullOwner;
 use Star\Component\Document\Design\Domain\Model\Types;
@@ -204,7 +204,7 @@ class FeatureContext implements Context
         $this->bus->dispatchCommand(
             new CreateDocumentType(
                 DocumentTypeId::fromString($documentId),
-                DocumentName::fromLocalizedString($documentId, 'en'),
+                DocumentTypeName::fromLocalizedString($documentId, 'en'),
                 new NullOwner(),
                 AuditDateTime::fromNow()
             )

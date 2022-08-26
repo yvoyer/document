@@ -3,10 +3,10 @@
 namespace Star\Component\Document\Tests\App\Fixtures;
 
 use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateProperty;
-use Star\Component\Document\Design\Domain\Model\DocumentName;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeName;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Types\StringType;
@@ -29,7 +29,7 @@ final class DocumentTypeFixture
         $this->builder->doCommand(
             new RenameDocumentType(
                 $this->documentId,
-                DocumentName::fromLocalizedString($name, $locale),
+                DocumentTypeName::fromLocalizedString($name, $locale),
                 AuditDateTime::fromNow()
             )
         );

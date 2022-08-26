@@ -4,22 +4,22 @@ namespace Star\Component\Document\Design\Domain\Model\Events;
 
 use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\Audit\Domain\Model\UpdatedBy;
-use Star\Component\Document\Design\Domain\Model\DocumentName;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeName;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 
 final class DocumentTypeWasRenamed implements DocumentTypeEvent
 {
     private DocumentTypeId $typeId;
-    private DocumentName $oldName;
-    private DocumentName $newName;
+    private DocumentTypeName $oldName;
+    private DocumentTypeName $newName;
     private AuditDateTime $renamedAt;
     private UpdatedBy $renamedBy;
 
     public function __construct(
         DocumentTypeId $typeId,
-        DocumentName $oldName,
-        DocumentName $newName,
+        DocumentTypeName $oldName,
+        DocumentTypeName $newName,
         AuditDateTime $renamedAt,
         UpdatedBy $renamedBy
     ) {
@@ -35,12 +35,12 @@ final class DocumentTypeWasRenamed implements DocumentTypeEvent
         return $this->typeId;
     }
 
-    final public function oldName(): DocumentName
+    final public function oldName(): DocumentTypeName
     {
         return $this->oldName;
     }
 
-    final public function newName(): DocumentName
+    final public function newName(): DocumentTypeName
     {
         return $this->newName;
     }

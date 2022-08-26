@@ -6,7 +6,7 @@ use Doctrine\DBAL\Connection;
 use Star\Component\Document\Design\Domain\Messaging\Query\DataTransfer\SchemaOfDocument;
 use Star\Component\Document\Design\Domain\Messaging\Query\FindSchemaForDocumentTypes;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
-use Star\Component\Document\Design\Domain\Model\DocumentName;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeName;
 use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 
 final class FindSchemaForDocumentTypesHandler
@@ -59,7 +59,7 @@ final class FindSchemaForDocumentTypesHandler
                 foreach ($result->iterateAssociativeIndexed() as $typeId => $row) {
                     yield $typeId => new SchemaOfDocument(
                         DocumentTypeId::fromString($typeId),
-                        DocumentName::fromLocalizedString($row['name'], $locale),
+                        DocumentTypeName::fromLocalizedString($row['name'], $locale),
                         DocumentSchema::fromJsonString($row['structure'])
                     );
                 }

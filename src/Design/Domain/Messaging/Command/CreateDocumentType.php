@@ -4,20 +4,20 @@ namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
 use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
-use Star\Component\Document\Design\Domain\Model\DocumentName;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeName;
 use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\DomainEvent\Messaging\Command;
 
 final class CreateDocumentType implements Command
 {
     private DocumentTypeId $id;
-    private DocumentName $name;
+    private DocumentTypeName $name;
     private DocumentOwner $owner;
     private AuditDateTime $createdAt;
 
     public function __construct(
         DocumentTypeId $typeId,
-        DocumentName $name,
+        DocumentTypeName $name,
         DocumentOwner $owner,
         AuditDateTime $createdAt
     ) {
@@ -32,7 +32,7 @@ final class CreateDocumentType implements Command
         return $this->id;
     }
 
-    final public function name(): DocumentName
+    final public function name(): DocumentTypeName
     {
         return $this->name;
     }

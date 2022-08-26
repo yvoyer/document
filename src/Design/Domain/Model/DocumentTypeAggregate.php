@@ -4,18 +4,16 @@ namespace Star\Component\Document\Design\Domain\Model;
 
 use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\Audit\Domain\Model\UpdatedBy;
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\DataEntry\Domain\Model\SchemaMetadata;
 use Star\Component\Document\Design\Domain\Model\Behavior\BehaviorSubject;
-use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 use Star\Component\Document\Design\Domain\Model\Events;
+use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
+use Star\Component\Document\Translation\Domain\Model\FallbackStrategy;
 use Star\Component\Document\Translation\Domain\Model\Strategy\ReturnDefaultValue;
-use Star\Component\Document\Translation\Domain\Model\Strategy\ThrowExceptionWhenNotDefined;
 use Star\Component\Document\Translation\Domain\Model\TranslatedField;
-use Star\Component\Document\Translation\Domain\Model\TranslationLocale;
 use Star\Component\DomainEvent\AggregateRoot;
-use function var_dump;
+use function sprintf;
 
 class DocumentTypeAggregate extends AggregateRoot implements DocumentDesigner, BehaviorSubject
 {
@@ -31,7 +29,7 @@ class DocumentTypeAggregate extends AggregateRoot implements DocumentDesigner, B
 
     public static function draft(
         DocumentTypeId $id,
-        DocumentName $name,
+        DocumentTypeName $name,
         DocumentOwner $owner,
         AuditDateTime $created_at
     ): DocumentTypeAggregate {
@@ -47,11 +45,11 @@ class DocumentTypeAggregate extends AggregateRoot implements DocumentDesigner, B
         return $aggregate;
     }
 
-    public function getName(TranslationLocale $locale): DocumentName
+    public function getName(string $locale): DocumentTypeName
     {
-        return DocumentName::fromLocalizedString(
-            $this->name->toTranslatedString($locale->toString()),
-            $locale->toString()
+        return DocumentTypeName::fromLocalizedString(
+            $this->name->toTranslatedString($locale),
+            $locale
         );
     }
 
@@ -137,12 +135,12 @@ class DocumentTypeAggregate extends AggregateRoot implements DocumentDesigner, B
         );
     }
 
-    public function rename(DocumentName $name, AuditDateTime $renamedAt, UpdatedBy $renamedBy): void
+    public function rename(DocumentTypeName $name, AuditDateTime $renamedAt, UpdatedBy $renamedBy): void
     {
         $this->mutate(
             new Events\DocumentTypeWasRenamed(
                 $this->getIdentity(),
-                $this->getName(TranslationLocale::fromString($name->locale())),
+                $this->getName($name->locale()),
                 $name,
                 $renamedAt,
                 $renamedBy
@@ -188,11 +186,43 @@ class DocumentTypeAggregate extends AggregateRoot implements DocumentDesigner, B
     {
         $this->schema = new DocumentSchema($event->typeId());
         $this->defaultLocale = $event->name()->locale();
-        $this->name = TranslatedField::withSingleTranslation(
+        $this->name = TranslatedField::forDefaultLocale(
             'name',
             $event->name()->toString(),
             $event->name()->locale(),
-            new ReturnDefaultValue($event->name()->toString())
+            new class($event->name()) implements FallbackStrategy {
+                private DocumentTypeName $defaultName;
+
+                public function __construct(DocumentTypeName $name)
+                {
+                    $this->defaultName = $name;
+                }
+
+                public function whenUndefinedLocaleMap(string $field, array $map, string $locale, string $defaultLocale): string
+                {
+                    return $this->defaultName->toString();
+                }
+
+                public function whenEmptyContentOnCreate(string $field, string $locale, string $defaultLocale): string
+                {
+                    return $this->defaultName->toString();
+                }
+
+                public function whenEmptyContentOnUpdate(string $field, array $map, string $locale, string $defaultLocale): string
+                {
+                    return '';
+                }
+
+                public function whenEmptyContentForDefaultLocale(string $field, array $map, string $defaultLocale): string
+                {
+                    throw new InvalidDocumentTypeName(
+                        sprintf(
+                            'Document type name cannot be empty for the default locale "%s".',
+                            $defaultLocale
+                        )
+                    );
+                }
+            }
         );
         $this->owner = $event->updatedBy();
     }
@@ -236,7 +266,7 @@ class DocumentTypeAggregate extends AggregateRoot implements DocumentDesigner, B
 
     protected function onDocumentTypeWasRenamed(Events\DocumentTypeWasRenamed $event): void
     {
-        $this->name = $this->name->update(
+        $this->name = $this->name->updateLocalizedValue(
             $event->newName()->toString(),
             $event->newName()->locale()
         );

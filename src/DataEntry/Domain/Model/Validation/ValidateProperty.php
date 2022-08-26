@@ -2,11 +2,11 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Model\Validation;
 
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeVisitor;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyParameter;

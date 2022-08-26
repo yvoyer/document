@@ -3,10 +3,10 @@
 namespace Star\Component\Document\Design\Domain\Model\Events;
 
 use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\Constraints\ConstraintData;
-use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\DocumentOwner;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 
 final class PropertyConstraintWasAdded implements DocumentTypeEvent

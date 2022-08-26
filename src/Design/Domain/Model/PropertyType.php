@@ -2,7 +2,6 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\Types\InvalidPropertyValue;
 use Star\Component\Document\Design\Domain\Model\Types\NotSupportedTypeForValue;

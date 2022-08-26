@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocumentType;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocumentTypeHandler;
-use Star\Component\Document\Design\Domain\Model\DocumentName;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeName;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\Test\NullOwner;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentTypeCollection;
@@ -24,7 +24,7 @@ final class CreateDocumentHandlerTest extends TestCase
         $handler(
             new CreateDocumentType(
                 $id,
-                DocumentName::random(),
+                DocumentTypeName::random(),
                 new NullOwner(),
                 AuditDateTime::fromNow()
             )

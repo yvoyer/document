@@ -3,11 +3,11 @@
 namespace Star\Component\Document\Design\Domain\Model\Behavior\State;
 
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\DataEntry\Domain\Model\RecordAction;
 use Star\Component\Document\DataEntry\Domain\Model\SchemaMetadata;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\AlwaysThrowExceptionOnValidationErrors;
 use Star\Component\Document\DataEntry\Domain\Model\Values\StringValue;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use function sprintf;
 
 final class TransitStateDocument implements RecordAction

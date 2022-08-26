@@ -5,8 +5,8 @@ namespace App\Tests\Assertions\Design;
 use App\Tests\Assertions\TranslationsToAssertion;
 use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\Assert;
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use function array_merge;
 use function var_dump;
 

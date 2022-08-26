@@ -13,8 +13,37 @@ final class ReturnDefaultValue implements FallbackStrategy
         $this->defaultValue = $defaultValue;
     }
 
-    public function onUndefinedTranslation(string $field, array $map, string $locale): string
-    {
+    public function whenUndefinedLocaleMap(
+        string $field,
+        array $map,
+        string $locale,
+        string $defaultLocale
+    ): string {
+        return $this->defaultValue;
+    }
+
+    public function whenEmptyContentOnUpdate(
+        string $field,
+        array $map,
+        string $locale,
+        string $defaultLocale
+    ): string {
+        return $this->defaultValue;
+    }
+
+    public function whenEmptyContentOnCreate(
+        string $field,
+        string $locale,
+        string $defaultLocale
+    ): string {
+        throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
+    }
+
+    public function whenEmptyContentForDefaultLocale(
+        string $field,
+        array $map,
+        string $defaultLocale
+    ): string {
         return $this->defaultValue;
     }
 }

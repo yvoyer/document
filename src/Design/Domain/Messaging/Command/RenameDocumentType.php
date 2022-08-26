@@ -4,19 +4,19 @@ namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
 use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\Audit\Domain\Model\UpdatedBy;
-use Star\Component\Document\Design\Domain\Model\DocumentName;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeName;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 
 final class RenameDocumentType
 {
     private DocumentTypeId $typeId;
-    private DocumentName $name;
+    private DocumentTypeName $name;
     private AuditDateTime $renamedAt;
     private UpdatedBy $renamedBy;
 
     public function __construct(
         DocumentTypeId $typeId,
-        DocumentName $name,
+        DocumentTypeName $name,
         AuditDateTime $renamedAt,
         UpdatedBy $renamedBy
     ) {
@@ -31,7 +31,7 @@ final class RenameDocumentType
         return $this->typeId;
     }
 
-    final public function name(): DocumentName
+    final public function name(): DocumentTypeName
     {
         return $this->name;
     }

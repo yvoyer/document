@@ -3,9 +3,9 @@
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
 use RuntimeException;
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Values\StringValue;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 
 final class StringType implements PropertyType

@@ -4,14 +4,13 @@ namespace Star\Component\Document\Tests\Design\Domain\Messaging\Command;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Builder\DocumentTypeBuilder;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddPropertyConstraint;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddPropertyConstraintHandler;
 use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\Schema\ReferencePropertyNotFound;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
-use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\ConstraintFactory;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentTypeCollection;
 
 final class AddPropertyConstraintHandlerTest extends TestCase

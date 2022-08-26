@@ -3,10 +3,10 @@
 namespace Star\Component\Document\Tests\App\Fixtures;
 
 use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Messaging\Command\AddPropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\Constraints\RequiresValue;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 
 final class PropertyFixture
 {

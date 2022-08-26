@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Star\Component\Document\DataEntry\Domain\Model;
+namespace Star\Component\Document\Design\Domain\Model;
 
 use Behat\Transliterator\Transliterator;
 use Star\Component\DomainEvent\Serialization\SerializableAttribute;

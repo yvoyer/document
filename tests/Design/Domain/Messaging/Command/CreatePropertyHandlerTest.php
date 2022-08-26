@@ -4,12 +4,12 @@ namespace Star\Component\Document\Tests\Design\Domain\Messaging\Command;
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Builder\DocumentTypeBuilder;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateProperty;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreatePropertyHandler;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeAggregate;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\Schema\PropertyDefinition;
 use Star\Component\Document\Design\Domain\Model\Types\StringType;

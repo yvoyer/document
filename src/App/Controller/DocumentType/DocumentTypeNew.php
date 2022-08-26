@@ -8,7 +8,7 @@ use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\Bridge\Validation\FlashableException;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateDocumentType;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
-use Star\Component\Document\Design\Domain\Model\DocumentName;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeName;
 use Star\Component\DomainEvent\Messaging\CommandBus;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,7 +33,7 @@ final class DocumentTypeNew extends AppController
         AuthenticationContext $context
     ): Response {
         try {
-            $name = DocumentName::fromLocalizedString(
+            $name = DocumentTypeName::fromLocalizedString(
                 $request->get('document_type_name'),
                 $request->getLocale()
             );

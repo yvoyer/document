@@ -4,9 +4,9 @@ namespace Star\Component\Document\Design\Domain\Model\Types;
 
 use Assert\Assertion;
 use RuntimeException;
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\Behavior\DocumentBehavior;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 
 final class BehaviorType implements PropertyType

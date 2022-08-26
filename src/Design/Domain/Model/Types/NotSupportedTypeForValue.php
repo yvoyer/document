@@ -3,8 +3,8 @@
 namespace Star\Component\Document\Design\Domain\Model\Types;
 
 use InvalidArgumentException;
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 
 final class NotSupportedTypeForValue extends InvalidArgumentException

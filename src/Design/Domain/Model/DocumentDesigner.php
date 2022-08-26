@@ -3,7 +3,6 @@
 namespace Star\Component\Document\Design\Domain\Model;
 
 use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 
 interface DocumentDesigner
 {

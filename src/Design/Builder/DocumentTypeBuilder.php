@@ -4,7 +4,6 @@ namespace Star\Component\Document\Design\Builder;
 
 use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\DataEntry\Builder\DocumentBuilder;
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentAggregate;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
@@ -13,11 +12,12 @@ use Star\Component\Document\DataEntry\Domain\Model\Validation\AlwaysThrowExcepti
 use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleValidationErrors;
 use Star\Component\Document\DataEntry\Domain\Model\Values\OptionListValue;
 use Star\Component\Document\Design\Domain\Model\Behavior\DocumentBehavior;
-use Star\Component\Document\Design\Domain\Model\DocumentTypeAggregate;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
-use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
-use Star\Component\Document\Design\Domain\Model\DocumentName;
 use Star\Component\Document\Design\Domain\Model\DocumentOwner;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeAggregate;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeName;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\Document\Design\Domain\Model\Test\NullOwner;
@@ -30,7 +30,7 @@ final class DocumentTypeBuilder
 
     private function __construct(
         DocumentTypeId $id,
-        DocumentName $type,
+        DocumentTypeName $type,
         DocumentOwner $owner,
         AuditDateTime $createdAt
     ) {
@@ -163,7 +163,7 @@ final class DocumentTypeBuilder
 
         return self::startDocumentType(
             DocumentTypeId::fromString($id),
-            DocumentName::random(),
+            DocumentTypeName::random(),
             new NullOwner(),
             AuditDateTime::fromNow()
         );
@@ -171,7 +171,7 @@ final class DocumentTypeBuilder
 
     public static function startDocumentType(
         DocumentTypeId $id,
-        DocumentName $name,
+        DocumentTypeName $name,
         DocumentOwner $owner,
         AuditDateTime $createdAt
     ): self {

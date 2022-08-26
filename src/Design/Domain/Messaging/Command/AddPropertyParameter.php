@@ -3,9 +3,9 @@
 namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
 use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\Parameters\ParameterData;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\DomainEvent\Messaging\Command;
 
 final class AddPropertyParameter implements Command

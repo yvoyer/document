@@ -2,8 +2,6 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
-
 interface DocumentTypeVisitor
 {
     public function visitDocumentType(DocumentTypeId $id): void;

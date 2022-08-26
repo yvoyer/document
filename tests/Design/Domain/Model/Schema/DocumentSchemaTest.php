@@ -4,11 +4,11 @@ namespace Star\Component\Document\Tests\Design\Domain\Model\Schema;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\Constraints\All;
 use Star\Component\Document\Design\Domain\Model\Constraints\NoConstraint;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\Parameters\NullParameter;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 use Star\Component\Document\Design\Domain\Model\Types;

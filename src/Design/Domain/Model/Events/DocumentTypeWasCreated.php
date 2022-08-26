@@ -4,7 +4,7 @@ namespace Star\Component\Document\Design\Domain\Model\Events;
 
 use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
-use Star\Component\Document\Design\Domain\Model\DocumentName;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeName;
 use Star\Component\Document\Design\Domain\Model\DocumentOwner;
 use Star\Component\Document\Membership\Domain\Model\MemberId;
 use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
@@ -12,13 +12,13 @@ use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 final class DocumentTypeWasCreated implements DocumentTypeEvent
 {
     private string $id;
-    private DocumentName $name;
+    private DocumentTypeName $name;
     private string $createdBy;
     private AuditDateTime $createdAt;
 
     public function __construct(
         DocumentTypeId $id,
-        DocumentName $name,
+        DocumentTypeName $name,
         DocumentOwner $owner,
         AuditDateTime $createdAt
     ) {
@@ -33,7 +33,7 @@ final class DocumentTypeWasCreated implements DocumentTypeEvent
         return DocumentTypeId::fromString($this->id);
     }
 
-    final public function name(): DocumentName
+    final public function name(): DocumentTypeName
     {
         return $this->name;
     }
@@ -52,7 +52,7 @@ final class DocumentTypeWasCreated implements DocumentTypeEvent
     {
         return new self(
             DocumentTypeId::fromString($payload['id']),
-            DocumentName::fromSerializedString($payload['name']),
+            DocumentTypeName::fromSerializedString($payload['name']),
             MemberId::fromString($payload['createdBy']),
             AuditDateTime::fromString($payload['createdAt'])
         );

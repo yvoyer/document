@@ -3,10 +3,10 @@
 namespace Star\Component\Document\Tests\Design\Domain\Messaging\Command;
 
 use PHPUnit\Framework\TestCase;
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Builder\DocumentTypeBuilder;
 use Star\Component\Document\Design\Domain\Messaging\Command\RemovePropertyConstraint;
 use Star\Component\Document\Design\Domain\Messaging\Command\RemovePropertyConstraintHandler;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\Schema\ReferencePropertyNotFound;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
 use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentTypeCollection;

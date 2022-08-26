@@ -6,25 +6,24 @@ use Star\Component\Document\Translation\Domain\Model\TranslationLocale;
 use Star\Component\DomainEvent\Serialization\SerializableAttribute;
 use function mb_strlen;
 use function serialize;
-use function sprintf;
+use function trim;
 use function uniqid;
 use function unserialize;
 
-final class DocumentName implements SerializableAttribute
+final class DocumentTypeName implements SerializableAttribute
 {
     private string $name;
     private TranslationLocale $locale;
 
     public function __construct(string $name, TranslationLocale $locale)
     {
-        if (mb_strlen($name) === 0) {
-            throw new InvalidDocumentTypeName(
-                sprintf('Document type name "%s" cannot be empty.', $name)
-            );
-        }
-
-        $this->name = $name;
+        $this->name = trim($name);
         $this->locale = $locale;
+    }
+
+    final public function isEmpty(): bool
+    {
+        return mb_strlen($this->name) === 0;
     }
 
     final public function toSerializableString(): string
@@ -37,23 +36,19 @@ final class DocumentName implements SerializableAttribute
         return $this->name;
     }
 
-    /**
-     * @return string
-     * @deprecated todo Return TranslationLocale instead
-     */
     final public function locale(): string
     {
         return $this->locale->toString();
     }
 
-    public static function fromSerializedString(string $payload): DocumentName
+    public static function fromSerializedString(string $payload): DocumentTypeName
     {
         $data = unserialize($payload);
 
         return self::fromLocalizedString((string) $data['content'], (string) $data['locale']);
     }
 
-    public static function fromLocalizedString(string $name, string $locale): DocumentName
+    public static function fromLocalizedString(string $name, string $locale): DocumentTypeName
     {
         return new self($name, TranslationLocale::fromString($locale));
     }

@@ -2,13 +2,13 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Schema;
 
-use Star\Component\Document\DataEntry\Domain\Model\PropertyCode;
 use Star\Component\Document\DataEntry\Domain\Model\PropertyMetadata;
 use Star\Component\Document\DataEntry\Domain\Model\SchemaMetadata;
 use Star\Component\Document\Design\Domain\Model\Constraints\ConstraintData;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeVisitor;
 use Star\Component\Document\Design\Domain\Model\Parameters\ParameterData;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyParameter;

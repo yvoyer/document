@@ -8,6 +8,7 @@ use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleValidationErrors;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ValidateProperty;
 use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\Schema\DocumentSchema;
 use Star\Component\DomainEvent\AggregateRoot;
 use function array_key_exists;
