@@ -2,48 +2,55 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Events;
 
-use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
+use Star\Component\Document\Audit\Domain\Model\UpdatedBy;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
+use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 
-final class PropertyConstraintWasRemoved implements DocumentEvent
+final class PropertyConstraintWasRemoved implements DocumentTypeEvent
 {
-    /**
-     * @var DocumentId
-     */
-    private $document;
-
-    /**
-     * @var PropertyName
-     */
-    private $propertyName;
-
-    /**
-     * @var string
-     */
-    private $constraintName;
+    private DocumentTypeId $document;
+    private PropertyCode $propertyCode;
+    private string $constraintName;
 
     public function __construct(
-        DocumentId $document,
-        PropertyName $propertyName,
+        DocumentTypeId $document,
+        PropertyCode $propertyCode,
         string $constraintName
     ) {
         $this->document = $document;
-        $this->propertyName = $propertyName;
+        $this->propertyCode = $propertyCode;
         $this->constraintName = $constraintName;
     }
 
-    public function documentId(): DocumentId
+    final public function typeId(): DocumentTypeId
     {
         return $this->document;
     }
 
-    public function propertyName(): PropertyName
+    final public function propertyCode(): PropertyCode
     {
-        return $this->propertyName;
+        return $this->propertyCode;
     }
 
-    public function constraintName(): string
+    final public function constraintName(): string
     {
         return $this->constraintName;
+    }
+
+    final public function updatedAt(): AuditDateTime
+    {
+        throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
+    }
+
+    final public function updatedBy(): UpdatedBy
+    {
+        throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
+    }
+
+    public static function fromPayload(array $payload): CreatedFromPayload
+    {
+        throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
     }
 }

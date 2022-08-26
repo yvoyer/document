@@ -2,6 +2,7 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Model;
 
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\Types\InvalidPropertyValue;
 use Star\Component\Document\Design\Domain\Model\Types\NotSupportedTypeForValue;
 
@@ -45,22 +46,22 @@ interface PropertyMetadata
     public function supportsValue(RecordValue $value): bool;
 
     /**
-     * @param string $property
+     * @param PropertyCode $property
      * @param RecordValue $value
      * @return NotSupportedTypeForValue
      */
     public function generateExceptionForNotSupportedTypeForValue(
-        string $property,
+        PropertyCode $property,
         RecordValue $value
     ): NotSupportedTypeForValue;
 
     /**
-     * @param string $property
+     * @param PropertyCode $property
      * @param RecordValue $value
      * @return InvalidPropertyValue
      */
     public function generateExceptionForNotSupportedValue(
-        string $property,
+        PropertyCode $property,
         RecordValue $value
     ): InvalidPropertyValue;
 }

@@ -3,20 +3,20 @@
 namespace Star\Component\Document\DataEntry\Domain\Messaging\Command;
 
 use Assert\Assertion;
-use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\DomainEvent\Messaging\Command;
 
 final class CreateRecord implements Command
 {
     /**
-     * @var DocumentId
+     * @var DocumentTypeId
      */
     private $documentId;
 
     /**
-     * @var RecordId
+     * @var DocumentId
      */
     private $recordId;
 
@@ -26,13 +26,13 @@ final class CreateRecord implements Command
     private $values = [];
 
     /**
-     * @param DocumentId $documentId
-     * @param RecordId $recordId
+     * @param DocumentTypeId $documentId
+     * @param DocumentId $recordId
      * @param RecordValue[] $values
      */
     public function __construct(
-        DocumentId $documentId,
-        RecordId $recordId,
+        DocumentTypeId $documentId,
+        DocumentId $recordId,
         array $values
     ) {
         Assertion::allString(
@@ -49,12 +49,12 @@ final class CreateRecord implements Command
         $this->values = $values;
     }
 
-    public function documentId(): DocumentId
+    public function documentId(): DocumentTypeId
     {
         return $this->documentId;
     }
 
-    public function recordId(): RecordId
+    public function recordId(): DocumentId
     {
         return $this->recordId;
     }

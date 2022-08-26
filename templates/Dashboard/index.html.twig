@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'app.title.dashboard_index'|trans }}{% endblock %}
+
+{% block body %}
+    <section>
+        {% include 'DocumentType/my_documents.html.twig' with {'document_types': document_types } %}
+    </section>
+{% endblock %}

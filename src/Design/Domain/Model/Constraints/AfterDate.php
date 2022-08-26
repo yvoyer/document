@@ -53,11 +53,11 @@ final class AfterDate implements PropertyConstraint
 
     public function toData(): ConstraintData
     {
-        return new ConstraintData(self::class, ['target' => $this->target->format(self::FORMAT)]);
+        return ConstraintData::fromConstraint($this, ['target' => $this->target->format(self::FORMAT)]);
     }
 
     public static function fromData(ConstraintData $data): Constraint
     {
-        return new static($data->getArgument('target'));
+        return new self($data->getStringArgument('target'));
     }
 }

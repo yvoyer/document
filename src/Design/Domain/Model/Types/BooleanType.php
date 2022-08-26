@@ -5,6 +5,7 @@ namespace Star\Component\Document\Design\Domain\Model\Types;
 use RuntimeException;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Values\BooleanValue;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 
 final class BooleanType implements PropertyType
@@ -30,14 +31,16 @@ final class BooleanType implements PropertyType
     }
 
     public function generateExceptionForNotSupportedTypeForValue(
-        string $property,
+        PropertyCode $property,
         RecordValue $value
     ): NotSupportedTypeForValue {
         return new NotSupportedTypeForValue($property, $value, $this);
     }
 
-    public function generateExceptionForNotSupportedValue(string $property, RecordValue $value): InvalidPropertyValue
-    {
+    public function generateExceptionForNotSupportedValue(
+        PropertyCode $property,
+        RecordValue $value
+    ): InvalidPropertyValue {
         return InvalidPropertyValue::invalidValueForType(
             $property,
             $value,

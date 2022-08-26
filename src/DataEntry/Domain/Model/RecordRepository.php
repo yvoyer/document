@@ -2,36 +2,36 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Model;
 
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\Identity\Exception\EntityNotFoundException;
 
 interface RecordRepository
 {
     /**
-     * @param RecordId $id
+     * @param DocumentId $id
      *
      * @return DocumentRecord
      * @throws EntityNotFoundException
      */
-    public function getRecordWithIdentity(RecordId $id): DocumentRecord;
-
-    /**
-     * @param RecordId $id
-     *
-     * @return bool
-     */
-    public function recordExists(RecordId $id): bool;
-
-    /**
-     * @param RecordId $id
-     * @param DocumentRecord $record
-     */
-    public function saveRecord(RecordId $id, DocumentRecord $record): void;
+    public function getRecordWithIdentity(DocumentId $id): DocumentRecord;
 
     /**
      * @param DocumentId $id
      *
+     * @return bool
+     */
+    public function recordExists(DocumentId $id): bool;
+
+    /**
+     * @param DocumentId $id
+     * @param DocumentRecord $record
+     */
+    public function saveRecord(DocumentId $id, DocumentRecord $record): void;
+
+    /**
+     * @param DocumentTypeId $id
+     *
      * @return DocumentRecord[]
      */
-    public function allRecordsOfDocument(DocumentId $id): array;
+    public function allRecordsOfDocument(DocumentTypeId $id): array;
 }

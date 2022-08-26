@@ -2,16 +2,16 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Model;
 
-use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeVisitor;
 
 interface SchemaMetadata
 {
-    public function getIdentity(): DocumentId;
+    public function getIdentity(): DocumentTypeId;
 
     public function toString(): string;
 
-    public function getPropertyMetadata(string $propertyName): PropertyMetadata;
+    public function getPropertyMetadata(string $code): PropertyMetadata;
 
-    public function acceptDocumentVisitor(DocumentVisitor $visitor): void;
+    public function acceptDocumentTypeVisitor(DocumentTypeVisitor $visitor): void;
 }

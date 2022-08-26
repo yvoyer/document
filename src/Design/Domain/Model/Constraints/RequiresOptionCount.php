@@ -11,10 +11,7 @@ use function sprintf;
 
 final class RequiresOptionCount implements PropertyConstraint
 {
-    /**
-     * @var int
-     */
-    private $count;
+    private int $count;
 
     public function __construct(int $count)
     {
@@ -39,11 +36,11 @@ final class RequiresOptionCount implements PropertyConstraint
 
     public function toData(): ConstraintData
     {
-        return new ConstraintData(self::class, ['count' => $this->count]);
+        return ConstraintData::fromConstraint($this, ['count' => $this->count]);
     }
 
     public static function fromData(ConstraintData $data): Constraint
     {
-        return new static($data->getArgument('count'));
+        return new self($data->getIntegerArgument('count'));
     }
 }

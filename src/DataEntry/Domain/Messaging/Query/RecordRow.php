@@ -3,7 +3,7 @@
 namespace Star\Component\Document\DataEntry\Domain\Messaging\Query;
 
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
-use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\DocumentId;
 
 final class RecordRow
 {
@@ -21,9 +21,9 @@ final class RecordRow
     }
 
     /**
-     * @return RecordId
+     * @return DocumentId
      */
-    public function getRecordId(): RecordId
+    public function getRecordId(): DocumentId
     {
         return $this->record->getIdentity();
     }

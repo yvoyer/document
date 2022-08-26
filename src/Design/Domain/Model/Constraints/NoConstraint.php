@@ -17,7 +17,7 @@ final class NoConstraint implements PropertyConstraint, DocumentConstraint
 
     public function toData(): ConstraintData
     {
-        return new ConstraintData(self::class);
+        return ConstraintData::fromConstraint($this, []);
     }
 
     public function onRegistered(DocumentDesigner $document): void
@@ -27,6 +27,6 @@ final class NoConstraint implements PropertyConstraint, DocumentConstraint
 
     public static function fromData(ConstraintData $data): Constraint
     {
-        return new static();
+        return new self();
     }
 }

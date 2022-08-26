@@ -4,20 +4,21 @@ namespace Star\Component\Document\Design\Domain\Model\Types;
 
 use Assert\Assertion;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
+use Star\Component\DomainEvent\Serialization\SerializableAttribute;
 use function json_decode;
 use function json_encode;
 
-final class TypeData
+final class TypeData implements SerializableAttribute
 {
     /**
      * @var string
      */
-    private $class;
+    private string $class;
 
     /**
      * @var mixed[]
      */
-    private $arguments = [];
+    private array $arguments;
 
     /**
      * @param string $class
@@ -44,6 +45,16 @@ final class TypeData
         $class = $this->class;
 
         return $class::fromData($this->arguments);
+    }
+
+    public function toString(): string
+    {
+        return json_encode($this->toArray());
+    }
+
+    public function toSerializableString(): string
+    {
+        return $this->toString();
     }
 
     /**
@@ -80,5 +91,11 @@ final class TypeData
     public static function fromArray(array $data): self
     {
         return self::fromString((string) json_encode($data));
+    }
+
+    public static function isValidString(string $string): bool
+    {
+        json_decode($string);
+        return json_last_error() === JSON_ERROR_NONE;
     }
 }
