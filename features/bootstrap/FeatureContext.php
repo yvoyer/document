@@ -64,31 +64,22 @@ use function sprintf;
  */
 class FeatureContext implements Context
 {
-    /**
-     * @var DocumentTypeCollection
-     */
-    private $documents;
-
-    /**
-     * @var CommandBus
-     */
-    private $bus;
-
-    /**
-     * @var MessageMapBus
-     */
-    private $queries;
+    private DocumentTypeCollection $documents;
+    private CommandBus $bus;
+    private MessageMapBus $queries;
 
     /**
      * @var string[][]
      */
-    private $errors = [];
+    private array $errors = [];
+
+    private ConstraintFactory $factory;
 
     public function __construct()
     {
         $records = new RecordCollection();
         $this->documents = new DocumentTypeCollection();
-        $constraints = new ConstraintFactory(
+        $this->factory = new ConstraintFactory(
             [
                 'required' => RequiresValue::class,
                 'single-option' => RequiresOptionCount::class,
@@ -107,7 +98,7 @@ class FeatureContext implements Context
         $this->bus->registerHandler(CreateProperty::class, new CreatePropertyHandler($this->documents));
         $this->bus->registerHandler(
             AddPropertyConstraint::class,
-            new AddPropertyConstraintHandler($this->documents, $constraints)
+            new AddPropertyConstraintHandler($this->documents)
         );
         $this->bus->registerHandler(
             AddPropertyParameter::class,
@@ -395,7 +386,8 @@ class FeatureContext implements Context
                     $typeId,
                     $code,
                     $name,
-                    ConstraintData::fromString($jsonString)->createPropertyConstraint(),
+                    $this->factory->createPropertyConstraint($name, $arguments),
+                    #ConstraintData::fromString($jsonString)->createPropertyConstraint(),
                     AuditDateTime::fromNow()
                 )
             );
@@ -493,9 +485,7 @@ class FeatureContext implements Context
      */
     public function thePropertyOfDocumentShouldHaveTheFollowingDefinition($property, $documentId, TableNode $table)
     {
-        $this->getDocument($documentId)->acceptDocumentVisitor($visitor = new PropertyExtractor());
-        $definition = $visitor->getProperty($property);
-
+        $definition = $this->getDocument($documentId)->getSchema()->getPropertyMetadata($property);
         foreach ($table->getHash() as $options) {
             Assert::assertTrue($definition->typeIs($options['type']));
             Assert::assertTrue(

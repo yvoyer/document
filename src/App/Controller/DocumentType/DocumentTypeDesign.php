@@ -27,7 +27,6 @@ final class DocumentTypeDesign extends AppController
     {
         $typeId = DocumentTypeId::fromString($id);
         $bus->dispatchQuery($query = new FindSchemaForDocumentTypes($request->getLocale(), $typeId));
-        var_dump($schema = $query->getSingleSchema($typeId));
 
         $supportedLocales = [ // todo make configurable using system setting
             'en'

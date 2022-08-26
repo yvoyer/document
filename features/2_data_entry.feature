@@ -7,51 +7,51 @@ Feature: Enter values on document using property rules
     Given The document "My document" is created with a text property named "My text"
     When I enter the following values to document "My document"
       | record-id | values                                            |
-      | 1         | {"property":"My text","value":"string(Option 1)"} |
-      | 2         | {"property":"My text","value":"string(Option 2)"} |
-      | 3         | {"property":"My text","value":"string(Option 3)"} |
+      | 1         | {"property":"my-text","value":"string(Option 1)"} |
+      | 2         | {"property":"my-text","value":"string(Option 2)"} |
+      | 3         | {"property":"my-text","value":"string(Option 3)"} |
     Then The records list of document "My document" should looks like:
       | record-id | property | value    |
-      | 1         | My text  | Option 1 |
-      | 2         | My text  | Option 2 |
-      | 3         | My text  | Option 3 |
+      | 1         | my-text  | Option 1 |
+      | 2         | my-text  | Option 2 |
+      | 3         | my-text  | Option 3 |
 
   Scenario: Enter a bool value
     Given The document "My document" is created with a bool property named "My boolean"
     When I enter the following values to document "My document"
       | record-id | values                                             |
-      | 1         | {"property":"My boolean","value":"boolean(true)"}  |
-      | 2         | {"property":"My boolean","value":"boolean(false)"} |
-      | 3         | {"property":"My boolean","value":"boolean(false)"} |
-      | 4         | {"property":"My boolean","value":"boolean(true)"}  |
+      | 1         | {"property":"my-boolean","value":"boolean(true)"}  |
+      | 2         | {"property":"my-boolean","value":"boolean(false)"} |
+      | 3         | {"property":"my-boolean","value":"boolean(false)"} |
+      | 4         | {"property":"my-boolean","value":"boolean(true)"}  |
     Then The records list of document "My document" should looks like:
       | record-id | property    | value    |
-      | 1         | My boolean  | true     |
-      | 2         | My boolean  | false    |
-      | 3         | My boolean  | false    |
-      | 4         | My boolean  | true     |
+      | 1         | my-boolean  | true     |
+      | 2         | my-boolean  | false    |
+      | 3         | my-boolean  | false    |
+      | 4         | my-boolean  | true     |
 
   Scenario: Enter a date value
     Given The document "My document" is created with a date property named "My date"
     When I enter the following values to document "My document"
       | record-id | values                                            |
-      | 1         | {"property":"My date","value":"date(2001-10-01)"} |
-      | 2         | {"property":"My date","value":"date(2002-01-01)"} |
+      | 1         | {"property":"my-date","value":"date(2001-10-01)"} |
+      | 2         | {"property":"my-date","value":"date(2002-01-01)"} |
     Then The records list of document "My document" should looks like:
       | record-id | property | value      |
-      | 1         | My date  | 2001-10-01 |
-      | 2         | My date  | 2002-01-01 |
+      | 1         | my-date  | 2001-10-01 |
+      | 2         | my-date  | 2002-01-01 |
 
   Scenario: Enter a number value
     Given The document "My document" is created with a number property named "My number"
     When I enter the following values to document "My document"
       | record-id | values                                           |
-      | 1         | {"property":"My number","value":"integer(2001)"} |
-      | 2         | {"property":"My number","value":"integer(2002)"} |
+      | 1         | {"property":"my-number","value":"integer(2001)"} |
+      | 2         | {"property":"my-number","value":"integer(2002)"} |
     Then The records list of document "My document" should looks like:
       | record-id | property  | value |
-      | 1         | My number | 2001  |
-      | 2         | My number | 2002  |
+      | 1         | my-number | 2001  |
+      | 2         | my-number | 2002  |
 
   Scenario: Enter values for a custom list property
     Given The document "My document" is created with a custom list property named "My list" having the options:
@@ -61,14 +61,14 @@ Feature: Enter values on document using property rules
       | 3         | Option 3     |
     When I enter the following values to document "My document"
       | record-id | values |
-      | 1         | {"property":"My list","value":"empty()"}      |
-      | 2         | {"property":"My list","value":"array(1)"}     |
-      | 3         | {"property":"My list","value":"array(1;2;3)"} |
+      | 1         | {"property":"my-list","value":"empty()"}      |
+      | 2         | {"property":"my-list","value":"array(1)"}     |
+      | 3         | {"property":"my-list","value":"array(1;2;3)"} |
     Then The records list of document "My document" should looks like:
       | record-id | property  | value |
-      | 1         | My list   |                             |
-      | 2         | My list   | [{"id":1,"value":"Option 1","label":"Option 1"}] |
-      | 3         | My list   | [{"id":1,"value":"Option 1","label":"Option 1"},{"id":2,"value":"Option 2","label":"Option 2"},{"id":3,"value":"Option 3","label":"Option 3"}] |
+      | 1         | my-list   |                             |
+      | 2         | my-list   | [{"id":1,"value":"Option 1","label":"Option 1"}] |
+      | 3         | my-list   | [{"id":1,"value":"Option 1","label":"Option 1"},{"id":2,"value":"Option 2","label":"Option 2"},{"id":3,"value":"Option 3","label":"Option 3"}] |
 
   Scenario: Require a text field with a minimum length
     Given The document "document" is created with a text property named "field"
