@@ -4,6 +4,9 @@ namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 
+/**
+ * todo check if still useful
+ */
 interface ConstraintRegistry
 {
     /**

@@ -5,36 +5,35 @@ namespace Star\Component\Document\Design\Domain\Model\Constraints;
 use Assert\Assertion;
 use Star\Component\Document\Design\Domain\Model\DocumentConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
+use Star\Component\DomainEvent\Serialization\SerializableAttribute;
+use function get_class;
+use function json_decode;
 use function json_encode;
+use function serialize;
 
-final class ConstraintData
+final class ConstraintData implements SerializableAttribute
 {
-    /**
-     * @var string
-     */
-    private $class;
+    private string $class;
+    private array $arguments;
 
-    /**
-     * @var mixed[]
-     */
-    private $arguments = [];
-
-    /**
-     * @param string $class
-     * @param mixed[] $arguments
-     */
-    public function __construct(string $class, array $arguments = [])
+    private function __construct(string $class, array $arguments = [])
     {
         Assertion::implementsInterface($class, PropertyConstraint::class);
         $this->class = $class;
         $this->arguments = $arguments;
     }
 
-    /**
-     * @param string $argument
-     * @return mixed
-     */
-    public function getArgument(string $argument)
+    public function getArrayArgument(string $argument): array
+    {
+        return $this->arguments[$argument];
+    }
+
+    public function getStringArgument(string $argument): string
+    {
+        return $this->arguments[$argument];
+    }
+
+    public function getIntegerArgument(string $argument): int
     {
         return $this->arguments[$argument];
     }
@@ -75,12 +74,46 @@ final class ConstraintData
         return (string) json_encode($this->toArray());
     }
 
+    public function toSerializableString(): string
+    {
+        return serialize($this->toArray());
+    }
+
+    public static function fromString(string $string): self
+    {
+        Assertion::isJsonString($string);
+        $data = json_decode($string, true);
+
+        return self::fromArray($data);
+    }
+
     /**
      * @param mixed[] $data
      * @return ConstraintData
      */
     public static function fromArray(array $data): self
     {
-        return new self($data['class'], $data['arguments']);
+        Assertion::keyExists(
+            $data,
+            'class',
+            'Constraint data does not contain an element with key "%s".'
+        );
+        Assertion::keyExists(
+            $data,
+            'arguments',
+            'Constraint data does not contain an element with key "%s".'
+        );
+
+        return self::fromClass($data['class'], $data['arguments']);
+    }
+
+    public static function fromClass(string $class, array $arguments): self
+    {
+        return new self($class, $arguments);
+    }
+
+    public static function fromConstraint(PropertyConstraint $constraint, array $arguments): self
+    {
+        return self::fromClass(get_class($constraint), $arguments);
     }
 }

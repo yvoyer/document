@@ -2,50 +2,57 @@
 
 namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 use Star\Component\DomainEvent\Messaging\Command;
 
 final class CreateProperty implements Command
 {
-    /**
-     * @var DocumentId
-     */
-    private $documentId;
-
-    /**
-     * @var PropertyName
-     */
-    private $name;
-
-    /**
-     * @var PropertyType
-     */
-    private $type;
+    private DocumentTypeId $typeId;
+    private PropertyCode $code;
+    private PropertyName $name;
+    private PropertyType $type;
+    private AuditDateTime $createdAt;
 
     public function __construct(
-        DocumentId $documentId,
+        DocumentTypeId $typeId,
+        PropertyCode $code,
         PropertyName $name,
-        PropertyType $type
+        PropertyType $type,
+        AuditDateTime $createdAt
     ) {
-        $this->documentId = $documentId;
+        $this->typeId = $typeId;
+        $this->code = $code;
         $this->name = $name;
         $this->type = $type;
+        $this->createdAt = $createdAt;
     }
 
-    public function documentId(): DocumentId
+    final public function typeId(): DocumentTypeId
     {
-        return $this->documentId;
+        return $this->typeId;
     }
 
-    public function name(): PropertyName
+    final public function code(): PropertyCode
+    {
+        return $this->code;
+    }
+
+    final public function name(): PropertyName
     {
         return $this->name;
     }
 
-    public function type(): PropertyType
+    final public function type(): PropertyType
     {
         return $this->type;
+    }
+
+    final public function createdAt(): AuditDateTime
+    {
+        return $this->createdAt;
     }
 }

@@ -3,40 +3,31 @@
 namespace Star\Component\Document\Tests\Design\Domain\Messaging\Command;
 
 use PHPUnit\Framework\TestCase;
-use Star\Component\Document\Design\Builder\DocumentBuilder;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
+use Star\Component\Document\Design\Builder\DocumentTypeBuilder;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreateProperty;
 use Star\Component\Document\Design\Domain\Messaging\Command\CreatePropertyHandler;
-use Star\Component\Document\Design\Domain\Model\DocumentAggregate;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeAggregate;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\Schema\PropertyDefinition;
 use Star\Component\Document\Design\Domain\Model\Types\StringType;
 use Star\Component\Document\Design\Domain\Structure\PropertyExtractor;
-use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
+use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentTypeCollection;
 use Star\Component\Identity\Exception\EntityNotFoundException;
 
 final class CreatePropertyHandlerTest extends TestCase
 {
-    /**
-     * @var CreatePropertyHandler
-     */
-    private $handler;
-
-    /**
-     * @var DocumentCollection
-     */
-    private $documents;
-
-    /**
-     * @var DocumentAggregate
-     */
-    private $document;
+    private CreatePropertyHandler $handler;
+    private DocumentTypeCollection $documents;
+    private DocumentTypeAggregate $document;
 
     public function setUp(): void
     {
-        $this->document = DocumentBuilder::createDocument()->getDocument();
+        $this->document = DocumentTypeBuilder::startDocumentTypeFixture()->getDocumentType();
         $this->handler = new CreatePropertyHandler(
-            $this->documents = new DocumentCollection()
+            $this->documents = new DocumentTypeCollection()
         );
     }
 
@@ -48,13 +39,15 @@ final class CreatePropertyHandlerTest extends TestCase
         $this->handler->__invoke(
             new CreateProperty(
                 $id,
-                PropertyName::fromString($name = 'name'),
-                new StringType()
+                $code = PropertyCode::random(),
+                PropertyName::random(),
+                new StringType(),
+                AuditDateTime::fromNow()
             )
         );
 
         $this->document->acceptDocumentVisitor($visitor = new PropertyExtractor());
-        $this->assertInstanceOf(PropertyDefinition::class, $visitor->getProperty($name));
+        $this->assertInstanceOf(PropertyDefinition::class, $visitor->getProperty($code));
     }
 
     public function test_it_should_throw_exception_when_document_not_found(): void
@@ -65,9 +58,11 @@ final class CreatePropertyHandlerTest extends TestCase
         $this->expectExceptionMessage("with identity 'invalid' could not be found.");
         $handler(
             new CreateProperty(
-                DocumentId::fromString('invalid'),
-                PropertyName::fromString('name'),
-                new StringType()
+                DocumentTypeId::fromString('invalid'),
+                PropertyCode::random(),
+                PropertyName::random(),
+                new StringType(),
+                AuditDateTime::fromNow()
             )
         );
     }

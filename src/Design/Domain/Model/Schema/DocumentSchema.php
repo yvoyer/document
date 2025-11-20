@@ -5,9 +5,10 @@ namespace Star\Component\Document\Design\Domain\Model\Schema;
 use Star\Component\Document\DataEntry\Domain\Model\PropertyMetadata;
 use Star\Component\Document\DataEntry\Domain\Model\SchemaMetadata;
 use Star\Component\Document\Design\Domain\Model\Constraints\ConstraintData;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\DocumentVisitor;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeVisitor;
 use Star\Component\Document\Design\Domain\Model\Parameters\ParameterData;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\Document\Design\Domain\Model\PropertyName;
 use Star\Component\Document\Design\Domain\Model\PropertyParameter;
@@ -19,110 +20,110 @@ use function json_encode;
 
 final class DocumentSchema implements SchemaMetadata
 {
-    /**
-     * @var DocumentId
-     */
-    private $documentId;
+    private DocumentTypeId $documentId;
 
     /**
      * @var PropertyDefinition[]
      */
-    private $properties = [];
+    private array $properties = [];
 
-    public function __construct(DocumentId $documentId)
+    public function __construct(DocumentTypeId $documentId)
     {
         $this->documentId = $documentId;
     }
 
-    public function getIdentity(): DocumentId
+    public function getIdentity(): DocumentTypeId
     {
         return $this->documentId;
     }
 
-    public function addProperty(string $property, PropertyType $type): void
+    public function addProperty(PropertyCode $code, PropertyName $name, PropertyType $type): void
     {
-        $this->properties[$property] = new PropertyDefinition(PropertyName::fromString($property), $type);
+        $this->properties[$code->toString()] = new PropertyDefinition($code, $name, $type);
     }
 
-    public function hasProperty(string $property): bool
+    public function hasProperty(PropertyCode $code): bool
     {
-        return array_key_exists($property, $this->properties);
+        return array_key_exists($code->toString(), $this->properties);
     }
 
-    public function getPropertyMetadata(string $property): PropertyMetadata
+    public function getPropertyMetadata(string $code): PropertyMetadata
     {
-        return $this->getPropertyDefinition($property);
+        return $this->getPropertyDefinition(PropertyCode::fromString($code));
     }
 
-    public function removePropertyConstraint(string $property, string $constraint): void
+    public function removePropertyConstraint(PropertyCode $code, string $constraint): void
     {
-        $this->properties[$property] = $this->getPropertyDefinition($property)->removeConstraint($constraint);
+        $this->properties[$code->toString()] = $this->getPropertyDefinition($code)->removeConstraint($constraint);
     }
 
     public function addPropertyConstraint(
-        string $property,
+        PropertyCode $code,
         string $constraintName,
         PropertyConstraint $constraint
     ): void {
-        $this->properties[$property] = $this
-            ->getPropertyDefinition($property)
+        $this->properties[$code->toString()] = $this
+            ->getPropertyDefinition($code)
             ->addConstraint($constraintName, $constraint);
     }
 
     public function addParameter(
-        string $property,
+        PropertyCode $code,
         string $parameterName,
         PropertyParameter $parameter
     ): void {
-        $this->properties[$property] = $this
-            ->getPropertyDefinition($property)
+        $this->properties[$code->toString()] = $this
+            ->getPropertyDefinition($code)
             ->addParameter($parameterName, $parameter);
     }
 
-    public function acceptDocumentVisitor(DocumentVisitor $visitor): void
+    public function acceptDocumentTypeVisitor(DocumentTypeVisitor $visitor): void
     {
-        $visitor->visitDocument($this->getIdentity());
+        $visitor->visitDocumentType($this->getIdentity());
         foreach ($this->properties as $property => $definition) {
             $definition->acceptDocumentVisitor($visitor);
         }
     }
 
-    public function clone(DocumentId $id): DocumentSchema
+    public function clone(DocumentTypeId $id): DocumentSchema
     {
-        $this->acceptDocumentVisitor($cloner = new SchemaCloner($id));
+        $this->acceptDocumentTypeVisitor($cloner = new SchemaCloner($id));
 
         return $cloner->getClone();
     }
 
     public function toString(): string
     {
-        $this->acceptDocumentVisitor($dumper = new SchemaDumper());
+        $this->acceptDocumentTypeVisitor($dumper = new SchemaDumper());
 
         return (string) json_encode($dumper->toArray());
     }
 
-    private function getPropertyDefinition(string $property): PropertyDefinition
+    private function getPropertyDefinition(PropertyCode $property): PropertyDefinition
     {
         if (!$this->hasProperty($property)) {
-            throw new ReferencePropertyNotFound(PropertyName::fromString($property));
+            throw new ReferencePropertyNotFound($property);
         }
 
-        return $this->properties[$property];
+        return $this->properties[$property->toString()];
     }
 
     public static function fromJsonString(string $string): DocumentSchema
     {
         $data = json_decode($string, true);
-        $schema = new DocumentSchema(DocumentId::fromString($data[SchemaDumper::INDEX_ID]));
-        foreach ($data[SchemaDumper::INDEX_PROPERTIES] as $propertyName => $propertyData) {
+        $schema = new DocumentSchema(
+            DocumentTypeId::fromString($data[SchemaDumper::INDEX_ID])
+        );
+        foreach ($data[SchemaDumper::INDEX_PROPERTIES] as $propertyCode => $propertyData) {
             $schema->addProperty(
-                $propertyName,
-                TypeData::fromArray($propertyData[SchemaDumper::INDEX_TYPE])->createType()
+                $code = PropertyCode::fromString($propertyCode),
+                PropertyName::fromSerializedString($propertyData[SchemaDumper::INDEX_PROPERTY_NAME]),
+                TypeData::fromArray($propertyData[SchemaDumper::INDEX_PROPERTY_TYPE])->createType()
             );
 
             foreach ($propertyData[SchemaDumper::INDEX_CONSTRAINTS] as $constraintName => $constraintData) {
                 $schema->addPropertyConstraint(
-                    $propertyName,
+                    $code,
                     $constraintName,
                     ConstraintData::fromArray($constraintData)->createPropertyConstraint()
                 );
@@ -134,7 +135,7 @@ final class DocumentSchema implements SchemaMetadata
 
             foreach ($propertyData[SchemaDumper::INDEX_PARAMETERS] as $parameterName => $parameterData) {
                 $schema->addParameter(
-                    $propertyName,
+                    $code,
                     $parameterName,
                     ParameterData::fromArray($parameterData)->createParameter()
                 );
@@ -142,5 +143,10 @@ final class DocumentSchema implements SchemaMetadata
         }
 
         return $schema;
+    }
+
+    public static function baseSchema(DocumentTypeId $documentId): self
+    {
+        return new self($documentId);
     }
 }

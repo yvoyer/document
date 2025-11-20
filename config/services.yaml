@@ -1,0 +1,75 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Controller\:
+        resource: '../src/App/Controller/'
+        tags: ['controller.service_arguments']
+
+    App\SchemaManager:
+        class: Doctrine\Migrations\Provider\OrmSchemaProvider
+
+    App\Authentication\AuthenticationContext:
+        class: App\Authentication\Port\InMemory\NullObjectContext
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+
+    # DomainEvent component
+    Star\Component\DomainEvent\Serialization\PayloadSerializer:
+        class: Star\Component\DomainEvent\Serialization\PayloadFromReflection
+    # End DomainEvent component
+
+    # Design context
+    Star\Component\Document\Design\Domain\Messaging\Command\:
+        resource: '../src/Design/Domain/Messaging/Command/*{Handler}.php'
+        tags:
+            - { name: star.command_handler }
+
+    Star\Component\Document\Design\Domain\Model\DocumentTypeRepository:
+        class: Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBAL\DocumentTypeEventStore
+
+#    Star\Component\Document\Design\Domain\Model\Constraints\ConstraintRegistry:
+ #       class: Star\Component\Document\Design\Infrastructure\Persistence\InMemory\ConstraintFactory
+  #      calls:
+   #         - ['addClassMap', ['required', 'Star\Component\Document\Design\Domain\Model\Constraints\RequiresValue']]
+
+    Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBAL\:
+        resource: '../src/Design/Infrastructure/Persistence/Doctrine/DBAL/*{Projection}.php'
+        tags:
+            - { name: star.event_listener }
+
+    Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBAL\FindAllMyDocumentTypesHandler:
+        tags:
+            - { name: star.query_handler, message: Star\Component\Document\Design\Domain\Messaging\Query\FindAllMyDocumentTypes }
+
+    Star\Component\Document\Design\Infrastructure\Persistence\Doctrine\DBAL\FindSchemaForDocumentTypesHandler:
+        tags:
+            - { name: star.query_handler, message: Star\Component\Document\Design\Domain\Messaging\Query\FindSchemaForDocumentTypes }
+    # End Design context
+
+    # Membership context
+    Star\Component\Document\Membership\Domain\Model\MemberRepository:
+        class: Star\Component\Document\Membership\Infrastructure\Persistence\Doctrine\MemberDBALEventStore
+
+    Star\Component\Document\Membership\Domain\Messaging\Command\:
+        resource: '../src/Membership/Domain/Messaging/Command/*{Handler}.php'
+        tags:
+            - { name: star.command_handler }
+
+    Star\Component\Document\Membership\Infrastructure\Persistence\Doctrine\DBAL\MemberSchemaManager:
+        tags:
+            - { name: star.event_listener }
+    # End Membership context
+

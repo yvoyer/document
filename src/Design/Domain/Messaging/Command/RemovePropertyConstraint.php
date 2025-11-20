@@ -2,45 +2,34 @@
 
 namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
-use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\DomainEvent\Messaging\Command;
 
 final class RemovePropertyConstraint implements Command
 {
-    /**
-     * @var DocumentId
-     */
-    private $documentId;
-
-    /**
-     * @var PropertyName
-     */
-    private $name;
-
-    /**
-     * @var string
-     */
-    private $constraintName;
+    private DocumentTypeId $documentId;
+    private PropertyCode $code;
+    private string $constraintName;
 
     public function __construct(
-        DocumentId $documentId,
-        PropertyName $name,
+        DocumentTypeId $documentId,
+        PropertyCode $code,
         string $constraintName
     ) {
         $this->documentId = $documentId;
-        $this->name = $name;
+        $this->code = $code;
         $this->constraintName = $constraintName;
     }
 
-    public function documentId(): DocumentId
+    public function documentId(): DocumentTypeId
     {
         return $this->documentId;
     }
 
-    public function name(): PropertyName
+    public function code(): PropertyCode
     {
-        return $this->name;
+        return $this->code;
     }
 
     public function constraintName(): string

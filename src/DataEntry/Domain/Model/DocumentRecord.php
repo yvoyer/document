@@ -7,20 +7,20 @@ use Star\Component\Document\DataEntry\Domain\Model\Validation\StrategyToHandleVa
 interface DocumentRecord extends ReadOnlyRecord
 {
     /**
-     * @param string $propertyName
+     * @param string $code
      * @param RecordValue $value
      * @param StrategyToHandleValidationErrors|null $strategy
      */
     public function setValue(
-        string $propertyName,
+        string $code,
         RecordValue $value,
         StrategyToHandleValidationErrors $strategy = null
     ): void;
 
     /**
-     * @param string $propertyName
+     * @param string $code
      *
      * @return RecordValue
      */
-    public function getValue(string $propertyName): RecordValue;
+    public function getValue(string $code): RecordValue;
 }

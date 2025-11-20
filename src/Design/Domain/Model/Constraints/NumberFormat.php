@@ -13,20 +13,9 @@ use function str_repeat;
 
 final class NumberFormat implements PropertyConstraint
 {
-    /**
-     * @var int
-     */
-    private $decimal;
-
-    /**
-     * @var string
-     */
-    private $decimalPoint;
-
-    /**
-     * @var string
-     */
-    private $thousandSeparator;
+    private int $decimal;
+    private string $decimalPoint;
+    private string $thousandSeparator;
 
     public function __construct(
         int $decimal = 2,
@@ -73,8 +62,8 @@ final class NumberFormat implements PropertyConstraint
 
     public function toData(): ConstraintData
     {
-        return new ConstraintData(
-            self::class,
+        return ConstraintData::fromConstraint(
+            $this,
             [
                 'decimal' => $this->decimal,
                 'point' => $this->decimalPoint,
@@ -85,10 +74,10 @@ final class NumberFormat implements PropertyConstraint
 
     public static function fromData(ConstraintData $data): Constraint
     {
-        return new static(
-            $data->getArgument('decimal'),
-            $data->getArgument('point'),
-            $data->getArgument('thousands_separator')
+        return new self(
+            $data->getIntegerArgument('decimal'),
+            $data->getStringArgument('point'),
+            $data->getStringArgument('thousands_separator')
         );
     }
 }

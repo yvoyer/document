@@ -2,61 +2,71 @@
 
 namespace Star\Component\Document\Design\Domain\Model\Events;
 
-use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
+use Star\Component\Document\Design\Domain\Model\Constraints\ConstraintData;
+use Star\Component\Document\Design\Domain\Model\DocumentOwner;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
+use Star\Component\DomainEvent\Serialization\CreatedFromPayload;
 
-final class PropertyConstraintWasAdded implements DocumentEvent
+final class PropertyConstraintWasAdded implements DocumentTypeEvent
 {
-    /**
-     * @var DocumentId
-     */
-    private $document;
-
-    /**
-     * @var PropertyName
-     */
-    private $propertyName;
-
-    /**
-     * @var string
-     */
-    private $constraintName;
-
-    /**
-     * @var PropertyConstraint
-     */
-    private $constraint;
+    private DocumentTypeId $document;
+    private PropertyCode $propertyCode;
+    private string $constraintAlias;
+    private ConstraintData $constraintData;
+    private DocumentOwner $addedBy;
+    private AuditDateTime $addedAt;
 
     public function __construct(
-        DocumentId $document,
-        PropertyName $propertyName,
-        string $constraintName,
-        PropertyConstraint $constraint
+        DocumentTypeId $document,
+        PropertyCode $propertyCode,
+        string $constraintAlias,
+        ConstraintData $constraintData,
+        DocumentOwner $addedBy,
+        AuditDateTime $addedAt
     ) {
         $this->document = $document;
-        $this->propertyName = $propertyName;
-        $this->constraintName = $constraintName;
-        $this->constraint = $constraint;
+        $this->propertyCode = $propertyCode;
+        $this->constraintAlias = $constraintAlias;
+        $this->constraintData = $constraintData;
+        $this->addedBy = $addedBy;
+        $this->addedAt = $addedAt;
     }
 
-    public function documentId(): DocumentId
+    public function typeId(): DocumentTypeId
     {
         return $this->document;
     }
 
-    public function propertyName(): PropertyName
+    public function propertyCode(): PropertyCode
     {
-        return $this->propertyName;
+        return $this->propertyCode;
     }
 
-    public function constraintName(): string
+    public function constraintAlias(): string
     {
-        return $this->constraintName;
+        return $this->constraintAlias;
     }
 
-    public function constraint(): PropertyConstraint
+    public function constraintData(): ConstraintData
     {
-        return $this->constraint;
+        return $this->constraintData;
+    }
+
+    final public function updatedBy(): DocumentOwner
+    {
+        return $this->addedBy;
+    }
+
+    final public function updatedAt(): AuditDateTime
+    {
+        return $this->addedAt;
+    }
+
+    public static function fromPayload(array $payload): CreatedFromPayload
+    {
+        \var_dump($payload);
+        throw new \RuntimeException(__METHOD__ . ' not implemented yet.');
     }
 }

@@ -9,15 +9,8 @@ use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 
 final class BetweenDate implements PropertyConstraint
 {
-    /**
-     * @var string
-     */
-    private $fromDate;
-
-    /**
-     * @var string
-     */
-    private $toDate;
+    private string $fromDate;
+    private string $toDate;
 
     public function __construct(string $start, string $end)
     {
@@ -36,8 +29,8 @@ final class BetweenDate implements PropertyConstraint
 
     public function toData(): ConstraintData
     {
-        return new ConstraintData(
-            self::class,
+        return ConstraintData::fromConstraint(
+            $this,
             [
                 'from' => $this->fromDate,
                 'to' => $this->toDate,
@@ -47,9 +40,9 @@ final class BetweenDate implements PropertyConstraint
 
     public static function fromData(ConstraintData $data): Constraint
     {
-        return new static(
-            $data->getArgument('from'),
-            $data->getArgument('to')
+        return new self(
+            $data->getStringArgument('from'),
+            $data->getStringArgument('to')
         );
     }
 }

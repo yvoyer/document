@@ -2,70 +2,57 @@
 
 namespace Star\Component\Document\Design\Domain\Messaging\Command;
 
-use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Domain\Model\PropertyName;
+use Star\Component\Document\Audit\Domain\Model\AuditDateTime;
+use Star\Component\Document\Design\Domain\Model\Constraints\ConstraintData;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
+use Star\Component\Document\Design\Domain\Model\PropertyConstraint;
 use Star\Component\DomainEvent\Messaging\Command;
 
 final class AddPropertyConstraint implements Command
 {
-    /**
-     * @var DocumentId
-     */
-    private $documentId;
+    private DocumentTypeId $typeId;
+    private PropertyCode $propertyCode;
+    private string $constraintCode;
+    private ConstraintData $constraintData;
+    private AuditDateTime $addedAt;
 
-    /**
-     * @var PropertyName
-     */
-    private $name;
-
-    /**
-     * @var string
-     */
-    private $constraintName;
-
-    /**
-     * @var mixed[]
-     */
-    private $constraintData;
-
-    /**
-     * @param DocumentId $documentId
-     * @param PropertyName $name
-     * @param string $constraintName
-     * @param mixed[] $constraintData
-     */
     public function __construct(
-        DocumentId $documentId,
-        PropertyName $name,
-        string $constraintName,
-        array $constraintData
+        DocumentTypeId $typeId,
+        PropertyCode $propertyCode,
+        string $constraintCode,
+        PropertyConstraint $constraint,
+        AuditDateTime $addedAt
     ) {
-        $this->documentId = $documentId;
-        $this->name = $name;
-        $this->constraintName = $constraintName;
-        $this->constraintData = $constraintData;
+        $this->typeId = $typeId;
+        $this->propertyCode = $propertyCode;
+        $this->constraintCode = $constraintCode;
+        $this->constraintData = $constraint->toData();
+        $this->addedAt = $addedAt;
     }
 
-    public function documentId(): DocumentId
+    public function typeId(): DocumentTypeId
     {
-        return $this->documentId;
+        return $this->typeId;
     }
 
-    public function name(): PropertyName
+    public function propertyCode(): PropertyCode
     {
-        return $this->name;
+        return $this->propertyCode;
     }
 
-    public function constraintName(): string
+    public function constraintCode(): string
     {
-        return $this->constraintName;
+        return $this->constraintCode;
     }
 
-    /**
-     * @return mixed[]
-     */
-    public function constraintData(): array
+    public function constraintData(): ConstraintData
     {
         return $this->constraintData;
+    }
+
+    final public function addedAt(): AuditDateTime
+    {
+        return $this->addedAt;
     }
 }

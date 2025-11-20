@@ -3,12 +3,12 @@
 namespace Star\Component\Document\DataEntry\Domain\Model\Events;
 
 use Star\Component\Document\DataEntry\Domain\Model\RecordAction;
-use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\DocumentId;
 
 final class ActionWasPerformed implements RecordEvent
 {
     /**
-     * @var RecordId
+     * @var DocumentId
      */
     private $recordId;
 
@@ -17,13 +17,13 @@ final class ActionWasPerformed implements RecordEvent
      */
     private $action;
 
-    public function __construct(RecordId $recordId, RecordAction $action)
+    public function __construct(DocumentId $recordId, RecordAction $action)
     {
         $this->recordId = $recordId;
         $this->action = $action;
     }
 
-    public function recordId(): RecordId
+    public function recordId(): DocumentId
     {
         return $this->recordId;
     }

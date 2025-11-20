@@ -4,7 +4,7 @@ namespace Star\Component\Document\Tests\DataEntry\Infrastructure\Persistence\InM
 
 use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Model\DocumentRecord;
-use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
 use Star\Component\Identity\Exception\EntityNotFoundException;
 
@@ -25,7 +25,7 @@ final class RecordCollectionTest extends TestCase
         $this->assertCount(0, $this->collection);
 
         $this->collection->saveRecord(
-            $id = RecordId::fromString('r1'),
+            $id = DocumentId::fromString('r1'),
             $record = $this->createMock(DocumentRecord::class)
         );
 
@@ -36,7 +36,7 @@ final class RecordCollectionTest extends TestCase
 
     public function test_it_should_throw_exception_when_not_found(): void
     {
-        $id = RecordId::fromString('not-found');
+        $id = DocumentId::fromString('not-found');
         $this->assertCount(0, $this->collection);
         $this->assertFalse($this->collection->recordExists($id));
 

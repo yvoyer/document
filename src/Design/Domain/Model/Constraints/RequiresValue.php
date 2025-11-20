@@ -27,11 +27,11 @@ final class RequiresValue implements PropertyConstraint
 
     public function toData(): ConstraintData
     {
-        return new ConstraintData(self::class);
+        return ConstraintData::fromConstraint($this, []);
     }
 
     public static function fromData(ConstraintData $data): Constraint
     {
-        return new static();
+        return new self();
     }
 }

@@ -3,3 +3,4 @@ default:
         default:
             paths: ["%paths.base%/features"]
             contexts: [Star\Component\Document\Tests\FeatureContext]
+            formatter: progress

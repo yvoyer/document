@@ -4,7 +4,7 @@ namespace Star\Component\Document\DataEntry\Domain\Model\Schema;
 
 use Star\Component\Document\DataEntry\Domain\Model\SchemaFactory;
 use Star\Component\Document\DataEntry\Domain\Model\SchemaMetadata;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 
 final class CallbackSchemaFactory implements SchemaFactory
 {
@@ -18,7 +18,7 @@ final class CallbackSchemaFactory implements SchemaFactory
         $this->callback = $callback;
     }
 
-    public function createSchema(DocumentId $documentId): SchemaMetadata
+    public function createSchema(DocumentTypeId $documentId): SchemaMetadata
     {
         $closure = $this->callback;
 

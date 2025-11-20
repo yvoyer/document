@@ -6,6 +6,7 @@ use Assert\Assertion;
 use RuntimeException;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\Design\Domain\Model\Behavior\DocumentBehavior;
+use Star\Component\Document\Design\Domain\Model\PropertyCode;
 use Star\Component\Document\Design\Domain\Model\PropertyType;
 
 final class BehaviorType implements PropertyType
@@ -36,14 +37,16 @@ final class BehaviorType implements PropertyType
     }
 
     public function generateExceptionForNotSupportedTypeForValue(
-        string $property,
+        PropertyCode $property,
         RecordValue $value
     ): NotSupportedTypeForValue {
         return new NotSupportedTypeForValue($property, $value, $this);
     }
 
-    public function generateExceptionForNotSupportedValue(string $property, RecordValue $value): InvalidPropertyValue
-    {
+    public function generateExceptionForNotSupportedValue(
+        PropertyCode $property,
+        RecordValue $value
+    ): InvalidPropertyValue {
         throw new RuntimeException(__METHOD__ . ' not implemented yet.');
     }
 

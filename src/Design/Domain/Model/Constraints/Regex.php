@@ -13,10 +13,7 @@ use function sprintf;
 
 final class Regex implements PropertyConstraint
 {
-    /**
-     * @var string
-     */
-    private $pattern;
+    private string $pattern;
 
     public function __construct(string $pattern)
     {
@@ -43,11 +40,11 @@ final class Regex implements PropertyConstraint
 
     public function toData(): ConstraintData
     {
-        return new ConstraintData(self::class, ['pattern' => $this->pattern]);
+        return ConstraintData::fromConstraint($this, ['pattern' => $this->pattern]);
     }
 
     public static function fromData(ConstraintData $data): Constraint
     {
-        return new static($data->getArgument('pattern'));
+        return new self($data->getStringArgument('pattern'));
     }
 }

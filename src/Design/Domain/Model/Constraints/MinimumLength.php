@@ -13,10 +13,7 @@ use function sprintf;
 
 final class MinimumLength implements PropertyConstraint
 {
-    /**
-     * @var int
-     */
-    private $length;
+    private int $length;
 
     private function __construct(int $length)
     {
@@ -41,7 +38,7 @@ final class MinimumLength implements PropertyConstraint
 
     public function toData(): ConstraintData
     {
-        return new ConstraintData(self::class, ['length' => $this->length]);
+        return ConstraintData::fromConstraint($this, ['length' => $this->length]);
     }
 
     /**
@@ -70,6 +67,6 @@ final class MinimumLength implements PropertyConstraint
 
     public static function fromData(ConstraintData $data): Constraint
     {
-        return new static($data->getArgument('length'));
+        return new self($data->getIntegerArgument('length'));
     }
 }

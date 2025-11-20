@@ -1,0 +1,19 @@
+app:
+    title:
+        dashboard_index: Your documents
+
+menu:
+    home: My documents
+    settings: Settings
+    preferences: Preferences
+    help: Help
+    about: About
+
+form:
+    create:
+        document_type:
+            name:
+                label: Name
+                placeholder: Enter the document type name
+                description: This name will be used for listing
+                submit: New document

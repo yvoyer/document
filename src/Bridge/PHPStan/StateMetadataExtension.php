@@ -5,10 +5,13 @@ namespace Star\Component\Document\Bridge\PHPStan;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
-use PHPStan\Type;
+use PHPStan\Type\ClassStringType;
+use PHPStan\Type\DynamicMethodReturnTypeExtension;
+use PHPStan\Type\ObjectType;
+use PHPStan\Type\Type;
 use Star\Component\State\StateMetadata;
 
-final class StateMetadataExtension implements Type\DynamicMethodReturnTypeExtension
+final class StateMetadataExtension implements DynamicMethodReturnTypeExtension
 {
     public function getClass(): string
     {
@@ -24,12 +27,12 @@ final class StateMetadataExtension implements Type\DynamicMethodReturnTypeExtens
         MethodReflection $methodReflection,
         MethodCall $methodCall,
         Scope $scope
-    ): Type\Type {
+    ): Type {
         $reflection = $scope->getClassReflection();
         if ($reflection && $reflection->isSubclassOf(StateMetadata::class)) {
-            return new Type\ObjectType($reflection->getName());
+            return new ObjectType($reflection->getName());
         }
 
-        return new Type\ClassStringType();
+        return new ClassStringType();
     }
 }

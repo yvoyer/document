@@ -6,13 +6,13 @@ use PHPUnit\Framework\TestCase;
 use Star\Component\Document\DataEntry\Domain\Messaging\Command\CreateRecord;
 use Star\Component\Document\DataEntry\Domain\Messaging\Command\CreateRecordHandler;
 use Star\Component\Document\DataEntry\Domain\Model\AlwaysReturnSchema;
-use Star\Component\Document\DataEntry\Domain\Model\RecordId;
+use Star\Component\Document\DataEntry\Domain\Model\DocumentId;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Values\StringValue;
 use Star\Component\Document\DataEntry\Infrastructure\Persistence\InMemory\RecordCollection;
-use Star\Component\Document\Design\Builder\DocumentBuilder;
-use Star\Component\Document\Design\Domain\Model\DocumentId;
-use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentCollection;
+use Star\Component\Document\Design\Builder\DocumentTypeBuilder;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
+use Star\Component\Document\Design\Infrastructure\Persistence\InMemory\DocumentTypeCollection;
 
 final class CreateRecordHandlerTest extends TestCase
 {
@@ -20,12 +20,12 @@ final class CreateRecordHandlerTest extends TestCase
     {
         $handler = new CreateRecordHandler(
             $records = new RecordCollection(),
-            new DocumentCollection(),
-            new AlwaysReturnSchema(DocumentBuilder::createDocument()->getSchema())
+            new DocumentTypeCollection(),
+            new AlwaysReturnSchema(DocumentTypeBuilder::startDocumentTypeFixture()->getSchema())
         );
         $this->assertCount(0, $records);
 
-        $handler(new CreateRecord(DocumentId::random(), RecordId::random(), []));
+        $handler(new CreateRecord(DocumentTypeId::random(), DocumentId::random(), []));
 
         $this->assertCount(1, $records);
     }
@@ -34,9 +34,9 @@ final class CreateRecordHandlerTest extends TestCase
     {
         $handler = new CreateRecordHandler(
             $records = new RecordCollection(),
-            new DocumentCollection(),
+            new DocumentTypeCollection(),
             new AlwaysReturnSchema(
-                DocumentBuilder::createDocument()
+                DocumentTypeBuilder::startDocumentTypeFixture()
                     ->createText('key')->endProperty()
                     ->getSchema()
             )
@@ -44,8 +44,8 @@ final class CreateRecordHandlerTest extends TestCase
         $this->assertCount(0, $records);
 
         $handler(new CreateRecord(
-            DocumentId::random(),
-            $recordId = RecordId::random(),
+            DocumentTypeId::random(),
+            $recordId = DocumentId::random(),
             [
                 'key' => StringValue::fromString('value'),
             ]
@@ -64,7 +64,7 @@ final class CreateRecordHandlerTest extends TestCase
         $this->expectExceptionMessage(
             'Keys of value map "0" is expected to be the name of the property, "integer" given.'
         );
-        new CreateRecord(DocumentId::random(), RecordId::random(), ['value']);
+        new CreateRecord(DocumentTypeId::random(), DocumentId::random(), ['value']);
     }
 
     public function test_it_should_throw_exception_when_value_not_scalar(): void
@@ -76,6 +76,6 @@ final class CreateRecordHandlerTest extends TestCase
                 RecordValue::class
             )
         );
-        new CreateRecord(DocumentId::random(), RecordId::random(), ['property' => new \stdClass()]);
+        new CreateRecord(DocumentTypeId::random(), DocumentId::random(), ['property' => new \stdClass()]);
     }
 }

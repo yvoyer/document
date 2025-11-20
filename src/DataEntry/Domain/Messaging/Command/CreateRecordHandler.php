@@ -2,10 +2,10 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Messaging\Command;
 
-use Star\Component\Document\DataEntry\Domain\Model\RecordAggregate;
+use Star\Component\Document\DataEntry\Domain\Model\DocumentAggregate;
 use Star\Component\Document\DataEntry\Domain\Model\RecordRepository;
 use Star\Component\Document\DataEntry\Domain\Model\SchemaFactory;
-use Star\Component\Document\Design\Domain\Model\DocumentRepository;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeRepository;
 
 final class CreateRecordHandler
 {
@@ -15,7 +15,7 @@ final class CreateRecordHandler
     private $records;
 
     /**
-     * @var DocumentRepository
+     * @var DocumentTypeRepository
      */
     private $documents;
 
@@ -26,7 +26,7 @@ final class CreateRecordHandler
 
     public function __construct(
         RecordRepository $records,
-        DocumentRepository $documents,
+        DocumentTypeRepository $documents,
         SchemaFactory $factory
     ) {
         $this->records = $records;
@@ -36,7 +36,7 @@ final class CreateRecordHandler
 
     public function __invoke(CreateRecord $command): void
     {
-        $record = RecordAggregate::withValues(
+        $record = DocumentAggregate::withValues(
             $command->recordId(),
             $this->factory->createSchema($command->documentId()),
             $command->valueMap()

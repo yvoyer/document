@@ -41,12 +41,12 @@ interface PropertyType
     public function supportsValue(RecordValue $value): bool;
 
     public function generateExceptionForNotSupportedTypeForValue(
-        string $property,
+        PropertyCode $property,
         RecordValue $value
     ): NotSupportedTypeForValue;
 
     public function generateExceptionForNotSupportedValue(
-        string $property,
+        PropertyCode $property,
         RecordValue $value
     ): InvalidPropertyValue;
 

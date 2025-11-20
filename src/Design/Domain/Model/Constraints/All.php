@@ -37,8 +37,8 @@ final class All implements PropertyConstraint, DocumentConstraint
 
     public function toData(): ConstraintData
     {
-        return new ConstraintData(
-            self::class,
+        return ConstraintData::fromConstraint(
+            $this,
             [
                 'constraints' => array_map(
                     function (PropertyConstraint $constraint) {
@@ -59,9 +59,9 @@ final class All implements PropertyConstraint, DocumentConstraint
                      * @var PropertyConstraint $class
                      */
                     $class = $constraint['class'];
-                    return $class::fromData(new ConstraintData($constraint['class'], $constraint['arguments']));
+                    return $class::fromData(ConstraintData::fromClass($constraint['class'], $constraint['arguments']));
                 },
-                $data->getArgument('constraints')
+                $data->getArrayArgument('constraints')
             )
         );
     }

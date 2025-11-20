@@ -2,19 +2,28 @@
 
 namespace Star\Component\Document\Design\Domain\Model;
 
-use Assert\Assertion;
+use Star\Component\Document\Translation\Domain\Model\TranslationLocale;
+use Star\Component\DomainEvent\Serialization\SerializableAttribute;
+use function mb_strlen;
+use function serialize;
+use function sprintf;
+use function unserialize;
 
-final class PropertyName
+final class PropertyName implements SerializableAttribute
 {
-    /**
-     * @var string
-     */
-    private $value;
+    private string $value;
+    private TranslationLocale $locale;
 
-    private function __construct(string $value)
+    private function __construct(string $value, TranslationLocale $locale)
     {
-        Assertion::notBlank($value);
+        if (mb_strlen($value) === 0) {
+            throw new InvalidPropertyName(
+                sprintf('Property name "%s" may not be empty.', $value)
+            );
+        }
+
         $this->value = $value;
+        $this->locale = $locale;
     }
 
     public function toString(): string
@@ -22,18 +31,39 @@ final class PropertyName
         return $this->value;
     }
 
-    public function matchName(PropertyName $name): bool
+    public function toSerializableString(): string
     {
-        return $name->toString() === $this->toString();
+        return serialize(
+            [
+                'content' => $this->value,
+                'locale' => $this->locale->toString(),
+            ]
+        );
     }
 
-    public static function fromString(string $value): self
+    /**
+     * @return string
+     * @deprecated todo move to object?
+     */
+    public function locale(): string
     {
-        return new self($value);
+        return $this->locale->toString();
     }
 
-    public static function fixture(): self
+    public static function fromLocalizedString(string $value, string $locale): self
     {
-        return self::fromString(\uniqid('property-'));
+        return new self($value, TranslationLocale::fromString($locale));
+    }
+
+    public static function fromSerializedString(string $value): self
+    {
+        $data = unserialize($value);
+
+        return self::fromLocalizedString((string) $data['content'], $data['locale']);
+    }
+
+    public static function random(): self
+    {
+        return self::fromLocalizedString(\uniqid('property-'), 'en');
     }
 }

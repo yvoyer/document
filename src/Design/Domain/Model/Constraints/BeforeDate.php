@@ -3,6 +3,7 @@
 namespace Star\Component\Document\Design\Domain\Model\Constraints;
 
 use DateTimeImmutable;
+use DateTimeInterface;
 use Star\Component\Document\DataEntry\Domain\Model\RecordValue;
 use Star\Component\Document\DataEntry\Domain\Model\Validation\ErrorList;
 use Star\Component\Document\DataEntry\Domain\Model\Values\DateParser;
@@ -15,10 +16,7 @@ final class BeforeDate implements PropertyConstraint
 {
     private const FORMAT = 'Y-m-d';
 
-    /**
-     * @var \DateTimeInterface
-     */
-    private $target;
+    private DateTimeInterface $target;
 
     public function __construct(string $target)
     {
@@ -53,11 +51,11 @@ final class BeforeDate implements PropertyConstraint
 
     public function toData(): ConstraintData
     {
-        return new ConstraintData(self::class, ['target' => $this->target->format(self::FORMAT)]);
+        return ConstraintData::fromConstraint($this, ['target' => $this->target->format(self::FORMAT)]);
     }
 
     public static function fromData(ConstraintData $data): Constraint
     {
-        return new static($data->getArgument('target'));
+        return new self($data->getStringArgument('target'));
     }
 }

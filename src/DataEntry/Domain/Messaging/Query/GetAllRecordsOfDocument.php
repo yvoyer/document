@@ -2,34 +2,34 @@
 
 namespace Star\Component\Document\DataEntry\Domain\Messaging\Query;
 
-use Star\Component\Document\Design\Domain\Model\DocumentId;
+use Star\Component\Document\Design\Domain\Model\DocumentTypeId;
 use Star\Component\DomainEvent\Messaging\Results\CollectionQuery;
 
 final class GetAllRecordsOfDocument extends CollectionQuery
 {
     /**
-     * @var DocumentId
+     * @var DocumentTypeId
      */
     private $documentId;
 
     /**
-     * @param DocumentId $documentId
+     * @param DocumentTypeId $documentId
      */
-    public function __construct(DocumentId $documentId)
+    public function __construct(DocumentTypeId $documentId)
     {
         $this->documentId = $documentId;
     }
 
     /**
-     * @return DocumentId
+     * @return DocumentTypeId
      */
-    public function documentId(): DocumentId
+    public function documentId(): DocumentTypeId
     {
         return $this->documentId;
     }
 
     public static function fromString(string $documentId): self
     {
-        return new self(DocumentId::fromString($documentId));
+        return new self(DocumentTypeId::fromString($documentId));
     }
 }
